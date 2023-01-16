@@ -161,82 +161,33 @@ class autorun(QThread):
         self.run_mode=run_mode
         self.directory = os.path.dirname(os.path.realpath(sys.argv[0]))
 
-    def cugan_(self):
-        noise = 0
-        scale = 2
-        version = 2
+        def cugan_(self):
+        model_switch = {
+            'pro-conservative-up2x'   : [0, 2, 2],
+            'pro-conservative-up3x'   : [0, 3, 2],
+            'pro-denoise3x-up2x'      : [3, 2, 2],
+            'pro-denoise3x-up3x'      : [3, 3, 2],
+            'pro-no-denoise3x-up2x'   : [-1, 2, 2],
+            'pro-no-denoise3x-up3x'   : [-1, 3, 2],
+            'up2x-latest-conservative': [0, 2, 1],
+            'up2x-latest-denoise1x'   : [1, 2, 1],
+            'up2x-latest-denoise2x'   : [2, 2, 1],
+            'up2x-latest-denoise3x'   : [3, 2, 1],
+            'up2x-latest-no-denoise'  : [-1, 2, 1],
+            'up3x-latest-conservative': [0, 3, 1],
+            'up3x-latest-denoise3x'   : [3, 3, 1],
+            'up3x-latest-no-denoise'  : [-1, 3, 1],
+            'up4x-latest-conservative': [0, 4, 1],
+            'up4x-latest-denoise3x'   : [3, 4, 1],
+            'up4x-latest-no-denoise'  : [-1, 4, 1],
+        }
+        noise, scale, version = model_switch[self.every_setting.sr_set.model] \
+            if self.every_setting.sr_set.model in model_switch else [0, 2, 2]
 
-        if self.every_setting.sr_set.model == 'pro-conservative-up2x':
-            noise = 0
-            scale = 2
-            version = 2
-        elif self.every_setting.sr_set.model == 'pro-conservative-up3x':
-            noise = 0
-            scale = 3
-            version = 2
-        elif self.every_setting.sr_set.model == 'pro-denoise3x-up2x':
-            noise = 3
-            scale = 2
-            version = 2
-        elif self.every_setting.sr_set.model == 'pro-denoise3x-up3x':
-            noise = 3
-            scale = 3
-            version = 2
-        elif self.every_setting.sr_set.model == 'pro-no-denoise3x-up2x':
-            noise = -1
-            scale = 2
-            version = 2
-        elif self.every_setting.sr_set.model == 'pro-no-denoise3x-up3x':
-            noise = -1
-            scale = 3
-            version = 2
-        elif self.every_setting.sr_set.model == 'up2x-latest-conservative':
-            noise = 0
-            scale = 2
-            version = 1
-        elif self.every_setting.sr_set.model == 'up2x-latest-denoise1x':
-            noise = 1
-            scale = 2
-            version = 1
-        elif self.every_setting.sr_set.model == 'up2x-latest-denoise2x':
-            noise = 2
-            scale = 2
-            version = 1
-        elif self.every_setting.sr_set.model == 'up2x-latest-denoise3x':
-            noise = 3
-            scale = 2
-            version = 1
-        elif self.every_setting.sr_set.model == 'up2x-latest-no-denoise':
-            noise = -1
-            scale = 2
-            version = 1
-        elif self.every_setting.sr_set.model == 'up3x-latest-conservative':
-            noise = 0
-            scale = 3
-            version = 1
-        elif self.every_setting.sr_set.model == 'up3x-latest-denoise3x':
-            noise = 3
-            scale = 3
-            version = 1
-        elif self.every_setting.sr_set.model == 'up3x-latest-no-denoise':
-            noise = -1
-            scale = 3
-            version = 1
-        elif self.every_setting.sr_set.model == 'up4x-latest-conservative':
-            noise = 0
-            scale = 4
-            version = 1
-        elif self.every_setting.sr_set.model == 'up4x-latest-denoise3x':
-            noise = 3
-            scale = 4
-            version = 1
-        elif self.every_setting.sr_set.model == 'up4x-latest-no-denoise':
-            noise = -1
-            scale = 4
-            version = 1
-
-        return('res = CUGAN(res, noise='+str(noise)+', scale='+str(scale)+', tiles='+str(self.every_setting.sr_set.tile)+',version='+str(version)+',alpha='+str(self.every_setting.sr_set.alpha)+', backend=device)\n')
-
+        return ('res = CUGAN(res, noise=' + str(noise) + ', scale=' + str(scale) + ', tiles=' + str(
+            self.every_setting.sr_set.tile) + ',version=' + str(version) + ',alpha=' + str(
+            self.every_setting.sr_set.alpha) + ', backend=device)\n')
+    
     def esrgan_(self):
         model=0
         if self.every_setting.sr_set.model=='animevideov3':
