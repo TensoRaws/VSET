@@ -16,9 +16,9 @@ var GithubAPIrpHost = "https://api-github.114514.lol/" // 反代GitHub API
 // rp -- reverse proxy
 
 func getCurrentVersion() []string {
-	repositoryVset := "v1.0.0"
-	repositoryVsVsmlrt := "v1.0."
-	repositoryVsPytorch := "v1.0."
+	repositoryVset := "v1.0."
+	repositoryVsVsmlrt := "v1.0.0"
+	repositoryVsPytorch := "v1.0.0"
 	return []string{repositoryVset, repositoryVsVsmlrt, repositoryVsPytorch}
 }
 
@@ -122,6 +122,9 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
+
+			DownloadFile.Close()
+
 			fmt.Println("解压完成，要删除下载的压缩包吗？（y/n）")
 			var scan string
 			_, scanln = fmt.Scanln(&scan)
@@ -134,7 +137,6 @@ func main() {
 					panic(err)
 				}
 			}
-			DownloadFile.Close()
 		}
 	}
 	if cnt == 0 {
