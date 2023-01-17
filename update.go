@@ -108,7 +108,7 @@ func main() {
 	LastestVersion := getLastestVersion()
 	DownloadLink := getDownloadLink(LastestVersion)
 
-	pgName := [][]string{{"VSET主程序", "VSET.zip"}, {"vs_vsmlrt环境包", "vs_vsmlrt.7z"}, {"vs_pytorch环境包", "vs_pytorch.7z"}}
+	pgName := [][]string{{"VSET主程序", "VSET.zip", "VSET.exe"}, {"vs_vsmlrt环境包", "vs_vsmlrt.7z", "vs_vsmlrt"}, {"vs_pytorch环境包", "vs_pytorch.7z", "vs_pytorch"}}
 	cnt := 0
 	for i := 0; i < 3; i++ {
 		if LastestVersion[i] != CurrentVersion[i] {
@@ -122,6 +122,11 @@ func main() {
 			}
 
 			downloadFile(DownloadLink[i], MyDirPath)
+
+			// 删除原来的文件
+			if err := os.RemoveAll(path.Join(MyDirPath, pgName[i][2])); err != nil {
+				fmt.Println("删除原来的文件失败")
+			}
 
 			_ = os.Rename(path.Join(MyDirPath, "tempdl"), path.Join(MyDirPath, pgName[i][1]))
 			DownloadFile, err := unarr.NewArchive(path.Join(MyDirPath, pgName[i][1]))
@@ -151,5 +156,7 @@ func main() {
 	}
 	if cnt == 0 {
 		fmt.Println("Ciallo~~恭喜你呀，当前已是最新版本")
+	} else {
+		fmt.Println("Ciallo~~恭喜你呀，更新完成啦嘿嘿嘿")
 	}
 }
