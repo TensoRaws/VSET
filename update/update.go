@@ -17,7 +17,7 @@ var GithubAPIrpHost = "https://api-github.114514.lol/" // 反代GitHub API
 
 func getCurrentVersion() []string {
 	repositoryVset := "v1.0."
-	repositoryVsVsmlrt := "v1.0.0"
+	repositoryVsVsmlrt := "v1.0"
 	repositoryVsPytorch := "v1.0.0"
 	return []string{repositoryVset, repositoryVsVsmlrt, repositoryVsPytorch}
 }
@@ -53,7 +53,7 @@ func getDownloadLink(version []string) []string {
 	return []string{repositoryVset, repositoryVsVsmlrt, repositoryVsPytorch}
 }
 
-// 下载器结构体，实现io.Reader接口
+// MyDownloader 下载器结构体，实现io.Reader接口
 type MyDownloader struct {
 	io.Reader
 	TotalSize   int64
@@ -72,13 +72,21 @@ func (d *MyDownloader) Read(p []byte) (n int, err error) {
 }
 
 func downloadFile(url string, p string) {
+	deleteDLfile := func() {
+		if err := os.RemoveAll(path.Join(p, "tempdl")); err != nil {
+			fmt.Println("删除下载文件失败")
+		}
+	}
 	file, err := os.OpenFile(path.Join(p, "tempdl"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
+		fmt.Println("创建下载文件失败")
 		panic(err)
 	}
 	defer file.Close()
 	resp, err := http.Get(url)
 	if err != nil {
+		fmt.Println("    ||    下载文件失败，请检查网络是否稳定，建议开启tun/tap模式")
+		deleteDLfile()
 		panic(err)
 	}
 	defer resp.Body.Close()
@@ -88,6 +96,8 @@ func downloadFile(url string, p string) {
 		TotalSize: resp.ContentLength,
 	}
 	if _, err := io.Copy(file, myDownloader); err != nil {
+		fmt.Println("    ||    下载文件失败，请检查网络是否稳定，建议开启tun/tap模式")
+		deleteDLfile()
 		panic(err)
 	}
 }
@@ -125,7 +135,7 @@ func main() {
 
 			DownloadFile.Close()
 
-			fmt.Println("解压完成，要删除下载的压缩包吗？（y/n）")
+			fmt.Println("    ||    解压完成，要删除下载的压缩包吗？（y/n）")
 			var scan string
 			_, scanln = fmt.Scanln(&scan)
 			if scanln != nil {
