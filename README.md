@@ -1,6 +1,8 @@
 # VSET（VapourSynth Encode Tool）
 基于Vapoursynth的图形化视频批量压制处理工具,集成了Real-cugan,Real-esrgan,Waifu2x的二次元超分算法，以及适用于三次元超分辨率的算法BasicVSRpp。
 现阶段已经初步测试完毕。开源2.0版本正在公测中，欢迎各位大佬帮忙测试。
+![logo](https://user-images.githubusercontent.com/72263191/212935212-516e32a0-5171-4dc0-907e-d5162af4ce2d.png)
+
 ## 20230117更新
 -集成了BasicVSRpp算法，支持6个常用模型   
 -集成了Waifu2x算法，支持将近30个模型   
