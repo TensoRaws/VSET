@@ -1,5 +1,5 @@
 # VSET（VapourSynth Encode Tool）
-基于Vapoursynth的图形化视频批量压制处理图形化工具,现阶段已经初步测试完毕。开源2.0版本正在公测中，欢迎各位大佬帮忙测试。
+基于Vapoursynth的图形化视频批量压制处理图形化工具,现阶段已经初步测试完毕。开源2.0版本正在公测中，欢迎各位大佬帮忙测试。   
 ![logo](https://user-images.githubusercontent.com/72263191/212935212-516e32a0-5171-4dc0-907e-d5162af4ce2d.png)
 ## 这玩意是做啥的
 VSET是一款可以提升视频分辨率（1080->2160）的软件   
