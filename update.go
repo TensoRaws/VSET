@@ -1,3 +1,4 @@
+//go:generate goversioninfo -64=true
 package main
 
 import (
@@ -18,7 +19,7 @@ var GithubAPIrpHost = "https://api-github.114514.lol/" // 反代GitHub API
 func getCurrentVersion() []string {
 	repositoryVset := "v1.0."
 	repositoryVsVsmlrt := "v1.0"
-	repositoryVsPytorch := "v1.0.0"
+	repositoryVsPytorch := "v1.0."
 	return []string{repositoryVset, repositoryVsVsmlrt, repositoryVsPytorch}
 }
 
@@ -103,6 +104,7 @@ func downloadFile(url string, p string) {
 }
 
 func main() {
+	fmt.Println("Ciallo~~正在检查更新...")
 	MyDirPath, _ := os.Getwd()
 	CurrentVersion := getCurrentVersion()
 	LastestVersion := getLastestVersion()
