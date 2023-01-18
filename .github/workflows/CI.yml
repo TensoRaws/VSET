@@ -38,13 +38,9 @@ jobs:
         with:
           go-version: '1.19.5'
       - run: |
-          go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
-          go generate
           go build
-          echo D | xcopy update.exe dist /e
           xcopy update.exe dist
-          
-          
+                    
       - uses: actions/upload-artifact@v3
         with:
           name: VSET
