@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"time"
 )
 
 var GithubrpHost = "https://git.114514.lol/"           // 反代GitHub域名
@@ -17,9 +18,9 @@ var GithubAPIrpHost = "https://api-github.114514.lol/" // 反代GitHub API
 // rp -- reverse proxy
 
 func getCurrentVersion() []string {
-	repositoryVset := "v1.0."
-	repositoryVsVsmlrt := "v1.0"
-	repositoryVsPytorch := "v1.0."
+	repositoryVset := "未安装"
+	repositoryVsVsmlrt := "未安装"
+	repositoryVsPytorch := "未安装"
 	return []string{repositoryVset, repositoryVsVsmlrt, repositoryVsPytorch}
 }
 
@@ -117,10 +118,15 @@ func main() {
 			cnt++
 
 			fmt.Println(pgName[i][0] + " 当前版本" + CurrentVersion[i] + "，" +
-				"有新版本" + LastestVersion[i] + "，按回车键开始下载")
-			_, scanln := fmt.Scanln()
+				"有新版本" + LastestVersion[i] + "，按回车键开始下载，按n键跳过")
+			var input string
+			_, scanln := fmt.Scanln(&input)
 			if scanln != nil {
 				return
+			}
+			if input == "n" || input == "N" {
+				fmt.Println("跳过" + pgName[i][0] + "更新")
+				continue
 			}
 
 			downloadFile(DownloadLink[i], MyDirPath)
@@ -148,7 +154,7 @@ func main() {
 			if scanln != nil {
 				return
 			}
-			if scan == "y" {
+			if scan == "y" || scan == "Y" {
 				err = os.RemoveAll(path.Join(MyDirPath, pgName[i][1]))
 				if err != nil {
 					panic(err)
@@ -161,4 +167,6 @@ func main() {
 	} else {
 		fmt.Println("Ciallo~~恭喜你呀，更新完成啦嘿嘿嘿")
 	}
+	time.Sleep(2 * time.Second)
+	return
 }
