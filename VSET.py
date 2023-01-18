@@ -4,12 +4,12 @@ import subprocess as sp
 import json
 from configparser import ConfigParser
 
-
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from VSET_UI import Ui_mainWindow
+
 
 class FFprobe():
     def __init__(self):
@@ -21,15 +21,15 @@ class FFprobe():
         self.filepath = filepath
         try:
             res = sp.check_output(
-                [self.directory+'/vs_pytorch/ffprobe', '-i', self.filepath, '-print_format', 'json', '-show_format', '-show_streams', '-v',
-                 'quiet'],shell=True)
+                [self.directory + '/vs_pytorch/ffprobe', '-i', self.filepath, '-print_format', 'json', '-show_format',
+                 '-show_streams', '-v',
+                 'quiet'], shell=True)
             res = res.decode('utf8')
             self._video_info = json.loads(res)
             # print('_video_info ',self._video_info)
         except Exception as e:
             print(e)
             raise Exception('获取视频信息失败')
-
 
     def video_full_frame(self):
         stream = self._video_info['streams'][0]
@@ -39,24 +39,25 @@ class FFprobe():
 
         stream = self._video_info['streams']
         if 'color_space' in stream[0]:
-            color_space=stream[0]['color_space']
+            color_space = stream[0]['color_space']
         else:
-            color_space=2
+            color_space = 2
         if 'color_transfer' in stream[0]:
-            color_transfer=stream[0]['color_transfer']
+            color_transfer = stream[0]['color_transfer']
         else:
-            color_transfer=2
+            color_transfer = 2
         if 'color_primaries' in stream[0]:
-            color_primaries=stream[0]['color_primaries']
+            color_primaries = stream[0]['color_primaries']
         else:
-            color_primaries=2
+            color_primaries = 2
 
         item = {
-            'color_space':color_space,
-            'color_transfer':color_transfer,
-            'color_primaries':color_primaries
+            'color_space'    : color_space,
+            'color_transfer' : color_transfer,
+            'color_primaries': color_primaries
         }
         return item
+
 
 class Signal(QObject):
     text_update = pyqtSignal(str)
@@ -68,8 +69,9 @@ class Signal(QObject):
     def flush(self):
         pass
 
+
 class cugan_setting(QObject):
-    def __init__(self,model,tile,alpha):
+    def __init__(self, model, tile, alpha):
         self.model = model
         self.tile = tile
         self.alpha = alpha
@@ -83,8 +85,9 @@ class cugan_setting(QObject):
     def return_alpha(self):
         return self.alpha
 
+
 class esrgan_setting(QObject):
-    def __init__(self,model,tile,scale):
+    def __init__(self, model, tile, scale):
         self.model = model
         self.tile = tile
         self.scale = scale
@@ -98,8 +101,9 @@ class esrgan_setting(QObject):
     def return_scale(self):
         return self.scale
 
+
 class waifu2x_setting(QObject):
-    def __init__(self,model,tile):
+    def __init__(self, model, tile):
         self.model = model
         self.tile = tile
 
@@ -109,8 +113,9 @@ class waifu2x_setting(QObject):
     def return_tile(self):
         return self.tile
 
+
 class vsrpp_setting(QObject):
-    def __init__(self,model,interval):
+    def __init__(self, model, interval):
         self.model = model
         self.interval = interval
 
@@ -120,10 +125,12 @@ class vsrpp_setting(QObject):
     def return_interval(self):
         return self.interval
 
+
 class every_set_object(QObject):
-    def __init__(self,videos,outfolder,
-                                device,gpu_id,half,sr_method,sr_set,is_rs_bef,is_rs_aft,rs_bef_w,rs_bef_h,rs_aft_w,rs_aft_h,
-                                encoder,preset,eformat,vformat,use_crf,use_bit,crf,bit,use_encode_audio,use_source_audio,audio_format,customization_encode,use_customization_encode):
+    def __init__(self, videos, outfolder,
+                 device, gpu_id, half, sr_method, sr_set, is_rs_bef, is_rs_aft, rs_bef_w, rs_bef_h, rs_aft_w, rs_aft_h,
+                 encoder, preset, eformat, vformat, use_crf, use_bit, crf, bit, use_encode_audio, use_source_audio,
+                 audio_format, customization_encode, use_customization_encode):
         self.videos = videos
         self.outfolder = outfolder
 
@@ -153,262 +160,117 @@ class every_set_object(QObject):
         self.customization_encode = customization_encode
         self.use_customization_encode = use_customization_encode
 
+
 class autorun(QThread):
     signal = pyqtSignal()
+
     def __init__(self, every_setting, run_mode):
         super().__init__()
-        self.every_setting=every_setting
-        self.run_mode=run_mode
+        self.every_setting = every_setting
+        self.run_mode = run_mode
         self.directory = os.path.dirname(os.path.realpath(sys.argv[0]))
 
     def cugan_(self):
-        noise = 0
-        scale = 2
-        version = 2
+        model_switch = {
+            'pro-conservative-up2x'   : [0, 2, 2],
+            'pro-conservative-up3x'   : [0, 3, 2],
+            'pro-denoise3x-up2x'      : [3, 2, 2],
+            'pro-denoise3x-up3x'      : [3, 3, 2],
+            'pro-no-denoise3x-up2x'   : [-1, 2, 2],
+            'pro-no-denoise3x-up3x'   : [-1, 3, 2],
+            'up2x-latest-conservative': [0, 2, 1],
+            'up2x-latest-denoise1x'   : [1, 2, 1],
+            'up2x-latest-denoise2x'   : [2, 2, 1],
+            'up2x-latest-denoise3x'   : [3, 2, 1],
+            'up2x-latest-no-denoise'  : [-1, 2, 1],
+            'up3x-latest-conservative': [0, 3, 1],
+            'up3x-latest-denoise3x'   : [3, 3, 1],
+            'up3x-latest-no-denoise'  : [-1, 3, 1],
+            'up4x-latest-conservative': [0, 4, 1],
+            'up4x-latest-denoise3x'   : [3, 4, 1],
+            'up4x-latest-no-denoise'  : [-1, 4, 1],
+        }
+        noise, scale, version = model_switch[self.every_setting.sr_set.model] \
+            if self.every_setting.sr_set.model in model_switch else [0, 2, 2]
 
-        if self.every_setting.sr_set.model == 'pro-conservative-up2x':
-            noise = 0
-            scale = 2
-            version = 2
-        elif self.every_setting.sr_set.model == 'pro-conservative-up3x':
-            noise = 0
-            scale = 3
-            version = 2
-        elif self.every_setting.sr_set.model == 'pro-denoise3x-up2x':
-            noise = 3
-            scale = 2
-            version = 2
-        elif self.every_setting.sr_set.model == 'pro-denoise3x-up3x':
-            noise = 3
-            scale = 3
-            version = 2
-        elif self.every_setting.sr_set.model == 'pro-no-denoise3x-up2x':
-            noise = -1
-            scale = 2
-            version = 2
-        elif self.every_setting.sr_set.model == 'pro-no-denoise3x-up3x':
-            noise = -1
-            scale = 3
-            version = 2
-        elif self.every_setting.sr_set.model == 'up2x-latest-conservative':
-            noise = 0
-            scale = 2
-            version = 1
-        elif self.every_setting.sr_set.model == 'up2x-latest-denoise1x':
-            noise = 1
-            scale = 2
-            version = 1
-        elif self.every_setting.sr_set.model == 'up2x-latest-denoise2x':
-            noise = 2
-            scale = 2
-            version = 1
-        elif self.every_setting.sr_set.model == 'up2x-latest-denoise3x':
-            noise = 3
-            scale = 2
-            version = 1
-        elif self.every_setting.sr_set.model == 'up2x-latest-no-denoise':
-            noise = -1
-            scale = 2
-            version = 1
-        elif self.every_setting.sr_set.model == 'up3x-latest-conservative':
-            noise = 0
-            scale = 3
-            version = 1
-        elif self.every_setting.sr_set.model == 'up3x-latest-denoise3x':
-            noise = 3
-            scale = 3
-            version = 1
-        elif self.every_setting.sr_set.model == 'up3x-latest-no-denoise':
-            noise = -1
-            scale = 3
-            version = 1
-        elif self.every_setting.sr_set.model == 'up4x-latest-conservative':
-            noise = 0
-            scale = 4
-            version = 1
-        elif self.every_setting.sr_set.model == 'up4x-latest-denoise3x':
-            noise = 3
-            scale = 4
-            version = 1
-        elif self.every_setting.sr_set.model == 'up4x-latest-no-denoise':
-            noise = -1
-            scale = 4
-            version = 1
-
-        return('res = CUGAN(res, noise='+str(noise)+', scale='+str(scale)+', tiles='+str(self.every_setting.sr_set.tile)+',version='+str(version)+',alpha='+str(self.every_setting.sr_set.alpha)+', backend=device)\n')
+        return ('res = CUGAN(res, noise=' + str(noise) + ', scale=' + str(scale) + ', tiles=' + str(
+            self.every_setting.sr_set.tile) + ',version=' + str(version) + ',alpha=' + str(
+            self.every_setting.sr_set.alpha) + ', backend=device)\n')
 
     def esrgan_(self):
-        model=0
-        if self.every_setting.sr_set.model=='animevideov3':
-            model=0
-        elif self.every_setting.sr_set.model=='animevideo-xsx2':
-            model = 1
-        elif self.every_setting.sr_set.model=='animevideo-xsx4':
-            model = 2
-        return ('res = RealESRGAN(res, scale='+str(self.every_setting.sr_set.scale)+',tiles='+str(self.every_setting.sr_set.tile)+',model='+str(model)+', backend=device)\n')
+        model_switch = {
+            'animevideov3'   : 0,
+            'animevideo-xsx2': 1,
+            'animevideo-xsx4': 2
+        }
+        model = model_switch[self.every_setting.sr_set.model] \
+            if self.every_setting.sr_set.model in model_switch else 0
+        return ('res = RealESRGAN(res, scale=' + str(self.every_setting.sr_set.scale) + ',tiles=' + str(
+            self.every_setting.sr_set.tile) + ',model=' + str(model) + ', backend=device)\n')
 
     def waifu2x_(self):
-        noise=1
-        scale=1
-        model=1
-        if self.every_setting.sr_set.model=='anime_style_art_rgb_noise0':
-            noise = 0
-            scale = 1
-            model = 1
-        elif self.every_setting.sr_set.model=='anime_style_art_rgb_noise1':
-            noise = 1
-            scale = 1
-            model = 1
-        elif self.every_setting.sr_set.model == 'anime_style_art_rgb_noise2':
-            noise = 2
-            scale = 1
-            model = 1
-        elif self.every_setting.sr_set.model=='anime_style_art_rgb_noise3':
-            noise = 3
-            scale = 1
-            model = 1
-        elif self.every_setting.sr_set.model=='anime_style_art_rgb_scale2.0x':
-            noise = -1
-            scale = 2
-            model = 1
-        elif self.every_setting.sr_set.model=='cunet_noise0':
-            noise = 0
-            scale = 1
-            model = 6
-        elif self.every_setting.sr_set.model=='cunet_noise0_scale2.0x':
-            noise = 0
-            scale = 2
-            model = 6
-        elif self.every_setting.sr_set.model=='cunet_noise1':
-            noise = 1
-            scale = 1
-            model = 6
-        elif self.every_setting.sr_set.model=='cunet_noise1_scale2.0x':
-            noise = 1
-            scale = 2
-            model = 6
-        elif self.every_setting.sr_set.model=='cunet_noise2':
-            noise = 2
-            scale = 1
-            model = 6
-        elif self.every_setting.sr_set.model=='cunet_noise2_scale2.0x':
-            noise = 2
-            scale = 2
-            model = 6
-        elif self.every_setting.sr_set.model=='cunet_noise3':
-            noise = 3
-            scale = 1
-            model = 6
-        elif self.every_setting.sr_set.model=='cunet_noise3_scale2.0x':
-            noise = 3
-            scale = 2
-            model = 6
-        elif self.every_setting.sr_set.model=='cunet_scale2.0x':
-            noise = -1
-            scale = 2
-            model = 6
-        elif self.every_setting.sr_set.model=='photo_noise0':
-            noise = 0
-            scale = 1
-            model = 2
-        elif self.every_setting.sr_set.model=='photo_noise1':
-            noise = 1
-            scale = 1
-            model = 2
-        elif self.every_setting.sr_set.model=='photo_noise2':
-            noise = 2
-            scale = 1
-            model = 2
-        elif self.every_setting.sr_set.model=='photo_noise3':
-            noise = 3
-            scale = 1
-            model = 2
-        elif self.every_setting.sr_set.model=='photo_scale2.0x':
-            noise = -1
-            scale = 2
-            model = 2
-        elif self.every_setting.sr_set.model=='upconv_7_anime_noise0_scale2.0x':
-            noise = 0
-            scale = 2
-            model = 3
-        elif self.every_setting.sr_set.model=='upconv_7_anime_noise1_scale2.0x':
-            noise = 1
-            scale = 2
-            model = 3
-        elif self.every_setting.sr_set.model=='upconv_7_anime_noise2_scale2.0x':
-            noise = 2
-            scale = 2
-            model = 3
-        elif self.every_setting.sr_set.model=='upconv_7_anime_noise3_scale2.0x':
-            noise = 3
-            scale = 2
-            model = 3
-        elif self.every_setting.sr_set.model=='upconv_7_anime_scale2.0x':
-            noise = -1
-            scale = 2
-            model = 3
-        elif self.every_setting.sr_set.model=='upconv_7_photo_noise0_scale2.0x':
-            noise = 0
-            scale = 2
-            model = 4
-        elif self.every_setting.sr_set.model=='upconv_7_photo_noise1_scale2.0x':
-            noise = 1
-            scale = 2
-            model = 4
-        elif self.every_setting.sr_set.model=='upconv_7_photo_noise2_scale2.0x':
-            noise = 2
-            scale = 2
-            model = 4
-        elif self.every_setting.sr_set.model=='upconv_7_photo_noise3_scale2.0x':
-            noise = 3
-            scale = 2
-            model = 4
-        elif self.every_setting.sr_set.model=='upconv_7_photo_scale2.0x':
-            noise = -1
-            scale = 2
-            model = 4
-        elif self.every_setting.sr_set.model=='upresnet10_noise0_scale2.0x':
-            noise = 0
-            scale = 2
-            model = 5
-        elif self.every_setting.sr_set.model=='upresnet10_noise1_scale2.0x':
-            noise = 1
-            scale = 2
-            model = 5
-        elif self.every_setting.sr_set.model=='upresnet10_noise2_scale2.0x':
-            noise = 2
-            scale = 2
-            model = 5
-        elif self.every_setting.sr_set.model=='upresnet10_noise3_scale2.0x':
-            noise = 3
-            scale = 2
-            model = 5
-        elif self.every_setting.sr_set.model=='upresnet10_scale2.0x':
-            noise = -1
-            scale = 2
-            model = 5
-        return ('res = Waifu2x(res, noise='+str(noise)+',scale='+str(scale)+',tiles='+str(self.every_setting.sr_set.tile)+',model='+str(model)+', backend=device)\n')
+        model_switch = {
+            'anime_style_art_rgb_noise0'     : [0, 1, 1],
+            'anime_style_art_rgb_noise1'     : [1, 1, 1],
+            'anime_style_art_rgb_noise2'     : [2, 1, 1],
+            'anime_style_art_rgb_noise3'     : [3, 1, 1],
+            'anime_style_art_rgb_scale2.0x'  : [-1, 2, 1],
+            'cunet_noise0'                   : [0, 1, 6],
+            'cunet_noise0_scale2.0x'         : [0, 2, 6],
+            'cunet_noise1'                   : [1, 1, 6],
+            'cunet_noise1_scale2.0x'         : [1, 2, 6],
+            'cunet_noise2'                   : [2, 1, 6],
+            'cunet_noise2_scale2.0x'         : [2, 2, 6],
+            'cunet_noise3'                   : [3, 1, 6],
+            'cunet_noise3_scale2.0x'         : [3, 2, 6],
+            'cunet_scale2.0x'                : [-1, 2, 6],
+            'photo_noise0'                   : [0, 1, 2],
+            'photo_noise1'                   : [1, 1, 2],
+            'photo_noise2'                   : [2, 1, 2],
+            'photo_noise3'                   : [3, 1, 2],
+            'photo_scale2.0x'                : [-1, 2, 2],
+            'upconv_7_anime_noise0_scale2.0x': [0, 2, 3],
+            'upconv_7_anime_noise1_scale2.0x': [1, 2, 3],
+            'upconv_7_anime_noise2_scale2.0x': [2, 2, 3],
+            'upconv_7_anime_noise3_scale2.0x': [3, 2, 3],
+            'upconv_7_anime_scale2.0x'       : [-1, 2, 3],
+            'upconv_7_photo_noise0_scale2.0x': [0, 2, 4],
+            'upconv_7_photo_noise1_scale2.0x': [1, 2, 4],
+            'upconv_7_photo_noise2_scale2.0x': [2, 2, 4],
+            'upconv_7_photo_noise3_scale2.0x': [3, 2, 4],
+            'upconv_7_photo_scale2.0x'       : [-1, 2, 4],
+            'upresnet10_noise0_scale2.0x'    : [0, 2, 5],
+            'upresnet10_noise1_scale2.0x'    : [1, 2, 5],
+            'upresnet10_noise2_scale2.0x'    : [2, 2, 5],
+            'upresnet10_noise3_scale2.0x'    : [3, 2, 5],
+            'upresnet10_scale2.0x'           : [-1, 2, 5],
+        }
+        noise, scale, model = model_switch[self.every_setting.sr_set.model] \
+            if self.every_setting.sr_set.model in model_switch else [1, 1, 1]
+
+        return ('res = Waifu2x(res, noise=' + str(noise) + ',scale=' + str(scale) + ',tiles=' + str(
+            self.every_setting.sr_set.tile) + ',model=' + str(model) + ', backend=device)\n')
 
     def vsrpp_(self):
-        model =0
-        if self.every_setting.sr_set.model=='reds4':
-            model = 0
-        elif self.every_setting.sr_set.model=='vimeo90k_bi':
-            model = 1
-        elif self.every_setting.sr_set.model=='vimeo90k_bd':
-            model = 2
-        elif self.every_setting.sr_set.model=='ntire_decompress_track1':
-            model = 3
-        elif self.every_setting.sr_set.model=='ntire_decompress_track2':
-            model = 4
-        elif self.every_setting.sr_set.model=='ntire_decompress_track3':
-            model = 5
-        return ('res = BasicVSRPP(res,model='+str(model)+',interval='+str(self.every_setting.sr_set.interval)+',device_index='+str(self.every_setting.gpu_id)+',fp16='+str(self.every_setting.half)+')\n')
+        model_switch = {
+            'reds4'                  : 0,
+            'vimeo90k_bi'            : 1,
+            'vimeo90k_bd'            : 2,
+            'ntire_decompress_track1': 3,
+            'ntire_decompress_track2': 4,
+            'ntire_decompress_track3': 5
+        }
+        model = model_switch[self.every_setting.sr_set.model] \
+            if self.every_setting.sr_set.model in model_switch else 0
+
+        return ('res = BasicVSRPP(res,model=' + str(model) + ',interval=' + str(
+            self.every_setting.sr_set.interval) + ',device_index=' + str(self.every_setting.gpu_id) + ',fp16=' + str(
+            self.every_setting.half) + ')\n')
 
     def ffmpeg_(self):
         ffmpeg_set = []
         if self.every_setting.use_customization_encode == True:
-            ffmpeg_set_customizatio=str(self.every_setting.customization_encode)
+            ffmpeg_set_customizatio = str(self.every_setting.customization_encode)
             for str_ in ffmpeg_set_customizatio.split():
                 ffmpeg_set.append(str_)
         else:
@@ -445,7 +307,6 @@ class autorun(QThread):
             ffmpeg_set.append(self.every_setting.preset)
 
             if self.every_setting.eformat == 'H265':
-
                 ffmpeg_set.append('-vtag')
                 ffmpeg_set.append('hvc1')
 
@@ -456,37 +317,34 @@ class autorun(QThread):
                 ffmpeg_set.append('-b:v')
                 ffmpeg_set.append(self.every_setting.bit + 'M')
 
-        return  ffmpeg_set
-
+        return ffmpeg_set
 
     def run(self):
-
 
         vpy_folder = self.every_setting.outfolder + '/vpys'
         if self.run_mode == 'debug':
             bat_file = open(self.every_setting.outfolder + '/run.bat', 'w', encoding='ansi')
         if not os.path.exists(vpy_folder):
-            os.makedirs(vpy_folder)#存放配置文件vpy的文件夹
+            os.makedirs(vpy_folder)  # 存放配置文件vpy的文件夹
         video_folder = self.every_setting.outfolder + '/out_videos'
         if not os.path.exists(video_folder):
             os.makedirs(video_folder)
 
-        if self.every_setting.device =='GPU_nvidia':
-            use_device='ORT_CUDA()'
-        elif self.every_setting.device=='GPU_nvidia_trt':
-            use_device = 'TRT()'
-        elif self.every_setting.device=='GPU_amd':
-            use_device = 'OV_GPU()'
-        elif self.every_setting.device=='NCNN':
-            use_device = 'NCNN_VK()'
-
-        #实测路径
-        #FFMPEG_BIN=self.directory + '\\vapoursynth\\ffmpeg.exe'
-        #测试路径
-        #FFMPEG_BIN = 'ffmpeg.exe'
+        use_device_switch = {
+            'GPU_nvidia'    : 'ORT_CUDA()',
+            'GPU_nvidia_trt': 'TRT()',
+            'GPU_amd'       : 'OV_GPU()',
+            'NCNN'          : 'NCNN_VK()'
+        }
+        use_device = use_device_switch[self.every_setting.device] \
+            if self.every_setting.device in use_device_switch else 'ORT_CUDA()'
+        # 实测路径
+        # FFMPEG_BIN=self.directory + '\\vapoursynth\\ffmpeg.exe'
+        # 测试路径
+        # FFMPEG_BIN = 'ffmpeg.exe'
         num = 1
         for video in self.every_setting.videos:
-            print('正在运行队列中第'+str(num)+'个视频')
+            print('正在运行队列中第' + str(num) + '个视频')
 
             ffmpeg_code = self.ffmpeg_()
             ffprobe = FFprobe()
@@ -496,7 +354,7 @@ class autorun(QThread):
             video_name = (video_name.rsplit(".", 1))[0]  # 只保留文件名的参数
 
             # 色彩处理
-            color_info=[]
+            color_info = []
             v_info = ffprobe.video_info()
             if v_info['color_space'] != 2:
                 color_info.append('-vf')
@@ -512,23 +370,23 @@ class autorun(QThread):
                 color_info.append('-color_primaries')
                 color_info.append(v_info['color_primaries'])
 
-            #音频处理
-            audio_info=[]
+            # 音频处理
+            audio_info = []
             have_audio = False
             for i in ffprobe._video_info['streams']:
                 if i['codec_type'] == 'audio':
                     have_audio = True
                     break
             if have_audio == True:
-                print(video+' 有音频')
+                print(video + ' 有音频')
             else:
-                print(video+' 无音频')
+                print(video + ' 无音频')
 
             if have_audio == True:
                 if self.every_setting.use_encode_audio == True:
                     audio_info.append('-c:a')
                     audio_info.append(self.every_setting.audio_format)
-                    if self.every_setting.audio_format=='flac':
+                    if self.every_setting.audio_format == 'flac':
                         audio_info.append('-strict')
                         audio_info.append('-2')
                 else:
@@ -539,8 +397,8 @@ class autorun(QThread):
             # 测试路径
             # FFMPEG_BIN = 'ffmpeg.exe'
             FFMPEG_BIN = self.directory + '/vs_pytorch/ffmpeg.exe'
-            #输入处理
-            input_info=[FFMPEG_BIN]
+            # 输入处理
+            input_info = [FFMPEG_BIN]
             input_info.append('-y')
             input_info.append('-i')
             input_info.append('pipe:')
@@ -552,17 +410,16 @@ class autorun(QThread):
                 input_info.append('-map')
                 input_info.append('1:a')
 
-            #输出处理
-            output_info=[]
+            # 输出处理
+            output_info = []
 
-            output_info.append(video_folder+'/'+video_name+'.'+self.every_setting.vformat)
+            output_info.append(video_folder + '/' + video_name + '.' + self.every_setting.vformat)
             if self.every_setting.use_customization_encode == False:
                 ffmpeg_code = input_info + ffmpeg_code + color_info + audio_info + output_info
             else:
-                ffmpeg_code=input_info + ffmpeg_code + audio_info + output_info
+                ffmpeg_code = input_info + ffmpeg_code + audio_info + output_info
 
-
-            #vpy配置文件生成
+            # vpy配置文件生成
             vpy_place = vpy_folder + '/' + video_name + '.vpy'
             vpy = open(vpy_place, 'w', encoding='utf-8')
             vpy.write('import vapoursynth as vs\n')
@@ -615,11 +472,11 @@ class autorun(QThread):
             vpy.close()
             print('生成第' + str(num) + '个vpy脚本文件')
 
-            vspipe_code=[]
-            #实测路径
-            #vspipe_bin=self.directory + '/vapoursynth/VSPipe.exe'
+            vspipe_code = []
+            # 实测路径
+            # vspipe_bin=self.directory + '/vapoursynth/VSPipe.exe'
             # 测试路径
-            #vspipe_bin = 'D:/VS_NangInShell/VS_Nang/package/VSPipe.exe'
+            # vspipe_bin = 'D:/VS_NangInShell/VS_Nang/package/VSPipe.exe'
             vspipe_code.append(vspipe_bin)
             vspipe_code.append('-c')
             vspipe_code.append('y4m')
@@ -630,7 +487,7 @@ class autorun(QThread):
             print(command_out)
             print(command_in)
             print('\n')
-            if self.run_mode=='start':
+            if self.run_mode == 'start':
                 pipe_out = sp.Popen(command_out, stdout=sp.PIPE, shell=True)
                 pipe_in = sp.Popen(command_in, stdin=pipe_out.stdout, stdout=sp.PIPE, stderr=sp.STDOUT, shell=True,
                                    encoding="utf-8", text=True)
@@ -639,20 +496,21 @@ class autorun(QThread):
                     line = line.strip()
                     if line:
                         print(format(line))
-                print(video+" 已经渲染完成，这是队列中第"+str(num)+'个视频。')
+                print(video + " 已经渲染完成，这是队列中第" + str(num) + '个视频。')
             # for line in pipe_in.stdout:
             #     print(line)
-            elif self.run_mode=='debug':
+            elif self.run_mode == 'debug':
                 for str_ in command_out:
-                    bat_file.write('\"'+str_+'\"'+' ')
+                    bat_file.write('\"' + str_ + '\"' + ' ')
                 bat_file.write('| ')
                 for str_ in command_in:
-                    bat_file.write('\"'+str_+'\"'+' ')
+                    bat_file.write('\"' + str_ + '\"' + ' ')
                 bat_file.write('\n')
-                print('队列中第'+str(num)+'个视频：'+video+' 的配置文件已经生成，相关配置信息已经写入输出文件夹的run.bat文件')
-            num=num+1
+                print('队列中第' + str(
+                    num) + '个视频：' + video + ' 的配置文件已经生成，相关配置信息已经写入输出文件夹的run.bat文件')
+            num = num + 1
             print('\n')
-        if self.run_mode=='debug':
+        if self.run_mode == 'debug':
             bat_file.write('pause')
         self.signal.emit()
 
@@ -681,11 +539,13 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
         self.pb_debug.clicked.connect(self.debug_run)
         self.load_conf_auto()
         if ' ' in self.real_path:
-            QMessageBox.information(self, "提示信息", "你的软件存放路径不符合规范，建议把软件存放到英文的路径下,不要有空格")
+            QMessageBox.information(self, "提示信息",
+                                    "你的软件存放路径不符合规范，建议把软件存放到英文的路径下,不要有空格")
 
         for _char in self.real_path:
             if '\u4e00' <= _char <= '\u9fa5':
-                QMessageBox.information(self, "提示信息", "你的软件存放路径不符合规范，建议把软件存放到英文的路径下,不要有空格")
+                QMessageBox.information(self, "提示信息",
+                                        "你的软件存放路径不符合规范，建议把软件存放到英文的路径下,不要有空格")
                 break
 
     def updatetext(self, text):
@@ -700,20 +560,22 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
 
     def clear_video_list(self):
         self.video_list.takeItem(self.video_list.row(self.video_list.currentItem()))
+
     def clear_all_video_list(self):
         self.video_list.clear()
+
     def input_video_list(self):
         files = QFileDialog.getOpenFileNames(self,
                                              "多文件选择",
                                              "./",
                                              "videos (*.mp4 *.mkv *.mov *.m2ts *.avi *.ts *.flv *.rmvb *.m4v)")
-        valid_out_folder=True
+        valid_out_folder = True
         for file in files[0]:
             if ' ' in file:
-                valid_out_folder=False
+                valid_out_folder = False
                 break
 
-        if valid_out_folder==True:
+        if valid_out_folder == True:
             for file in files[0]:
                 self.video_list.addItem(file)
         else:
@@ -721,9 +583,9 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
 
     def outfolder(self):
         directory = QFileDialog.getExistingDirectory(self,
-                                                      "选取文件夹",
-                                                      "./")  # 起始路径
-        valid_out_folder=True
+                                                     "选取文件夹",
+                                                     "./")  # 起始路径
+        valid_out_folder = True
         if ' ' in directory:
             valid_out_folder = False
 
@@ -740,32 +602,31 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
 
         outfolder = self.out_folder.text()
 
-        device=self.cb_device.currentText()
-        gpu_id=self.cb_gpu.currentIndex()
-        half='True'
-        if self.rb_half.isChecked()==False:
-            half='False'
+        device = self.cb_device.currentText()
+        gpu_id = self.cb_gpu.currentIndex()
+        half = 'True'
+        if self.rb_half.isChecked() == False:
+            half = 'False'
 
+        cugan_model = self.cb_cg_model.currentText()
+        cugan_tile = self.cb_cg_tile.currentText()
+        cugan_alpha = self.db_cg_alpha.text()
+        cugan_set = cugan_setting(cugan_model, cugan_tile, cugan_alpha)
 
-        cugan_model=self.cb_cg_model.currentText()
-        cugan_tile=self.cb_cg_tile.currentText()
-        cugan_alpha=self.db_cg_alpha.text()
-        cugan_set=cugan_setting(cugan_model,cugan_tile,cugan_alpha)
+        esrgan_model = self.cb_eg_model.currentText()
+        esrgan_tile = self.cb_eg_tile.currentText()
+        esrgan_scale = self.cb_eg_scale.currentText()
+        esrgan_set = esrgan_setting(esrgan_model, esrgan_tile, esrgan_scale)
 
-        esrgan_model=self.cb_eg_model.currentText()
-        esrgan_tile=self.cb_eg_tile.currentText()
-        esrgan_scale=self.cb_eg_scale.currentText()
-        esrgan_set=esrgan_setting(esrgan_model,esrgan_tile,esrgan_scale)
+        waifu_model = self.cb_wf_model.currentText()
+        waifu_tile = self.cb_wf_tile.currentText()
+        waifu_set = waifu2x_setting(waifu_model, waifu_tile)
 
-        waifu_model=self.cb_wf_model.currentText()
-        waifu_tile=self.cb_wf_tile.currentText()
-        waifu_set=waifu2x_setting(waifu_model,waifu_tile)
+        vsrpp_model = self.cb_vsrpp_model.currentText()
+        vsrpp_interval = self.sb_interval.text()
+        vsrpp_set = vsrpp_setting(vsrpp_model, vsrpp_interval)
 
-        vsrpp_model=self.cb_vsrpp_model.currentText()
-        vsrpp_interval=self.sb_interval.text()
-        vsrpp_set=vsrpp_setting(vsrpp_model,vsrpp_interval)
-
-        sr_set=cugan_set
+        sr_set = cugan_set
         sr_method = ''
         if self.cb_SR.currentIndex() == 0:
             sr_method = 'Real_cugan'
@@ -780,32 +641,34 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
             sr_method = 'BasicVSRpp'
             sr_set = vsrpp_set
 
-        is_rs_bef=self.rb_resize_bef.isChecked()
-        is_rs_aft=self.rb_resize_aft.isChecked()
+        is_rs_bef = self.rb_resize_bef.isChecked()
+        is_rs_aft = self.rb_resize_aft.isChecked()
 
-        rs_bef_w=self.sb_rsbef_w.text()
-        rs_bef_h=self.sb_rsbef_h.text()
-        rs_aft_w=self.sb_rsaft_w.text()
-        rs_aft_h=self.sb_rsaft_h.text()
+        rs_bef_w = self.sb_rsbef_w.text()
+        rs_bef_h = self.sb_rsbef_h.text()
+        rs_aft_w = self.sb_rsaft_w.text()
+        rs_aft_h = self.sb_rsaft_h.text()
 
-        #encode setting
-        encoder=self.cb_encode.currentText()
-        preset=self.cb_preset.currentText()
-        eformat=self.cb_eformat.currentText()
-        vformat=self.cb_vformat.currentText()
-        use_crf=self.rb_crf.isChecked()
-        use_bit=self.rb_bit.isChecked()
-        crf=self.sb_crf.text()
-        bit=self.sb_bit.text()
-        use_encode_audio=self.rb_audio.isChecked()
-        use_source_audio=self.rb_save_source_audio.isChecked()
-        audio_format=self.cb_aformat.currentText()
-        customization_encode=self.te_customization_encode.toPlainText()
-        use_customization_encode=self.rb_customization_encode.isChecked()
+        # encode setting
+        encoder = self.cb_encode.currentText()
+        preset = self.cb_preset.currentText()
+        eformat = self.cb_eformat.currentText()
+        vformat = self.cb_vformat.currentText()
+        use_crf = self.rb_crf.isChecked()
+        use_bit = self.rb_bit.isChecked()
+        crf = self.sb_crf.text()
+        bit = self.sb_bit.text()
+        use_encode_audio = self.rb_audio.isChecked()
+        use_source_audio = self.rb_save_source_audio.isChecked()
+        audio_format = self.cb_aformat.currentText()
+        customization_encode = self.te_customization_encode.toPlainText()
+        use_customization_encode = self.rb_customization_encode.isChecked()
 
-        return every_set_object(videos,outfolder,
-                                device,gpu_id,half,sr_method,sr_set,is_rs_bef,is_rs_aft,rs_bef_w,rs_bef_h,rs_aft_w,rs_aft_h,
-                                encoder,preset,eformat,vformat,use_crf,use_bit,crf,bit,use_encode_audio,use_source_audio,audio_format,customization_encode,use_customization_encode)
+        return every_set_object(videos, outfolder,
+                                device, gpu_id, half, sr_method, sr_set, is_rs_bef, is_rs_aft, rs_bef_w, rs_bef_h,
+                                rs_aft_w, rs_aft_h,
+                                encoder, preset, eformat, vformat, use_crf, use_bit, crf, bit, use_encode_audio,
+                                use_source_audio, audio_format, customization_encode, use_customization_encode)
 
     def save_conf_set(self):
         conf = ConfigParser()
@@ -862,7 +725,7 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
 
         return conf
 
-    def load_conf_set(self,conf):
+    def load_conf_set(self, conf):
 
         self.cb_device.setCurrentText(conf['sr']['device'])
         self.rb_half.setChecked(conf['sr'].getboolean('half'))
@@ -916,21 +779,21 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
         self.save_config.setEnabled(False)
         self.save_config.setText('保存ing')
 
-        with open(self.real_path+'/config.ini', 'w', encoding='utf-8') as f:
+        with open(self.real_path + '/config.ini', 'w', encoding='utf-8') as f:
             (self.save_conf_set()).write(f)
 
         QMessageBox.information(self, "提示信息", "已保存当前自定义预设")
         self.save_config.setEnabled(True)
-        self.save_config.setText('保存预设')#conf['url']['smms_pic_url']
+        self.save_config.setText('保存预设')  # conf['url']['smms_pic_url']
 
     def load_conf_Manual(self):
         self.load_config.setEnabled(False)
         self.load_config.setText('加载ing')
-        if not os.path.exists(self.real_path+"/config.ini"):
+        if not os.path.exists(self.real_path + "/config.ini"):
             QMessageBox.information(self, "提示信息", "自定义预设文件不存在")
         else:
             conf = ConfigParser()
-            conf.read(self.real_path+"/config.ini", encoding="utf-8")
+            conf.read(self.real_path + "/config.ini", encoding="utf-8")
             self.load_conf_set(conf)
             print("已加载保存的自定义预设")
 
@@ -938,14 +801,14 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
         self.load_config.setText('加载预设')
 
     def save_conf_auto(self):
-        with open(self.real_path+'/config_auto.ini', 'w', encoding='utf-8') as f:
+        with open(self.real_path + '/config_auto.ini', 'w', encoding='utf-8') as f:
             (self.save_conf_set()).write(f)
         print("已自动保存当前设置，下次启动软件时自动加载")
 
     def load_conf_auto(self):
-        if os.path.exists(self.real_path+"/config_auto.ini"):
+        if os.path.exists(self.real_path + "/config_auto.ini"):
             conf = ConfigParser()
-            conf.read(self.real_path+"/config_auto.ini", encoding="utf-8")
+            conf.read(self.real_path + "/config_auto.ini", encoding="utf-8")
             self.load_conf_set(conf)
             print("已自动加载上一次软件运行设置")
 
@@ -960,12 +823,11 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
         self.pb_debug.setEnabled(False)
         self.pb_debug.setText('Debug模式')
 
-
-        every_setting=self.every_set()
-        allow_autorun=True
+        every_setting = self.every_set()
+        allow_autorun = True
 
         if every_setting.outfolder == '':
-            allow_autorun=False
+            allow_autorun = False
             QMessageBox.information(self, "提示信息", "输出文件夹为空，请选择输出文件夹")
 
         for _char in every_setting.videos:
@@ -990,11 +852,11 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
         self.pb_debug.setEnabled(False)
         self.pb_debug.setText('Debug运行ing')
 
-        every_setting=self.every_set()
-        allow_debug=True
+        every_setting = self.every_set()
+        allow_debug = True
 
         if every_setting.outfolder == '':
-            allow_debug=False
+            allow_debug = False
             QMessageBox.information(self, "提示信息", "输出文件夹为空，请选择输出文件夹")
 
         for _char in every_setting.videos:
@@ -1013,7 +875,7 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
             self.pb_debug.setEnabled(True)
             self.pb_debug.setText('Debug模式')
 
-    def set_btn_auto_run(self):#一键运行开关控制
+    def set_btn_auto_run(self):  # 一键运行开关控制
         self.pb_autorun.setEnabled(True)
         self.pb_autorun.setText('一键启动模式')
         self.pb_debug.setEnabled(True)
