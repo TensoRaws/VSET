@@ -27,6 +27,19 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 **注：第一次使用时不要运行```update.exe```，请先启动一次```VSET.exe```**
 ### 方法一 - 在线安装
 [Online Installer](https://github.com/NangInShell/VSET/releases/tag/v.2.0.0-installer)
+- 交互式
+直接点击```VSET_update.exe```，输入参数回车即可
+- 快速安装
+```
+# PowerShell
+$ echo "y" "n" "y" "n" "y" "n" | ./VSET_update.exe
+VSET主程序 当前版本未安装，有新版本v2.0.0，要下载最新版本吗？（y/n）
+下载完成，下载进度：100.00%    ||    解压完成，要删除下载的压缩包吗？（y/n）
+vs_vsmlrt环境包 当前版本未安装，有新版本v2.0.0，要下载最新版本吗？（y/n）
+下载完成，下载进度：100.00%    ||    解压完成，要删除下载的压缩包吗？（y/n）
+vs_pytorch环境包 当前版本未安装，有新版本v2.0.0，要下载最新版本吗？（y/n）
+下载完成，下载进度：100.00%    ||    解压完成，要删除下载的压缩包吗？（y/n）
+```
 
 **请保证网络稳定，建议开启tun/tap代理模式**
 
