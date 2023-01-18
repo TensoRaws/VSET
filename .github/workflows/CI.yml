@@ -16,8 +16,14 @@ jobs:
   build-windows:
     runs-on: windows-2019
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      
+      - name: Install Go and Build
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.19.5'
+      - run: |
+          go build
 
       - name: Install Python
         uses: actions/setup-python@v4
@@ -31,15 +37,11 @@ jobs:
           
       - name: Run pyinstaller
         run: |
-          python -m PyInstaller -F VSET.py --noconsole --icon="logo.ico"                  
-
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version: '1.19.5'
-      - run: |
-          go build
-          xcopy update.exe dist
+          python -m PyInstaller -F VSET.py --noconsole --icon="logo.ico"
+          
+      - name: Move Go Build File
+        run: |
+          echo F | xcopy update.exe dist
                     
       - uses: actions/upload-artifact@v3
         with:
