@@ -16,7 +16,7 @@ VSET是一款可以提升视频分辨率（1080->2160）的软件
 -软件目前解决了AMD CPU的压制问题，用户可以使用AMD CPU压制视频   
 -更新了vs-mlrt至v13版本
 
-## 相关地址
+## 安装
 [百度网盘下载地址](https://pan.baidu.com/s/1Lq1frEIHFmN-mJlWsmmX6g?pwd=Nang)
 
 [爱发电](https://afdian.net/a/NangInShell)   
@@ -24,7 +24,7 @@ VSET是一款可以提升视频分辨率（1080->2160）的软件
 
 [BiliBili:NangInShell](https://space.bilibili.com/335908558)   
 
-**软件QQ交流群：711185279**
+[QQ交流群：711185279]
 ## 安装方法
 整合包下载解压后即可使用，更新包用于debug，一般用不到。
 ![image](https://user-images.githubusercontent.com/72263191/212929996-4cf59811-faef-4b57-b3a7-543986414e5a.png)
@@ -34,7 +34,8 @@ VSET是一款可以提升视频分辨率（1080->2160）的软件
 2，超分设置里设置好相关参数   
 3，压制设置里设置好压制参数   
 4，交付页面点击交互。   
-（注意：如果出现错误请使用交付页面的debug模型运行，会在输出文件夹生成相关批处理文件，文件内容截图发给开发）   
+#####注意：如果出现错误请使用交付页面的debug模型运行，会在输出文件夹生成相关批处理文件，文件内容截图发给开发
+
 ## 软件界面
 ![image](https://user-images.githubusercontent.com/72263191/212924504-eebf637b-c327-4b33-bcfb-e4dbe00e5862.png "软件主界面")
 ![image](https://user-images.githubusercontent.com/72263191/212927595-b094dfcb-ccde-4c7f-b37a-53dd921e1605.png)
@@ -42,7 +43,7 @@ VSET是一款可以提升视频分辨率（1080->2160）的软件
 ![image](https://user-images.githubusercontent.com/72263191/212927683-23b31165-a1a3-4bac-bc36-838fab097004.png)
 ![image](https://user-images.githubusercontent.com/72263191/212927706-d8b9b500-6c46-4b37-a7f0-23afb50e66df.png)
 
-## 其他链接（感谢大佬们的付出）
+## 参考
 [（BasicVSRpp vs接口支持）https://github.com/HolyWu/vs-basicvsrpp](https://github.com/HolyWu/vs-basicvsrpp)
 
 [（vs-mlrt vs接口支持）https://github.com/AmusementClub/vs-mlrt](https://github.com/AmusementClub/vs-mlrt)
