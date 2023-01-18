@@ -124,7 +124,7 @@ func main() {
 			cnt++
 
 			fmt.Println(pgName[i][0] + " 当前版本" + CurrentVersion[i] + "，" +
-				"有新版本" + LastestVersion[i] + "，按回车键开始下载，按n键跳过")
+				"有新版本" + LastestVersion[i] + "，要下载最新版本吗？（y/n）")
 			var input string
 			_, scanln := fmt.Scanln(&input)
 			if scanln != nil {
