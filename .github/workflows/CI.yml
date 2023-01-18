@@ -1,4 +1,4 @@
-name: PyInstaller-Windows
+name: Build-For-WindowsX64
 
 # Controls when the workflow will run
 on:
@@ -31,7 +31,19 @@ jobs:
           
       - name: Run pyinstaller
         run: |
-          python -m PyInstaller -F VSET.py --noconsole --icon="logo.ico"
+          python -m PyInstaller -F VSET.py --noconsole --icon="logo.ico"                  
+
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.19.5'
+      - run: |
+          go get github.com/josephspurrier/goversioninfo/cmd/goversioninfo
+          go generate
+          go build
+          echo D | xcopy update.exe dist /e
+          xcopy update.exe dist
+          
           
       - uses: actions/upload-artifact@v3
         with:
