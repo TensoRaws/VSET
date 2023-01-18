@@ -10,17 +10,24 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"time"
 )
 
 var GithubrpHost = "https://git.114514.lol/"           // 反代GitHub域名
 var GithubAPIrpHost = "https://api-github.114514.lol/" // 反代GitHub API
 // rp -- reverse proxy
+// 远程仓库名称
+var repo1owner = "NangInShell/VSET"
+var repo2owner = "Tohrusky/vs_vsmlrt"
+var repo3owner = "Tohrusky/vs_pytorch"
+
+// 当前Release 版本号
+var VSETVersion = "v2.0.0"
+var VsVsmlrtVersion = "v2.0.0"
+var VsPytorchVersion = "v2.0.0"
 
 func getCurrentVersion() []string {
-	repositoryVset := "v1.0."
-	repositoryVsVsmlrt := "v1.0"
-	repositoryVsPytorch := "v1.0."
-	return []string{repositoryVset, repositoryVsVsmlrt, repositoryVsPytorch}
+	return []string{VSETVersion, VsVsmlrtVersion, VsPytorchVersion}
 }
 
 func getLastestVersion() []string {
@@ -38,18 +45,18 @@ func getLastestVersion() []string {
 		return gjson.Get(buffer.String(), "tag_name").String()
 	}
 	// https://api.github.com/repos/Tohrusky/VSET/releases/latest
-	repository1 := GithubAPIrpHost + "repos/Tohrusky/VSET/releases/latest"
-	repository2 := GithubAPIrpHost + "repos/Tohrusky/vs_vsmlrt/releases/latest"
-	repository3 := GithubAPIrpHost + "repos/Tohrusky/vs_pytorch/releases/latest"
+	repository1 := GithubAPIrpHost + "repos/" + repo1owner + "/releases/latest"
+	repository2 := GithubAPIrpHost + "repos/" + repo2owner + "/releases/latest"
+	repository3 := GithubAPIrpHost + "repos/" + repo3owner + "/releases/latest"
 	return []string{getVersion(repository1), getVersion(repository2), getVersion(repository3)}
 }
 
 func getDownloadLink(version []string) []string {
-	repositoryVset := GithubrpHost + "Tohrusky/VSET/releases/download/" + version[0] + "/VSET.zip"
+	repositoryVset := GithubrpHost + repo1owner + "/releases/download/" + version[0] + "/VSET.zip"
 	// https://github.com/Tohrusky/VSET/releases/download/v1.0.0/VSET.zip
-	repositoryVsVsmlrt := GithubrpHost + "Tohrusky/vs_vsmlrt/releases/download/" + version[1] + "/vs_vsmlrt.7z"
+	repositoryVsVsmlrt := GithubrpHost + repo2owner + "/releases/download/" + version[1] + "/vs_vsmlrt.7z"
 	// https://github.com/Tohrusky/vs_vsmlrt/releases/download/v1.0.0/vs_vsmlrt.7z
-	repositoryVsPytorch := GithubrpHost + "Tohrusky/vs_pytorch/releases/download/" + version[2] + "/vs_pytorch.7z"
+	repositoryVsPytorch := GithubrpHost + repo3owner + "/releases/download/" + version[2] + "/vs_pytorch.7z"
 	// https://github.com/Tohrusky/vs_pytorch/releases/download/v1.0.0/vs_pytorch.7z
 	return []string{repositoryVset, repositoryVsVsmlrt, repositoryVsPytorch}
 }
@@ -117,10 +124,15 @@ func main() {
 			cnt++
 
 			fmt.Println(pgName[i][0] + " 当前版本" + CurrentVersion[i] + "，" +
-				"有新版本" + LastestVersion[i] + "，按回车键开始下载")
-			_, scanln := fmt.Scanln()
+				"有新版本" + LastestVersion[i] + "，按回车键开始下载，按n键跳过")
+			var input string
+			_, scanln := fmt.Scanln(&input)
 			if scanln != nil {
 				return
+			}
+			if input == "n" || input == "N" {
+				fmt.Println("跳过" + pgName[i][0] + "更新")
+				continue
 			}
 
 			downloadFile(DownloadLink[i], MyDirPath)
@@ -148,7 +160,7 @@ func main() {
 			if scanln != nil {
 				return
 			}
-			if scan == "y" {
+			if scan == "y" || scan == "Y" {
 				err = os.RemoveAll(path.Join(MyDirPath, pgName[i][1]))
 				if err != nil {
 					panic(err)
@@ -161,4 +173,5 @@ func main() {
 	} else {
 		fmt.Println("Ciallo~~恭喜你呀，更新完成啦嘿嘿嘿")
 	}
+	time.Sleep(2 * time.Second)
 }

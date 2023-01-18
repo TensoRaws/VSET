@@ -1,13 +1,14 @@
-import sys
+import json
 import os
 import subprocess as sp
-import json
+import sys
 from configparser import ConfigParser
 
-from PyQt5.QtGui import QTextCursor
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+
 from VSET_UI import Ui_mainWindow
 
 
@@ -882,9 +883,20 @@ class MyMainWindow(QMainWindow, Ui_mainWindow):
         self.pb_debug.setText('Debug模式')
 
 
+def check_update() -> None:
+    if os.path.exists('update.exe'):
+        if os.path.exists('VSET_update.exe'):
+            os.remove('VSET_update.exe')
+        # 删除之前的更新脚本，改名
+        os.rename('update.exe', 'VSET_update.exe')
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon('logo.png'))
     myWin = MyMainWindow()
     myWin.show()
+
+    check_update()
+
     sys.exit(app.exec_())
