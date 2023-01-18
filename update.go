@@ -21,10 +21,10 @@ var repo1owner = "NangInShell/VSET"
 var repo2owner = "Tohrusky/vs_vsmlrt"
 var repo3owner = "Tohrusky/vs_pytorch"
 
-// 远程仓库Release 版本号
-var VSETVersion = "未安装"
-var VsVsmlrtVersion = "未安装"
-var VsPytorchVersion = "未安装"
+// 当前Release 版本号
+var VSETVersion = "v2.0.0"
+var VsVsmlrtVersion = "v2.0.0"
+var VsPytorchVersion = "v2.0.0"
 
 func getCurrentVersion() []string {
 	return []string{VSETVersion, VsVsmlrtVersion, VsPytorchVersion}
