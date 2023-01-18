@@ -16,12 +16,18 @@ import (
 var GithubrpHost = "https://git.114514.lol/"           // 反代GitHub域名
 var GithubAPIrpHost = "https://api-github.114514.lol/" // 反代GitHub API
 // rp -- reverse proxy
+// 远程仓库名称
+var repo1owner = "NangInShell/VSET"
+var repo2owner = "Tohrusky/vs_vsmlrt"
+var repo3owner = "Tohrusky/vs_pytorch"
+
+// 远程仓库Release 版本号
+var VSETVersion = "未安装"
+var VsVsmlrtVersion = "未安装"
+var VsPytorchVersion = "未安装"
 
 func getCurrentVersion() []string {
-	repositoryVset := "未安装"
-	repositoryVsVsmlrt := "未安装"
-	repositoryVsPytorch := "未安装"
-	return []string{repositoryVset, repositoryVsVsmlrt, repositoryVsPytorch}
+	return []string{VSETVersion, VsVsmlrtVersion, VsPytorchVersion}
 }
 
 func getLastestVersion() []string {
@@ -39,18 +45,18 @@ func getLastestVersion() []string {
 		return gjson.Get(buffer.String(), "tag_name").String()
 	}
 	// https://api.github.com/repos/Tohrusky/VSET/releases/latest
-	repository1 := GithubAPIrpHost + "repos/Tohrusky/VSET/releases/latest"
-	repository2 := GithubAPIrpHost + "repos/Tohrusky/vs_vsmlrt/releases/latest"
-	repository3 := GithubAPIrpHost + "repos/Tohrusky/vs_pytorch/releases/latest"
+	repository1 := GithubAPIrpHost + "repos/" + repo1owner + "/releases/latest"
+	repository2 := GithubAPIrpHost + "repos/" + repo2owner + "/releases/latest"
+	repository3 := GithubAPIrpHost + "repos/" + repo3owner + "/releases/latest"
 	return []string{getVersion(repository1), getVersion(repository2), getVersion(repository3)}
 }
 
 func getDownloadLink(version []string) []string {
-	repositoryVset := GithubrpHost + "Tohrusky/VSET/releases/download/" + version[0] + "/VSET.zip"
+	repositoryVset := GithubrpHost + repo1owner + "/releases/download/" + version[0] + "/VSET.zip"
 	// https://github.com/Tohrusky/VSET/releases/download/v1.0.0/VSET.zip
-	repositoryVsVsmlrt := GithubrpHost + "Tohrusky/vs_vsmlrt/releases/download/" + version[1] + "/vs_vsmlrt.7z"
+	repositoryVsVsmlrt := GithubrpHost + repo2owner + "/releases/download/" + version[1] + "/vs_vsmlrt.7z"
 	// https://github.com/Tohrusky/vs_vsmlrt/releases/download/v1.0.0/vs_vsmlrt.7z
-	repositoryVsPytorch := GithubrpHost + "Tohrusky/vs_pytorch/releases/download/" + version[2] + "/vs_pytorch.7z"
+	repositoryVsPytorch := GithubrpHost + repo3owner + "/releases/download/" + version[2] + "/vs_pytorch.7z"
 	// https://github.com/Tohrusky/vs_pytorch/releases/download/v1.0.0/vs_pytorch.7z
 	return []string{repositoryVset, repositoryVsVsmlrt, repositoryVsPytorch}
 }
@@ -168,5 +174,4 @@ func main() {
 		fmt.Println("Ciallo~~恭喜你呀，更新完成啦嘿嘿嘿")
 	}
 	time.Sleep(2 * time.Second)
-	return
 }
