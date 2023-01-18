@@ -1,14 +1,14 @@
-import sys
+import json
 import os
 import subprocess as sp
-import json
-import time
+import sys
 from configparser import ConfigParser
 
-from PyQt5.QtGui import QTextCursor
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+
 from VSET_UI import Ui_mainWindow
 
 
@@ -53,8 +53,8 @@ class FFprobe():
             color_primaries = 2
 
         item = {
-            'color_space': color_space,
-            'color_transfer': color_transfer,
+            'color_space'    : color_space,
+            'color_transfer' : color_transfer,
             'color_primaries': color_primaries
         }
         return item
@@ -173,23 +173,23 @@ class autorun(QThread):
 
     def cugan_(self):
         model_switch = {
-            'pro-conservative-up2x': [0, 2, 2],
-            'pro-conservative-up3x': [0, 3, 2],
-            'pro-denoise3x-up2x': [3, 2, 2],
-            'pro-denoise3x-up3x': [3, 3, 2],
-            'pro-no-denoise3x-up2x': [-1, 2, 2],
-            'pro-no-denoise3x-up3x': [-1, 3, 2],
+            'pro-conservative-up2x'   : [0, 2, 2],
+            'pro-conservative-up3x'   : [0, 3, 2],
+            'pro-denoise3x-up2x'      : [3, 2, 2],
+            'pro-denoise3x-up3x'      : [3, 3, 2],
+            'pro-no-denoise3x-up2x'   : [-1, 2, 2],
+            'pro-no-denoise3x-up3x'   : [-1, 3, 2],
             'up2x-latest-conservative': [0, 2, 1],
-            'up2x-latest-denoise1x': [1, 2, 1],
-            'up2x-latest-denoise2x': [2, 2, 1],
-            'up2x-latest-denoise3x': [3, 2, 1],
-            'up2x-latest-no-denoise': [-1, 2, 1],
+            'up2x-latest-denoise1x'   : [1, 2, 1],
+            'up2x-latest-denoise2x'   : [2, 2, 1],
+            'up2x-latest-denoise3x'   : [3, 2, 1],
+            'up2x-latest-no-denoise'  : [-1, 2, 1],
             'up3x-latest-conservative': [0, 3, 1],
-            'up3x-latest-denoise3x': [3, 3, 1],
-            'up3x-latest-no-denoise': [-1, 3, 1],
+            'up3x-latest-denoise3x'   : [3, 3, 1],
+            'up3x-latest-no-denoise'  : [-1, 3, 1],
             'up4x-latest-conservative': [0, 4, 1],
-            'up4x-latest-denoise3x': [3, 4, 1],
-            'up4x-latest-no-denoise': [-1, 4, 1],
+            'up4x-latest-denoise3x'   : [3, 4, 1],
+            'up4x-latest-no-denoise'  : [-1, 4, 1],
         }
         noise, scale, version = model_switch[self.every_setting.sr_set.model] \
             if self.every_setting.sr_set.model in model_switch else [0, 2, 2]
@@ -200,7 +200,7 @@ class autorun(QThread):
 
     def esrgan_(self):
         model_switch = {
-            'animevideov3': 0,
+            'animevideov3'   : 0,
             'animevideo-xsx2': 1,
             'animevideo-xsx4': 2
         }
@@ -211,40 +211,40 @@ class autorun(QThread):
 
     def waifu2x_(self):
         model_switch = {
-            'anime_style_art_rgb_noise0': [0, 1, 1],
-            'anime_style_art_rgb_noise1': [1, 1, 1],
-            'anime_style_art_rgb_noise2': [2, 1, 1],
-            'anime_style_art_rgb_noise3': [3, 1, 1],
-            'anime_style_art_rgb_scale2.0x': [-1, 2, 1],
-            'cunet_noise0': [0, 1, 6],
-            'cunet_noise0_scale2.0x': [0, 2, 6],
-            'cunet_noise1': [1, 1, 6],
-            'cunet_noise1_scale2.0x': [1, 2, 6],
-            'cunet_noise2': [2, 1, 6],
-            'cunet_noise2_scale2.0x': [2, 2, 6],
-            'cunet_noise3': [3, 1, 6],
-            'cunet_noise3_scale2.0x': [3, 2, 6],
-            'cunet_scale2.0x': [-1, 2, 6],
-            'photo_noise0': [0, 1, 2],
-            'photo_noise1': [1, 1, 2],
-            'photo_noise2': [2, 1, 2],
-            'photo_noise3': [3, 1, 2],
-            'photo_scale2.0x': [-1, 2, 2],
+            'anime_style_art_rgb_noise0'     : [0, 1, 1],
+            'anime_style_art_rgb_noise1'     : [1, 1, 1],
+            'anime_style_art_rgb_noise2'     : [2, 1, 1],
+            'anime_style_art_rgb_noise3'     : [3, 1, 1],
+            'anime_style_art_rgb_scale2.0x'  : [-1, 2, 1],
+            'cunet_noise0'                   : [0, 1, 6],
+            'cunet_noise0_scale2.0x'         : [0, 2, 6],
+            'cunet_noise1'                   : [1, 1, 6],
+            'cunet_noise1_scale2.0x'         : [1, 2, 6],
+            'cunet_noise2'                   : [2, 1, 6],
+            'cunet_noise2_scale2.0x'         : [2, 2, 6],
+            'cunet_noise3'                   : [3, 1, 6],
+            'cunet_noise3_scale2.0x'         : [3, 2, 6],
+            'cunet_scale2.0x'                : [-1, 2, 6],
+            'photo_noise0'                   : [0, 1, 2],
+            'photo_noise1'                   : [1, 1, 2],
+            'photo_noise2'                   : [2, 1, 2],
+            'photo_noise3'                   : [3, 1, 2],
+            'photo_scale2.0x'                : [-1, 2, 2],
             'upconv_7_anime_noise0_scale2.0x': [0, 2, 3],
             'upconv_7_anime_noise1_scale2.0x': [1, 2, 3],
             'upconv_7_anime_noise2_scale2.0x': [2, 2, 3],
             'upconv_7_anime_noise3_scale2.0x': [3, 2, 3],
-            'upconv_7_anime_scale2.0x': [-1, 2, 3],
+            'upconv_7_anime_scale2.0x'       : [-1, 2, 3],
             'upconv_7_photo_noise0_scale2.0x': [0, 2, 4],
             'upconv_7_photo_noise1_scale2.0x': [1, 2, 4],
             'upconv_7_photo_noise2_scale2.0x': [2, 2, 4],
             'upconv_7_photo_noise3_scale2.0x': [3, 2, 4],
-            'upconv_7_photo_scale2.0x': [-1, 2, 4],
-            'upresnet10_noise0_scale2.0x': [0, 2, 5],
-            'upresnet10_noise1_scale2.0x': [1, 2, 5],
-            'upresnet10_noise2_scale2.0x': [2, 2, 5],
-            'upresnet10_noise3_scale2.0x': [3, 2, 5],
-            'upresnet10_scale2.0x': [-1, 2, 5],
+            'upconv_7_photo_scale2.0x'       : [-1, 2, 4],
+            'upresnet10_noise0_scale2.0x'    : [0, 2, 5],
+            'upresnet10_noise1_scale2.0x'    : [1, 2, 5],
+            'upresnet10_noise2_scale2.0x'    : [2, 2, 5],
+            'upresnet10_noise3_scale2.0x'    : [3, 2, 5],
+            'upresnet10_scale2.0x'           : [-1, 2, 5],
         }
         noise, scale, model = model_switch[self.every_setting.sr_set.model] \
             if self.every_setting.sr_set.model in model_switch else [1, 1, 1]
@@ -254,9 +254,9 @@ class autorun(QThread):
 
     def vsrpp_(self):
         model_switch = {
-            'reds4': 0,
-            'vimeo90k_bi': 1,
-            'vimeo90k_bd': 2,
+            'reds4'                  : 0,
+            'vimeo90k_bi'            : 1,
+            'vimeo90k_bd'            : 2,
             'ntire_decompress_track1': 3,
             'ntire_decompress_track2': 4,
             'ntire_decompress_track3': 5
@@ -332,10 +332,10 @@ class autorun(QThread):
             os.makedirs(video_folder)
 
         use_device_switch = {
-            'GPU_nvidia': 'ORT_CUDA()',
+            'GPU_nvidia'    : 'ORT_CUDA()',
             'GPU_nvidia_trt': 'TRT()',
-            'GPU_amd': 'OV_GPU()',
-            'NCNN': 'NCNN_VK()'
+            'GPU_amd'       : 'OV_GPU()',
+            'NCNN'          : 'NCNN_VK()'
         }
         use_device = use_device_switch[self.every_setting.device] \
             if self.every_setting.device in use_device_switch else 'ORT_CUDA()'
