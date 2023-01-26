@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"time"
 )
@@ -22,7 +23,7 @@ var repo2owner = "Tohrusky/vs_vsmlrt"
 var repo3owner = "Tohrusky/vs_pytorch"
 
 // 当前Release 版本号
-var VSETVersion = "v2.0.0"
+var VSETVersion = "v2.0.1"
 var VsVsmlrtVersion = "v2.0.0"
 var VsPytorchVersion = "v2.0.0"
 
@@ -174,4 +175,5 @@ func main() {
 		fmt.Println("Ciallo~~恭喜你呀，更新完成啦嘿嘿嘿")
 	}
 	time.Sleep(2 * time.Second)
+	exec.Command("./VSET.exe").Start()
 }
