@@ -60,7 +60,7 @@ d-----         1/18/2023   9:22 PM                vs_vsmlrt
 ```
 
 ### 方法三 - 国内网盘
-[百度网盘](https://pan.baidu.com/s/1Lq1frEIHFmN-mJlWsmmX6g?pwd=Nang)
+[百度网盘](https://pan.baidu.com/s/1C0EECyBUs0MJy3KdiLPN8A?pwd=Nang)
 
 整合包下载解压后即可使用
 ![image](https://user-images.githubusercontent.com/72263191/212929996-4cf59811-faef-4b57-b3a7-543986414e5a.png)
