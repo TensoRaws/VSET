@@ -24,51 +24,10 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 - 更新了vs-mlrt至v13版本
 
 ## 安装
-**注：第一次使用时不要运行```update.exe```，请先启动一次```VSET.exe```**
-### 方法一 - 在线安装
-[Online Installer](https://github.com/NangInShell/VSET/releases/tag/v.2.0.0-installer)
-- 交互式
-直接点击```VSET_update.exe```，输入参数回车即可
-- 快速安装
-```
-# PowerShell
-$ echo "y" "n" "y" "n" "y" "n" | ./VSET_update.exe
-VSET主程序 当前版本未安装，有新版本v2.0.0，要下载最新版本吗？（y/n）
-下载完成，下载进度：100.00%    ||    解压完成，要删除下载的压缩包吗？（y/n）
-vs_vsmlrt环境包 当前版本未安装，有新版本v2.0.0，要下载最新版本吗？（y/n）
-下载完成，下载进度：100.00%    ||    解压完成，要删除下载的压缩包吗？（y/n）
-vs_pytorch环境包 当前版本未安装，有新版本v2.0.0，要下载最新版本吗？（y/n）
-下载完成，下载进度：100.00%    ||    解压完成，要删除下载的压缩包吗？（y/n）
-```
-
-**请保证网络稳定，建议开启tun/tap代理模式**
-
-### 方法二 - 离线下载
-[VSET](https://github.com/NangInShell/VSET/releases/latest) 
-[vs_vsmlrt环境包](https://github.com/Tohrusky/vs_vsmlrt/releases/latest)
-[vs_pytorch环境包](https://github.com/Tohrusky/vs_pytorch/releases/latest)
-
-下载完环境包和主程序后，将两个环境包直接解压到*VSET*的根目录即可
-```
-$ ls
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
-d-----         1/18/2023   9:44 PM                vs_pytorch
-d-----         1/18/2023   9:22 PM                vs_vsmlrt
--a----         1/18/2023   9:09 PM       38856845 VSET.exe
--a----         1/18/2023   9:09 PM       13664459 update.exe
-```
-
-### 方法三 - 国内网盘
 [百度网盘](https://pan.baidu.com/s/1C0EECyBUs0MJy3KdiLPN8A?pwd=Nang)
 
 整合包下载解压后即可使用
 ![image](https://user-images.githubusercontent.com/72263191/212929996-4cf59811-faef-4b57-b3a7-543986414e5a.png)
-
-## 更新
-*本项目GUI处于快速迭代更新中，但两个环境包不需要频繁更新，如遇更新失败，请参考安装方法二，从对应的Github Release手动下载，放入根目录即可*
-
-第一次运行```VSET.exe```后，目录下会有```VSET_update.exe```，点击即可交互式更新
 
 ## 使用步骤   
 1. 输入输出页面导入视频文件队列并设置输出文件夹   
