@@ -11,7 +11,7 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 #### 特性  
 &#x2705; **动漫**视频超分辨率  
 &#x2705; 实拍视频超分辨率   
-&#x2705; 流行的补帧算法rife 
+&#x2705; 流行的补帧算法rife  
 &#x2705; **自定义参数压制**   
 &#x2705; 支持队列**批量处理**   
 &#x2705; 支持**多开**，支持高性能处理（提高高性能显卡的cuda占用）   
@@ -32,10 +32,18 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 
 
 ## 安装
-[百度网盘](链接：https://pan.baidu.com/s/1M6KIbEBRi35SZtOtd1zVjQ?pwd=Nang)
+方法一：[百度网盘](https://pan.baidu.com/s/1M6KIbEBRi35SZtOtd1zVjQ?pwd=Nang)
 
 整合包下载解压后即可使用
-![image](https://user-images.githubusercontent.com/72263191/212929996-4cf59811-faef-4b57-b3a7-543986414e5a.png)
+![image](https://user-images.githubusercontent.com/72263191/223602793-365fc17b-b3dd-4369-9eba-c5239f13e872.png)
+
+方法二：steam在线更新
+
+**因为国内网盘下载的局限性，为了照顾没有网盘的小伙伴，后期考虑上传软件到steam在线平台，如果你想在steam上获得及时的更新,而不用每次都重复下载网盘的重复文件的话可以联系开发者索要序列码。在测试开发阶段的版本和网盘版本同步更新，不收费，谨防上当受骗。以后steam上线正式版本也会同步更新网盘离线版。不想用steam的玩家可以在github或B站获得与最新版本一样的网盘离线版的更新内容。**
+
+**测试要求：使用过VSET 3.0及之后的版本一段时间，有显存大于等于6G的20，30，40系列的显卡，有一颗能与人平等交流的心和一定的测试时间。**
+
+**steam开发测试群请联系下面QQ群的管理员**
 
 ## 使用步骤   
 1. 输入输出页面导入视频文件队列并设置输出文件夹   
