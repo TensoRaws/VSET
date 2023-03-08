@@ -1,7 +1,7 @@
-# VSET --VapourSynth Encode Tool
+# VSET --Video SuperResolution Encode Tool
 基于*Vapoursynth*的图形化视频批量压制处理工具，现阶段已经初步测试完毕
 
-开源2.0版本正在公测中，欢迎大家使用、反馈
+开源3.1版本正在公测中，欢迎大家使用、反馈
 
 <img src="https://user-images.githubusercontent.com/72263191/212935212-516e32a0-5171-4dc0-907e-d5162af4ce2d.png" alt="Anime!" width="250"/>
 
@@ -11,20 +11,28 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 #### 特性  
 &#x2705; **动漫**视频超分辨率  
 &#x2705; 实拍视频超分辨率   
+&#x2705; 流行的补帧算法rife 
 &#x2705; **自定义参数压制**   
 &#x2705; 支持队列**批量处理**   
-&#x2705; 支持**多开**，吃满显卡CPU   
-&#x2705; **开源、免费**   
+&#x2705; 支持**多开**，支持高性能处理（提高高性能显卡的cuda占用）   
+&#x2705; **开源**   
 
 ## 更新进度
 ### 2023-01-17更新
-- 集成了BasicVSRpp算法，支持6个常用模型   
-- 集成了Waifu2x算法，支持将近30个模型   
-- 软件目前解决了AMD CPU的压制问题，用户可以使用AMD CPU压制视频   
-- 更新了vs-mlrt至v13版本
+- 新增了Swinir算法，适用于三次元超分辨率
+- 新增了Waifu2x算法的新模型，新增后waifu2x模型数量超过30个模型   
+- 所有算法除了ncnn模式外均支持半精度推理
+- 使用cuda或ncnn时任务可终止，TRT模式的在生成引擎时终止的话需要去任务管理器终止，其他情况下可以直接终止。
+- 去掉了抗锯齿滤镜，新增了添加噪点的滤镜
+- QTGMC滤镜支持隔行扫描视频倍帧
+- 更新补帧算法rife，vsmlrt版本。支持TRT，cuda，ncnn推理，转场识别。
+- 新增可自定义的后端推理参数设置，可提高显卡的占用，用尽显卡的所有性能。
+- UI优化和其他已知BUG修复
+- 可能解决了AMD显卡的使用问题，AMD显卡用户默认只可使用ncnn推理，且不支持多卡。但由于开发没有AMD显卡测试，所以用户得自己测试能否使用。
+
 
 ## 安装
-[百度网盘](https://pan.baidu.com/s/1C0EECyBUs0MJy3KdiLPN8A?pwd=Nang)
+[百度网盘](链接：https://pan.baidu.com/s/1M6KIbEBRi35SZtOtd1zVjQ?pwd=Nang)
 
 整合包下载解压后即可使用
 ![image](https://user-images.githubusercontent.com/72263191/212929996-4cf59811-faef-4b57-b3a7-543986414e5a.png)
@@ -38,11 +46,13 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 *注意：如果出现错误，请使用交付页面的debug模式运行，会在输出文件夹生成相关批处理(.bat)文件，将文件内容截图反馈给开发*
 
 ## 软件界面
-![image](https://user-images.githubusercontent.com/72263191/212924504-eebf637b-c327-4b33-bcfb-e4dbe00e5862.png "软件主界面")
-![image](https://user-images.githubusercontent.com/72263191/212927595-b094dfcb-ccde-4c7f-b37a-53dd921e1605.png)
-![image](https://user-images.githubusercontent.com/72263191/212927649-bd8afe86-3e64-410f-9237-34ddd9093d2f.png)
-![image](https://user-images.githubusercontent.com/72263191/212927683-23b31165-a1a3-4bac-bc36-838fab097004.png)
-![image](https://user-images.githubusercontent.com/72263191/212927706-d8b9b500-6c46-4b37-a7f0-23afb50e66df.png)
+![image](https://user-images.githubusercontent.com/72263191/223601902-b4312dc5-4124-4077-b753-54e4f2214f3b.png) "软件主界面")
+![image](https://user-images.githubusercontent.com/72263191/223601936-038a9cf6-0e74-4162-bfd6-27f21cb8cc2c.png))
+![image](https://user-images.githubusercontent.com/72263191/223601954-cc2fee41-336c-4109-a0a8-1b57b364a65e.png))
+![image](https://user-images.githubusercontent.com/72263191/223602057-a378275c-478d-4a2c-ba67-98ada39b970e.png))
+![image](https://user-images.githubusercontent.com/72263191/223602086-768c989c-ae79-4549-b4cb-48ceab31ce8b.png))
+![image]((https://user-images.githubusercontent.com/72263191/223602166-60ae7692-d0b8-4413-ab7b-58ca37928c4b.png)
+![image](https://user-images.githubusercontent.com/72263191/223602286-a78aa928-187b-40ef-8ced-e0f3bfabf591.png)
 
 ## 相关链接
 [爱发电](https://afdian.net/a/NangInShell)   
@@ -53,7 +63,9 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 [QQ交流群：711185279]
 
 ## 参考
-[BasicVSRpp vs接口支持](https://github.com/HolyWu/vs-basicvsrpp)
+[超分算法](https://github.com/HolyWu)
+
+[rife ncnn](https://github.com/styler00dollar)
 
 [vs-mlrt vs接口支持](https://github.com/AmusementClub/vs-mlrt)
 
