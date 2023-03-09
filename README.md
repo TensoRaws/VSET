@@ -6,7 +6,7 @@
 <img src="https://user-images.githubusercontent.com/72263191/212935212-516e32a0-5171-4dc0-907e-d5162af4ce2d.png" alt="Anime!" width="250"/>
 
 ## [💬 感谢发电名单](https://github.com/NangInShell/VSET/blob/main/Thanks.md)
-感谢发电大佬们对本项目的支持以及所有测试用户的测试支持。
+感谢发电大佬们对本项目的支持以及所有测试用户的测试支持。以上链接包含了发电者名单和项目支出详情。
 
 ## 简介
 VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windows环境下使用**
