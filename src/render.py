@@ -1,5 +1,4 @@
 import time
-
 from PyQt5.QtCore import *
 
 from PyQt5.QtCore import QThread
@@ -149,6 +148,12 @@ class autorun(QThread):
                 else:
                     audio_info.append('-c:a')
                     audio_info.append('copy')
+            sub_info=[]
+            have_sub=ffprobe.is_HaveSubtitle()
+
+            if have_sub == True:
+                    sub_info.append('-c:s')
+                    sub_info.append('copy')
 
             FFMPEG_BIN = self.directory + '/ffmpeg.exe'
             #输入处理
@@ -165,13 +170,16 @@ class autorun(QThread):
             if have_audio == True:
                 input_info.append('-map')
                 input_info.append('1:a')
+            if have_sub == True:
+                input_info.append('-map')
+                input_info.append('1:s')
             #输出处理
 
             output_info=[]
             output_info.append(video_folder+'/'+video_name+'.'+self.every_setting.vformat)
-            if self.every_setting.use_customization_encode == False:
+            if self.every_setting.use_customization_encode == False:#自定义压制参数
                 # ffmpeg_code = input_info + ffmpeg_code + color_info + audio_info + output_info
-                ffmpeg_code = input_info + ffmpeg_code + audio_info + output_info
+                ffmpeg_code = input_info + ffmpeg_code + audio_info + sub_info + output_info
             else:
                 ffmpeg_code=input_info + ffmpeg_code + output_info
             #vpy配置文件生成
@@ -256,14 +264,17 @@ class autorun(QThread):
 
                 self.pipe_test = sp.Popen(command_test, stdout=sp.PIPE, stderr=sp.PIPE, shell=False,
                                           startupinfo=startupinfo)
+                for line in self.pipe_test.stderr:
+                    print(str(line,encoding='utf-8').replace("\n",""))
                 self.pipe_test.wait()
+
                 self.pipe_out = sp.Popen(command_out, stdout=sp.PIPE, shell=False,startupinfo=startupinfo)
                 self.pipe_in = sp.Popen(command_in, stdin=self.pipe_out.stdout, stdout=sp.PIPE, stderr=sp.STDOUT, shell=False,startupinfo=startupinfo,
                                    encoding="utf-8", text=True)
 
 
-                for line in self.pipe_test.stderr:
-                    print(str(line,encoding='utf-8').replace("\n",""))
+                # for line in self.pipe_test.stderr:
+                #     print(str(line,encoding='utf-8').replace("\n",""))
 
                 print('已输出 '+video+' 的debug信息')
                 print(' ')

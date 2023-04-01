@@ -562,6 +562,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             print(' ')
 
     def closeEvent(self, event):
+        self.quit_thread()
         self.save_conf_auto()
         time.sleep(1)
         super().closeEvent(event)
@@ -587,9 +588,12 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 allow_autorun = False
                 QMessageBox.information(self, "提示信息", "vsmlrt的补帧库不能vsmlrt以外的超分库混用，请取消选择一个补帧或超分的启动开关")
 
-        if every_setting.use_sr == False and every_setting.use_vfi == False:
-            allow_autorun = False
-            QMessageBox.information(self, "提示信息", "请至少开启超分或补帧一个渲染流程")
+        for video_name in every_setting.videos:
+            if os.path.dirname(video_name) == every_setting.outfolder:
+                allow_autorun = False
+                print('输出文件夹不能与输入视频的文件夹同目录,已自动终止运行')
+                QMessageBox.information(self, "提示信息", "输出文件夹不能与输入视频的文件夹同目录")
+                break
 
         if every_setting.outfolder == '':
             allow_autorun=False

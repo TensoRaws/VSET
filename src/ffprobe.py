@@ -76,7 +76,13 @@ class get_video_info(QObject):
                 return True
         return False
 
-#print(get_video_info(r'M:\code\VSET_os\video_test\test_709.mp4').is_Vfr())
+    def is_HaveSubtitle(self):
+        for item in self.ffprobe.video_info['streams']:
+            if item['codec_type'] == 'subtitle':
+                return True
+        return False
+
+#print(get_video_info(r'M:\code\VSET_os\video_test\10秒内封字幕.mkv').is_HaveSubtitle())
 
 
 
