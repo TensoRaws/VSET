@@ -35,6 +35,8 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 
 
 ## 安装
+**注意，网络上出现一些未经允许私自搬运VSET压缩包到收费下载网站的行为，遂特此说明，VSET目前没有任何第三方下载方式，也没有任何第三方收费服务，请只认准本项目github的网盘地址和steam测试。**
+
 方法一：[百度网盘](https://pan.baidu.com/s/1M6KIbEBRi35SZtOtd1zVjQ?pwd=Nang)
 
 整合包下载解压后即可使用
