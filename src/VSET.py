@@ -4,21 +4,20 @@ import json
 import time
 from configparser import ConfigParser
 from pynvml import *
-from Signal import Signal
+from src.Signal import Signal
 
 from PyQt5.QtGui import QTextCursor,QIcon
 from PyQt5.QtCore import *
-import cpuinfo
 
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
-from VSET_UI import Ui_MainWindow
+from src.VSET_UI import Ui_MainWindow
 
 #参数
-from method import cugan_ml_setting,esrgan_ml_setting,waifu2x_ml_setting,vsrpp_setting,vsr_setting,swinir_setting
-from method import esrgan_setting,animesr_setting,rife_ml_setting,rifenc_setting,every_set_object,mlrt_setting
+from src.method import cugan_ml_setting,esrgan_ml_setting,waifu2x_ml_setting,vsrpp_setting,vsr_setting,swinir_setting
+from src.method import esrgan_setting,animesr_setting,rife_ml_setting,rifenc_setting,every_set_object,mlrt_setting
 #推理
-from render import autorun,autorun_test
+from src.render import autorun,autorun_test
 
 
 class MyMainWindow(QMainWindow, Ui_MainWindow):
