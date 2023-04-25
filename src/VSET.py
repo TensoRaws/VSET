@@ -40,7 +40,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
             for i in range(deviceCount):
                 handle = nvmlDeviceGetHandleByIndex(i)
-                device = (str(i) + ":" + str(nvmlDeviceGetName(handle),'utf8'))
+                device = str(i) + ":" + str(nvmlDeviceGetName(handle))
                 self.cb_gpu_sr.addItem(device)
                 self.cb_gpu_vfi.addItem(device)
         except:
