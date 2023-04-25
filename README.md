@@ -3,6 +3,11 @@
 
 开源3.1版本正在公测中，欢迎大家使用、反馈
 
+## 特别注意
+**网络上出现一些未经允许私自搬运VSET压缩包到收费下载网站的行为，遂特此说明，VSET目前没有任何第三方下载方式，也没有任何第三方收费服务，请只认准本项目github的网盘地址和steam测试。**
+
+**同时本项目的所有源代码，程序和附带的自建环境禁止被用于任何第三方未经许可的商业用途。违者自行承担相应的法律责任。**
+
 <img src="https://user-images.githubusercontent.com/72263191/212935212-516e32a0-5171-4dc0-907e-d5162af4ce2d.png" alt="Anime!" width="250"/>
 
 ## [💬 感谢发电名单](https://github.com/NangInShell/VSET/blob/main/Thanks.md)
@@ -35,8 +40,6 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 
 
 ## 安装
-**注意，网络上出现一些未经允许私自搬运VSET压缩包到收费下载网站的行为，遂特此说明，VSET目前没有任何第三方下载方式，也没有任何第三方收费服务，请只认准本项目github的网盘地址和steam测试。**
-
 方法一：[百度网盘](https://pan.baidu.com/s/1oilF8cgjdiN6D_0ZQz1sLw?pwd=Nang)
 
 整合包下载解压后即可使用
