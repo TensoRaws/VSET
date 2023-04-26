@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from  Mywidget import MListWidget,MLineEdit
+from src.Mywidget import MListWidget,MLineEdit
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -6819,4 +6819,4 @@ class Ui_MainWindow(object):
         self.lb_afd.setText(_translate("MainWindow", "<html><head/><body><p><a href=\"https://afdian.net/a/NangInShell\"><span style=\" text-decoration: underline; color:#5500ff;\">爱发电:（https://afdian.net/a/NangInShell）</span></a></p></body></html>"))
         self.groupBox_7.setTitle(_translate("MainWindow", "公告"))
         self.label_4.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" color:#ff00ff;\">      软件正在steam测试开发阶段，如果你想在steam上获得及时的更新,而不用每次都重复下载网盘的重复文件的话可以联系开发者索要序列码。测试开发阶段的版本和网盘版本同步更新，不收费，谨防上当受骗。</span></p><p><span style=\" color:#ff00ff;\">以后steam上线正式版本也会同步更新网盘离线版。不想用steam的玩家可以在github或B站获得与最新版本一样的网盘离线版的更新内容。</span></p><p><span style=\" color:#ff00ff;\">测试要求：使用过VSET 3.0及之后的版本一段时间，有显存大于等于6G的20，30，40系列的显卡，有一颗能与人平等交流的心和一定的测试时间。</span></p><p><span style=\" color:#ff00ff;\">QQ交流群：711185279</span></p><p><span style=\" color:#ff00ff;\">steam开发测试群请联系上面QQ群的管理员。</span></p></body></html>"))
-import icons_rc
+import assets.icons_rc

@@ -5,8 +5,8 @@ from PyQt5.QtCore import QThread
 import os
 import sys
 import subprocess as sp
-from ffprobe import get_video_info
-from ffmpeg import ffmpeg_info
+from src.ffprobe import get_video_info
+from src.ffmpeg import ffmpeg_info
 
 class autorun_test(QThread):
     def __init__(self):
