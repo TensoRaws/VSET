@@ -1,42 +1,53 @@
 # VSET --Video SuperResolution Encode Tool
 基于*Vapoursynth*的图形化视频批量压制处理工具，现阶段已经初步测试完毕
 
-开源3.1版本正在公测中，欢迎大家使用、反馈
+开源3.2版本已更新，欢迎大家使用、反馈
 
 ## 特别注意
-**网络上出现一些未经允许私自搬运VSET压缩包到收费下载网站的行为，遂特此说明，VSET目前没有任何第三方下载方式，也没有任何第三方收费服务，请只认准本项目github的网盘地址和steam测试。**
+**网络上出现一些未经允许私自搬运VSET压缩包到收费下载网站的行为，遂特此说明，VSET目前没有任何第三方下载方式，也没有任何第三方收费服务，请只认准本项目github的下载方式。**
 
-**同时本项目的所有源代码，程序和附带的自建环境禁止被用于任何第三方未经许可的商业用途。违者自行承担相应的法律责任。**
+**同时本项目的所有源代码，程序和附带的自建环境禁止用于任何第三方未经许可的商业用途。**
 
 <img src="https://user-images.githubusercontent.com/72263191/212935212-516e32a0-5171-4dc0-907e-d5162af4ce2d.png" alt="Anime!" width="250"/>
 
 ## [💬 感谢发电名单](https://github.com/NangInShell/VSET/blob/main/Thanks.md)
 感谢发电大佬们对本项目的支持以及所有测试用户的测试支持。以上链接包含了发电者名单和项目支出详情。
 
+&#x2705; **发电大佬可联系开发者优先加入专门的debug群**
+
+&#x2705; **QQ交流群：711185279**
+
+发电地址:[**爱发电**](https://afdian.net/a/NangInShell)  
+
 ## 简介
 VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windows环境下使用**
 
 #### 特性  
 &#x2705; **动漫**视频超分辨率  
-&#x2705; 实拍视频超分辨率   
-&#x2705; 流行的补帧算法rife  
-&#x2705; **自定义参数压制**   
+&#x2705; **实拍**视频超分辨率  
+&#x2705; 流行的**补帧**算法rife  
+&#x2705; QTGMC，deband等常用**vs滤镜**  
+&#x2705; **16bit**高精度处理   
+&#x2705; **预览**  
+&#x2705; 完整的**字幕**，**音频**处理流程  
+&#x2705; **自定义**参数压制**   
 &#x2705; 支持队列**批量处理**   
-&#x2705; 支持**多开**，支持高性能处理（提高高性能显卡的cuda占用）   
+&#x2705; 支持**多开**，支持高性能处理（提高高性能显卡的占用）   
 &#x2705; **开源**   
 
 ## 更新进度
-### 2023-03-07更新
-- 新增了Swinir算法，适用于三次元超分辨率
-- 新增了Waifu2x算法的新模型，新增后waifu2x模型数量超过30个模型   
-- 所有算法除了ncnn模式外均支持半精度推理
-- 使用cuda或ncnn时任务可终止，TRT模式的在生成引擎时终止的话需要去任务管理器终止，其他情况下可以直接终止。
-- 去掉了抗锯齿滤镜，新增了添加噪点的滤镜
-- QTGMC滤镜支持隔行扫描视频倍帧
-- 更新补帧算法rife，vsmlrt版本。支持TRT，cuda，ncnn推理，转场识别。
-- 新增可自定义的后端推理参数设置，可提高显卡的占用，用尽显卡的所有性能。
-- UI优化和其他已知BUG修复
-- 可能解决了AMD显卡的使用问题，AMD显卡用户默认只可使用ncnn推理，且不支持多卡。但由于开发没有AMD显卡测试，所以用户得自己测试能否使用。
+### 2023-04-27更新
+- 新增预览功能，可在渲染前预览任意设置下任何时间点（任何一帧）的画面。
+- 新增对Inter显卡的支持，现在软件对A卡，I卡，N卡全面支持。
+- Basicvsrpp新增至十个模型，移除老版本的basicvsr算法。
+- 新增codeformat人脸修复算法。
+- 修复Swinir,Realesrgan算法显存占用过大的问题。
+- 新增多个滤镜设置。
+- 修复nvenc硬件编码的cq参数问题，修了hevc-qsv,h264-qsv压制不能运行的问题。
+- 新增多个可选编码器，新增多个压制预设。
+- 新增字幕外部导入外挂或内嵌，音频外部导入
+- 修复mp4封装flac音频的问题
+- 新增设置“先超后补”，“先补后超”
 
 
 ## 安装
@@ -62,17 +73,17 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 *注意：如果出现错误，请使用交付页面的debug模式运行，会在输出文件夹生成相关批处理(.bat)文件，将文件内容截图反馈给开发*
 
 ## 软件界面
-![image](https://user-images.githubusercontent.com/72263191/223601902-b4312dc5-4124-4077-b753-54e4f2214f3b.png)
-![image](https://user-images.githubusercontent.com/72263191/223601936-038a9cf6-0e74-4162-bfd6-27f21cb8cc2c.png)
-![image](https://user-images.githubusercontent.com/72263191/223601954-cc2fee41-336c-4109-a0a8-1b57b364a65e.png)
-![image](https://user-images.githubusercontent.com/72263191/223602057-a378275c-478d-4a2c-ba67-98ada39b970e.png)
-![image](https://user-images.githubusercontent.com/72263191/223602086-768c989c-ae79-4549-b4cb-48ceab31ce8b.png)
-![image](https://user-images.githubusercontent.com/72263191/223602166-60ae7692-d0b8-4413-ab7b-58ca37928c4b.png)
-![image](https://user-images.githubusercontent.com/72263191/223602286-a78aa928-187b-40ef-8ced-e0f3bfabf591.png)
+
+![image](https://user-images.githubusercontent.com/72263191/234762202-da7eb2e2-9fec-447e-9730-c71dbb453e7f.png)
+![image](https://user-images.githubusercontent.com/72263191/234762228-ec8daaa3-6cc8-4942-985a-570dfec088a0.png)
+![image](https://user-images.githubusercontent.com/72263191/234762234-c4162dd5-29d9-4fff-8bb0-ecce47ed8884.png)
+![image](https://user-images.githubusercontent.com/72263191/234762242-234e47d0-01af-4722-8528-47841e22e3f4.png)
+![image](https://user-images.githubusercontent.com/72263191/234762250-94963d6e-ce69-4513-ab4f-33aabeb26846.png)
+![image](https://user-images.githubusercontent.com/72263191/234762266-854fd9f6-6d18-462f-8dd1-7baf8bea0daf.png)
+![image](https://user-images.githubusercontent.com/72263191/234762275-cd32511c-9ab1-48d8-a4f8-41d69df1a443.png)
 
 ## 相关链接
-[爱发电](https://afdian.net/a/NangInShell)   
-如果您觉得软件使用体验不错，且**自身经济条件尚可**，可以在爱发电平台支持一下
+[爱发电](https://afdian.net/a/NangInShell)  
 
 [BiliBili: NangInShell](https://space.bilibili.com/335908558)   
 
