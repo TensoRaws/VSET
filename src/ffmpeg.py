@@ -27,18 +27,21 @@ class ffmpeg_info(QObject):
                 ffmpeg_code.append('yuv420p')
                 ffmpeg_code.append('-profile:v')
                 ffmpeg_code.append('main')
+            elif self.ffmpeg_set.encoder == 'cpu_Av1':
+                ffmpeg_code.append('-c:v')
+                ffmpeg_code.append('libaom-av1')
+                ffmpeg_code.append('-pix_fmt')
+                ffmpeg_code.append('yuv420p10le')
             elif self.ffmpeg_set.encoder == 'nvenc_H264':
                 ffmpeg_code.append('-c:v')
                 ffmpeg_code.append('h264_nvenc')
                 ffmpeg_code.append('-pix_fmt')
                 ffmpeg_code.append('yuv420p')
-                ffmpeg_code.append('-profile:v')
-                ffmpeg_code.append('main')
             elif self.ffmpeg_set.encoder == 'nvenc_H265':
                 ffmpeg_code.append('-c:v')
                 ffmpeg_code.append('hevc_nvenc')
                 ffmpeg_code.append('-pix_fmt')
-                ffmpeg_code.append('yuv420p10le')
+                ffmpeg_code.append('p010le')
                 ffmpeg_code.append('-profile:v')
                 ffmpeg_code.append('main10')
                 ffmpeg_code.append('-vtag')
@@ -47,32 +50,39 @@ class ffmpeg_info(QObject):
                 ffmpeg_code.append('-c:v')
                 ffmpeg_code.append('av1_nvenc')
                 ffmpeg_code.append('-pix_fmt')
-                ffmpeg_code.append('yuv420p10le')
+                ffmpeg_code.append('p010le')
                 ffmpeg_code.append('-profile:v')
                 ffmpeg_code.append('main10')
             elif self.ffmpeg_set.encoder == 'qsv_H264':
                 ffmpeg_code.append('-c:v')
                 ffmpeg_code.append('h264_qsv')
                 ffmpeg_code.append('-pix_fmt')
-                ffmpeg_code.append('yuv420p')
-                ffmpeg_code.append('-profile:v')
-                ffmpeg_code.append('main')
+                ffmpeg_code.append('p010le')
             elif self.ffmpeg_set.encoder == 'qsv_H265':
                 ffmpeg_code.append('-c:v')
                 ffmpeg_code.append('hevc_qsv')
                 ffmpeg_code.append('-pix_fmt')
-                ffmpeg_code.append('yuv420p10le')
+                ffmpeg_code.append('p010le')
                 ffmpeg_code.append('-profile:v')
                 ffmpeg_code.append('main10')
                 ffmpeg_code.append('-vtag')
                 ffmpeg_code.append('hvc1')
+            elif self.ffmpeg_set.encoder == 'qsv_Av1':
+                ffmpeg_code.append('-c:v')
+                ffmpeg_code.append('av1_qsv')
+                ffmpeg_code.append('-pix_fmt')
+                ffmpeg_code.append('p010le')
 
             ffmpeg_code.append('-preset')
             ffmpeg_code.append(self.ffmpeg_set.preset)
 
             if self.ffmpeg_set.use_crf == True:
-                ffmpeg_code.append('-crf')
-                ffmpeg_code.append(self.ffmpeg_set.crf)
+                if 'nvenc' not in self.ffmpeg_set.encoder:
+                    ffmpeg_code.append('-crf')
+                    ffmpeg_code.append(self.ffmpeg_set.crf)
+                else:
+                    ffmpeg_code.append('-cq')
+                    ffmpeg_code.append(self.ffmpeg_set.crf)
             else:
                 ffmpeg_code.append('-b:v')
                 ffmpeg_code.append(self.ffmpeg_set.bit + 'M')

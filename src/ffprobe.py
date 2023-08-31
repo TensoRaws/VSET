@@ -59,6 +59,12 @@ class get_video_info(QObject):
         self.ffprobe = FFprobe()
         self.ffprobe.parse(self.video_info)
 
+    def frames(self):
+        for item in self.ffprobe.video_info['streams']:
+            if item['codec_type'] == 'video':
+                return item['nb_frames']
+        return None
+
     #判断可变帧率
     def is_Vfr(self):
         # extract the video stream information

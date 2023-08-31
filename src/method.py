@@ -2,16 +2,23 @@ from PyQt5.QtCore import QObject
 
 
 class mlrt_setting(QObject):
-    def __init__(self, device, mlrt_numstream, trt_output, trt_force16, trt_graph, trt_cublas, trt_heuristic,
-                 cuda_gragh, half, gpu_id):
+    def __init__(self, device, cm_numstream, cm_gragh, tm_numstream,trt_output, trt_force16, trt_graph, trt_cublas, trt_heuristic,
+                 om_numstream,nm_numstream, half, gpu_id):
         self.device = device
-        self.mlrt_numstream = mlrt_numstream
-        self.mlrt_trt_output = trt_output
-        self.mlrt_trt_force16 = trt_force16
-        self.mlrt_trt_graph = trt_graph
-        self.mlrt_trt_cublas = trt_cublas
-        self.mlrt_trt_heuristic = trt_heuristic
-        self.mlrt_cuda_graph = cuda_gragh
+
+        self.cm_numstream = cm_numstream
+        self.cm_gragh = cm_gragh
+
+        self.tm_numstream = tm_numstream
+        self.tm_trt_output = trt_output
+        self.tm_trt_force16 = trt_force16
+        self.tm_trt_graph = trt_graph
+        self.tm_trt_cublas = trt_cublas
+        self.tm_trt_heuristic = trt_heuristic
+
+        self.om_numstream=om_numstream
+        self.nm_numstream=nm_numstream
+
         self.half = half
         self.gpu_id = gpu_id
 
@@ -20,25 +27,30 @@ class mlrt_setting(QObject):
         device_vpy.append('from vsmlrt import CUGAN,RealESRGAN,Waifu2x,RIFE,Backend\n')
         if self.device == 'CUDA':
             device_vpy.append('device_sr=Backend.ORT_CUDA()\n')
-            device_vpy.append('device_sr.num_streams=' + str(self.mlrt_numstream) + '\n')
-            device_vpy.append('device_sr.use_cuda_graph=' + str(self.mlrt_cuda_graph) + '\n')
+            device_vpy.append('device_sr.num_streams=' + str(self.cm_numstream) + '\n')
+            device_vpy.append('device_sr.use_cuda_graph=' + str(self.cm_gragh) + '\n')
 
         elif self.device == 'TRT':
             device_vpy.append('device_sr=Backend.TRT()\n')
-            device_vpy.append('device_sr.num_streams=' + str(self.mlrt_numstream) + '\n')
-            device_vpy.append('device_sr.use_cuda_graph=' + str(self.mlrt_trt_graph) + '\n')
-            if str(self.mlrt_trt_output)=='fp32':
+            device_vpy.append('device_sr.num_streams=' + str(self.tm_numstream) + '\n')
+            device_vpy.append('device_sr.use_cuda_graph=' + str(self.tm_trt_graph) + '\n')
+            if str(self.tm_trt_output)=='fp32':
                 device_vpy.append('device_sr.output_format=0\n')
-            elif str(self.mlrt_trt_output)=='fp16':
+            elif str(self.tm_trt_output)=='fp16':
                 device_vpy.append('device_sr.output_format=1\n')
             else:
                 device_vpy.append('device_sr.output_format=0\n')
-            device_vpy.append('device_sr.force_fp16=' + str(self.mlrt_trt_force16) + '\n')
-            device_vpy.append('device_sr.use_cublas=' + str(self.mlrt_trt_cublas) + '\n')
-            device_vpy.append('device_sr.heuristic=' + str(self.mlrt_trt_heuristic) + '\n')
+            device_vpy.append('device_sr.force_fp16=' + str(self.tm_trt_force16) + '\n')
+            device_vpy.append('device_sr.use_cublas=' + str(self.tm_trt_cublas) + '\n')
+            device_vpy.append('device_sr.heuristic=' + str(self.tm_trt_heuristic) + '\n')
+
+        elif self.device == 'OV':
+            device_vpy.append('device_sr=Backend.OV_GPU()\n')
+            device_vpy.append('device_sr.num_streams=' + str(self.om_numstream) + '\n')
 
         elif self.device == 'NCNN':
             device_vpy.append('device_sr=Backend.NCNN_VK()\n')
+            device_vpy.append('device_sr.num_streams=' + str(self.nm_numstream) + '\n')
 
         device_vpy.append('device_sr.device_id=' + str(self.gpu_id) + '\n')
         device_vpy.append('device_sr.fp16=' + str(self.half) + '\n')
@@ -49,25 +61,30 @@ class mlrt_setting(QObject):
         device_vpy.append('from vsmlrt import CUGAN,RealESRGAN,Waifu2x,RIFE,Backend\n')
         if self.device == 'CUDA':
             device_vpy.append('device_vfi=Backend.ORT_CUDA()\n')
-            device_vpy.append('device_vfi.num_streams=' + str(self.mlrt_numstream) + '\n')
-            device_vpy.append('device_vfi.use_cuda_graph=' + str(self.mlrt_cuda_graph) + '\n')
+            device_vpy.append('device_vfi.num_streams=' + str(self.cm_numstream) + '\n')
+            device_vpy.append('device_vfi.use_cuda_graph=' + str(self.cm_gragh) + '\n')
 
         elif self.device == 'TRT':
             device_vpy.append('device_vfi=Backend.TRT()\n')
-            device_vpy.append('device_vfi.num_streams=' + str(self.mlrt_numstream) + '\n')
-            device_vpy.append('device_vfi.use_cuda_graph=' + str(self.mlrt_trt_graph) + '\n')
-            if str(self.mlrt_trt_output) == 'fp32':
+            device_vpy.append('device_vfi.num_streams=' + str(self.tm_numstream) + '\n')
+            device_vpy.append('device_vfi.use_cuda_graph=' + str(self.tm_trt_graph) + '\n')
+            if str(self.tm_trt_output) == 'fp32':
                 device_vpy.append('device_vfi.output_format=0\n')
-            elif str(self.mlrt_trt_output) == 'fp16':
+            elif str(self.tm_trt_output) == 'fp16':
                 device_vpy.append('device_vfi.output_format=1\n')
             else:
                 device_vpy.append('device_vfi.output_format=0\n')
-            device_vpy.append('device_vfi.force_fp16=' + str(self.mlrt_trt_force16) + '\n')
-            device_vpy.append('device_vfi.use_cublas=' + str(self.mlrt_trt_cublas) + '\n')
-            device_vpy.append('device_vfi.heuristic=' + str(self.mlrt_trt_heuristic) + '\n')
+            device_vpy.append('device_vfi.force_fp16=' + str(self.tm_trt_force16) + '\n')
+            device_vpy.append('device_vfi.use_cublas=' + str(self.tm_trt_cublas) + '\n')
+            device_vpy.append('device_vfi.heuristic=' + str(self.tm_trt_heuristic) + '\n')
+
+        elif self.device == 'OV':
+            device_vpy.append('device_vfi=Backend.OV_GPU()\n')
+            device_vpy.append('device_vfi.num_streams=' + str(self.om_numstream) + '\n')
 
         elif self.device == 'NCNN':
             device_vpy.append('device_vfi=Backend.NCNN_VK()\n')
+            device_vpy.append('device_vfi.num_streams=' + str(self.nm_numstream) + '\n')
 
         device_vpy.append('device_vfi.device_id=' + str(self.gpu_id) + '\n')
         device_vpy.append('device_vfi.fp16=' + str(self.half) + '\n')
@@ -90,7 +107,7 @@ class cugan_ml_setting(QObject):
             'pro-no-denoise3x-up2x': [-1, 2, 2],
             'pro-no-denoise3x-up3x': [-1, 3, 2],
             'up2x-latest-conservative': [0, 2, 1],
-            'up2x-latest-denoise1x': [1, 2, ],
+            'up2x-latest-denoise1x': [1, 2, 1],
             'up2x-latest-denoise2x': [2, 2, 1],
             'up2x-latest-denoise3x': [3, 2, 1],
             'up2x-latest-no-denoise': [-1, 2, 1],
@@ -99,7 +116,7 @@ class cugan_ml_setting(QObject):
             'up3x-latest-no-denoise': [-1, 3, 1],
             'up4x-latest-conservative': [0, 4, 1],
             'up4x-latest-denoise3x': [3, 4, 1],
-            'up4x-latest-no-denoise': [-1, 4, 1],
+            'up4x-latest-no-denoise': [-1, 4, 1]
         }
         noise, scale, version = model_switch[self.model] \
             if self.model in model_switch else [0, 2, 2]
@@ -198,7 +215,7 @@ class waifu2x_ml_setting(QObject):
             'noise3_scale2x': [3, 2, 7],
             'noise3_scale4x': [3, 4, 7],
             'scale2x': [-1, 2, 7],
-            'scale4x': [-1, 4, 7],
+            'scale4x': [-1, 4, 7]
         }
         noise, scale, model = model_switch[self.model] \
             if self.model in model_switch else [1, 1, 1]
@@ -212,9 +229,9 @@ class waifu2x_ml_setting(QObject):
 
 
 class vsrpp_setting(QObject):
-    def __init__(self, model, interval, half, gpu_id):
+    def __init__(self, model, length, half, gpu_id):
         self.model = model
-        self.interval = interval
+        self.length = length
         self.half = half
         self.gpu_id = gpu_id
 
@@ -223,45 +240,22 @@ class vsrpp_setting(QObject):
             'reds4': 0,
             'vimeo90k_bi': 1,
             'vimeo90k_bd': 2,
-            'ntire_decompress_track1': 3,
-            'ntire_decompress_track2': 4,
-            'ntire_decompress_track3': 5
+            'ntire_vsr': 3,
+            'ntire_decompress_track1': 4,
+            'ntire_decompress_track2': 5,
+            'ntire_decompress_track3': 6,
+            'deblur_dvd': 7,
+            'deblur_gopro': 8,
+            'denoise': 9
         }
         model = model_switch[self.model] \
-            if self.model in model_switch else 5
+            if self.model in model_switch else 6
         vsrpp_vpy = []
-        vsrpp_vpy.append('from vsbasicvsrpp import BasicVSRPP\n')
-        vsrpp_vpy.append('res = BasicVSRPP(res,model=' + str(model) + ',interval=' + str(
-            self.interval) + ',device_index=' + str(self.gpu_id) + ',fp16=' + str(
-            self.half) + ')\n')
+        vsrpp_vpy.append('from vsbasicvsrpp import basicvsrpp\n')
+        vsrpp_vpy.append('res = basicvsrpp(res,model=' + str(model) + ',length=' + str(
+            self.length) + ',device_index=' + str(self.gpu_id) + ')\n')
 
         return vsrpp_vpy
-
-
-class vsr_setting(QObject):
-    def __init__(self, model, radius, half, gpu_id):
-        self.model = model
-        self.radius = radius
-        self.half = half
-        self.gpu_id = gpu_id
-
-    def sr_vpy(self):
-        model_switch = {
-            'REDS4': 0,
-            'Vimeo90K_BDx4': 1,
-            'Vimeo90K_BIx4': 2,
-        }
-        model = model_switch[self.model] \
-            if self.model in model_switch else 5
-
-        vsr_vpy = []
-        vsr_vpy.append('from vsbasicvsr import BasicVSR\n')
-        vsr_vpy.append('res = BasicVSR(res,model=' + str(model) + ',radius=' + str(
-            self.radius) + ',device_index=' + str(self.gpu_id) + ',fp16=' + str(
-            self.half) + ')\n')
-
-        return vsr_vpy
-
 
 class swinir_setting(QObject):
     def __init__(self, model, tile, half, gpu_id):
@@ -275,18 +269,16 @@ class swinir_setting(QObject):
             'SwinIR-S_x2': 0,
             'SwinIR-S_x3': 1,
             'SwinIR-S_x4': 2,
-            'SwinIR_Small_v1': 4,
             'SwinIR-L_x4_GAN': 3,
+            '2x_Anime_SwinIR_v1': 4
         }
         model = model_switch[self.model] \
             if self.model in model_switch else 0
         vpy_ = []
         vpy_.append('from vsswinir import swinir\n')
-        if self.half == True:
-            vpy_.append('res = core.resize.Bicubic(clip=res,format=vs.RGBH)\n')
 
         vpy_.append('res = swinir(res,model=' + str(model) + ',tile_w=' + str(
-            self.tile) + ', num_streams=2' + ', cuda_graphs=True' + ',device_index=' + str(self.gpu_id) + ')\n')
+            self.tile) + ', num_streams=1' + ',device_index=' + str(self.gpu_id) + ')\n')
         return vpy_
 
 
@@ -303,44 +295,39 @@ class esrgan_setting(QObject):
             'x2plus': 1,
             'x4plus': 2,
             'x4plus_anime_6B': 3,
-            'animevideov3': 4,
+            'animevideov3': 4
         }
         model = model_switch[self.model] \
             if self.model in model_switch else 0
         vpy_ = []
         vpy_.append('from vsrealesrgan import RealESRGAN\n')
-        if self.half == True:
-            vpy_.append('res = core.resize.Bicubic(clip=res,format=vs.RGBH)\n')
 
-        vpy_.append('res = RealESRGAN(res,model=' + str(model) + ',num_streams=2' + ',tile_w=' + str(
-            self.tile) + ',cuda_graphs=True'
-                    + ',device_index=' + str(self.gpu_id) + ')\n')
+        vpy_.append('res = RealESRGAN(res,model=' + str(model) + ',num_streams=1' + ',tile_w=' + str(
+            self.tile) + ',device_index=' + str(self.gpu_id) + ')\n')
         return vpy_
 
 
-class animesr_setting(QObject):
-    def __init__(self, model, half, gpu_id):
+class codeformer_setting(QObject):
+    def __init__(self, model, scale, weight, ocf,gpu_id):
         self.model = model
-        self.half = half
+        self.scale = scale
+        self.weight = weight
+        self.ocf = ocf
         self.gpu_id = gpu_id
 
     def sr_vpy(self):
         model_switch = {
-            'v1-PaperModel': 0,
-            'v2': 1,
+            'retinaface_resnet50': 0,
+            'dlib': 1
         }
         model = model_switch[self.model] \
             if self.model in model_switch else 0
-
         vpy_ = []
-        vpy_.append('from vsanimesr import animesr\n')
-        if self.half == True:
-            vpy_.append('res = core.resize.Bicubic(clip=res,format=vs.RGBH)\n')
+        vpy_.append('from vscodeformer import codeformer\n')
 
-        vpy_.append('res = animesr(res,model=' + str(model) + ',cuda_graphs=True' + ',device_index=' + str(
-            self.gpu_id) + ')\n')
+        vpy_.append('res = codeformer(res,detector=' + str(model) + ',num_streams=1' + ',upscale=' + str(
+            self.scale) + ',weight=' + str(self.weight)+ ',only_center_face=' + str(self.ocf)+ ',device_index=' + str(self.gpu_id) + ')\n')
         return vpy_
-
 
 class rife_ml_setting(QObject):
     def __init__(self, mlrt_set, model, cscale, scale, change, debef, deaft):
@@ -365,7 +352,7 @@ class rife_ml_setting(QObject):
             'rife4.3_ensemble': [43, True],
             'rife4.4_ensemble': [44, True],
             'rife4.5_ensemble': [45, True],
-            'rife4.6_ensemble': [46, True],
+            'rife4.6_ensemble': [46, True]
         }
         model, ensemble = model_switch[self.model] \
             if self.model in model_switch else [46, False]
@@ -448,44 +435,52 @@ class rifenc_setting(QObject):
         }
         model = model_switch[self.model] \
             if self.model in model_switch else 21
+        vpy_=[]
+        vpy_.append('res = core.misc.SCDetect(res, threshold=0.3)\n')
         if self.usecs == True:
-            return 'res=core.rife.RIFE(res,model="' + str(model) + '",factor_num=' + str(
+            vpy_.append('res=core.rife.RIFE(res,model="' + str(model) + '",factor_num=' + str(
                 self.cscale) + ',skip=' + str(self.skip) + ',uhd=' + str(
                 self.uhd) + ',tta=' + str(
                 self.tta) + ',gpu_id='+str(
                 self.gpu_id)+',skip_threshold=' + str(
-                self.static) + ',sc=True)\n'
+                self.static) + ',sc=True)\n')
 
         else:
-            return 'res=core.rife.RIFE(res,model="' + str(model) + '",skip=' + str(self.skip) + ',uhd=' + str(
+            vpy_.append('res=core.rife.RIFE(res,model="' + str(model) + '",skip=' + str(self.skip) + ',uhd=' + str(
                 self.uhd) + ',tta=' + str(
                 self.tta) + ',gpu_id='+str(
                 self.gpu_id)+',skip_threshold=' + str(
-                self.static) + ',fps_num='+str(self.clips)+',fps_den=1,sc=True)\n'
+                self.static) + ',fps_num='+str(self.clips)+',fps_den=1,sc=True)\n')
+
+        return vpy_
 
 
 class every_set_object(QObject):
-    def __init__(self, videos, outfolder,
-                 use_sr, sr_gpu, sr_gpu_id, use_half_sr, sr_method, sr_set, use_vfi, vfi_gpu, vfi_gpu_id, use_half_vfi,
-                 vfi_method,
-                 vfi_set, use_qtgmc, use_deband, add_noise, is_rs_bef, is_rs_aft, rs_bef_w, rs_bef_h, rs_aft_w,
-                 rs_aft_h,
-                 encoder, preset, vformat, use_crf, use_bit, crf, bit, use_encode_audio,
-                 use_source_audio, audio_format, customization_encode, use_customization_encode,
-                 mlrt_numstream, trt_output, trt_force16, trt_graph, trt_cublas, trt_heuristic, cuda_gragh, qtgmcFps,
-                 shut_down):
+    def __init__(self, gpu,videos,video_select, audios, subs, outfolder,
+                 use_sr, sr_gpu_id, use_half_sr, sr_method, sr_set,
+                 use_vfi, vfi_gpu_id, use_half_vfi,vfi_method,vfi_set,
+                 use_qtgmc, use_deband, use_taa_bef,use_cas_aft,use_taa_aft,add_noise,
+                 is_rs_bef, is_rs_aft, rs_bef_w, rs_bef_h, rs_aft_w,rs_aft_h,
+                 encoder, preset, vformat, use_crf, use_bit, crf, bit,
+                 use_encode_audio, use_source_audio, use_input_audio,audio_format,
+                 use_source_sub, attach_input_sub, embed_input_sub,customization_encode, use_customization_encode,
+                 cm_numstream, cm_gragh,tm_numstream,  trt_output, trt_force16, trt_graph, trt_cublas, trt_heuristic, om_numstream,nm_numstream ,
+                 qtgmcFps, priority):
+        self.gpu=gpu
         self.videos = videos
+        self.video_select = video_select
+        self.audios = audios
+        self.subs = subs
+
         self.outfolder = outfolder
 
         self.use_sr = use_sr
-        self.sr_gpu = sr_gpu
         self.sr_gpu_id = sr_gpu_id
         self.use_half_sr = use_half_sr
         self.sr_method = sr_method
         self.sr_set = sr_set
 
         self.use_vfi = use_vfi
-        self.vfi_gpu = vfi_gpu
         self.vfi_gpu_id = vfi_gpu_id
         self.use_half_vfi = use_half_vfi
         self.vfi_method = vfi_method
@@ -493,6 +488,10 @@ class every_set_object(QObject):
 
         self.use_qtgmc = use_qtgmc
         self.use_deband = use_deband
+        self.use_taa_bef = use_taa_bef
+
+        self.use_cas_aft=use_cas_aft
+        self.use_taa_aft=use_taa_aft
         self.add_noise = add_noise
 
         self.is_rs_bef = is_rs_bef
@@ -509,19 +508,31 @@ class every_set_object(QObject):
         self.use_bit = use_bit
         self.crf = crf
         self.bit = bit
+
         self.use_encode_audio = use_encode_audio
         self.use_source_audio = use_source_audio
         self.audio_format = audio_format
+        self.use_input_audio=use_input_audio
+
+        self.use_source_sub=use_source_sub
+        self.attach_input_sub=attach_input_sub
+        self.embed_input_sub=embed_input_sub
+
         self.customization_encode = customization_encode
         self.use_customization_encode = use_customization_encode
 
-        self.mlrt_numstream = mlrt_numstream
+        self.cm_numstream=cm_numstream
+        self.cm_gragh=cm_gragh
+
+        self.tm_numstream = tm_numstream
         self.mlrt_trt_output = trt_output
         self.mlrt_trt_force16 = trt_force16
         self.mlrt_trt_graph = trt_graph
         self.mlrt_trt_cublas = trt_cublas
         self.mlrt_trt_heuristic = trt_heuristic
-        self.mlrt_cuda_graph = cuda_gragh
+
+        self.om_numstream=om_numstream
+        self.nm_numstream=nm_numstream
 
         self.qtgmcFps = qtgmcFps
-        self.shut_down = shut_down
+        self.priority = priority
