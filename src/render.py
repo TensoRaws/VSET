@@ -470,7 +470,7 @@ class autorun(QThread):
                                           +' '+'预计剩余时间：'+str(
                                             int(((video_render_frames - frame) / fps) / 3600)) + 'h ' + str(
                                             int((((video_render_frames - frame) / fps) % 3600) / 60)) + 'min ' + str(
-                                            int(((video_render_frames - frame) / fps) % 60)) + 'sce'+' '+
+                                            int(((video_render_frames - frame) / fps) % 60)) + 'sec'+' '+
                                         '已渲染的时间长度: '+ time +' '+
                                         '比特率: '+bitrate)
                                 # else:
