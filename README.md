@@ -13,7 +13,7 @@
 
 &#x2705; **QQ交流群：711185279**
 
-发电地址:[**爱发电**](https://afdian.net/a/NangInShell)  
+发电地址:[**爱发电**](https://afdian.tv/a/NangInShell)  
 
 ## 简介
 VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windows环境下使用**
@@ -62,7 +62,7 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 
 
 ## 相关链接
-[爱发电](https://afdian.net/a/NangInShell)  
+[爱发电](https://afdian.tv/a/NangInShell)  
 
 [BiliBili: NangInShell](https://space.bilibili.com/335908558)   
 
