@@ -1,4 +1,5 @@
-import { spawn,  exec as execCallback} from 'child_process'
+import { spawn,  exec as execCallback } from 'child_process'
+import { addProcess, removeProcess } from './childProcessManager'
 import path from 'path'
 import { promisify } from 'util';
 import iconv from 'iconv-lite';
@@ -348,6 +349,7 @@ export async function RunCommand(event, config_json): Promise<void> {
       };
       await new Promise<void>((resolve, reject) => {
       const vspipeInfoProcess = spawn(vipipePath, ['--info', vpyPath]);
+      addProcess(vspipeInfoProcess);
 
       let vspipeOut = ''; // 用于保存 stdout 内容
       let stderrOut = ''; // 用于保存 stderr 内容
@@ -355,16 +357,17 @@ export async function RunCommand(event, config_json): Promise<void> {
       vspipeInfoProcess.stdout.on('data', (data: Buffer) => {
         const str = iconv.decode(data, 'gbk');;
         vspipeOut += str;
-        event.sender.send('ffmpeg-output', `[vspipe stdout] ${str}`);
+        event.sender.send('ffmpeg-output', `${str}`);
       });
 
       vspipeInfoProcess.stderr.on('data', (data: Buffer) => {
         const str = iconv.decode(data, 'gbk');;
         stderrOut += str;
-        event.sender.send('ffmpeg-output', `[vspipe stderr] ${str}`);
+        event.sender.send('ffmpeg-output', `${str}`);
       });
 
       vspipeInfoProcess.on('close', (code) => {
+          removeProcess(vspipeInfoProcess);
         event.sender.send('ffmpeg-output', `vspipe info 执行完毕，退出码: ${code}\n`);
 
          info = {
@@ -396,7 +399,7 @@ export async function RunCommand(event, config_json): Promise<void> {
       // ========== 5. 渲染并监听输出 ==========
       await new Promise<void>((resolve, reject) => {
         const renderProcess = spawn(cmd, { shell: true });
-
+        addProcess(renderProcess);
         renderProcess.stdout.on('data', (data) => {
           event.sender.send('ffmpeg-output', data.toString());
         });
@@ -430,6 +433,7 @@ export async function RunCommand(event, config_json): Promise<void> {
         });
 
         renderProcess.on('close', () => {
+          removeProcess(renderProcess);
           event.sender.send('ffmpeg-output', 'finish\n');
         
           resolve();

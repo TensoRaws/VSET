@@ -12,6 +12,7 @@ export const useLogStore = defineStore('log', {
     // 删除旧的 Progress 行
     this.logs = this.logs.replace(/\[Progress_vspipe_ffmpeg\].*\n?$/, '')
   }
+
   this.logs += cleanMessage
     },
     clearLog() {

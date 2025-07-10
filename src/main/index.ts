@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { RunCommand } from './RunCommand'
+import { killAllProcesses } from './childProcessManager'
 
 import ipc from './ipc'
 
@@ -34,7 +35,10 @@ function createWindow(): BrowserWindow {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
-
+mainWindow.on('close', () => {
+    console.log('⚠ mainWindow is closing, calling app.quit()');
+    app.quit(); // 这将触发 before-quit，进而 killAllProcesses
+  });
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -92,6 +96,10 @@ app.whenReady().then(() => {
   })
 })
 
+app.on('before-quit', () => {
+  console.log('⚠ before-quit triggered');
+  killAllProcesses();
+});
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
