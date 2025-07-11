@@ -97,7 +97,6 @@ app.whenReady().then(() => {
 })
 
 app.on('before-quit', () => {
-  console.log('⚠ before-quit triggered');
   killAllProcesses();
 });
 app.on('window-all-closed', () => {

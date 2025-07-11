@@ -1,5 +1,5 @@
 import { spawn,  exec as execCallback } from 'child_process'
-import { addProcess, removeProcess } from './childProcessManager'
+import { addProcess, removeProcess  } from './childProcessManager'
 import path from 'path'
 import { promisify } from 'util';
 import iconv from 'iconv-lite';
@@ -8,42 +8,49 @@ import iconv from 'iconv-lite';
 const fs = require('fs');
 const exec = promisify(execCallback);
 
-function generate_cmd(config_json,vipipePath,vpyPath,ffmpegPath,video){
-  let cmd = '"'+vipipePath+'"'+' "-c" "y4m" '+'"'+vpyPath+'" "-" | '+'"'+ffmpegPath+'" "-hide_banner" "-y" "-i" "pipe:" "-i" "'+
-  video+'"'+' "-map" "0:v:0" "-map" "1:a" "-c:v" '+'"'+config_json.encoderValue+'" '
+function generate_cmd(config_json,vipipePath,vpyPath,ffmpegPath,video,hasAudio){
+  let cmd = '"' + vipipePath + '"' + ' "-c" "y4m" "' + vpyPath + '" "-" | "' +
+    ffmpegPath + '" "-hide_banner" "-y" "-i" "pipe:" "-i" "' + video + '"' +
+    ' "-map" "0:v:0" ';
+  if (hasAudio) {
+    cmd += '"-map" "1:a" ';
+  }
 
-if(config_json.encoderValue=='libx265'){
-cmd +='"-pix_fmt" "yuv420p10le" "-profile:v" "main10" "-vtag" "hvc1" '
-}
-if(config_json.encoderValue=='libx264'){
-cmd +='"-pix_fmt" "yuv420p" "-profile:v" "main" '
-}
-if(config_json.encoderValue=='libaom-av1'){
-cmd +='"-pix_fmt" "yuv420p10le" '
-}
-if(config_json.encoderValue=='h264_nvenc'){
-cmd +='"-pix_fmt" "yuv420p" '
-}
-if(config_json.encoderValue=='hevc_nvenc'){
-cmd +='"-pix_fmt" "p010le" "-profile:v" "main10" "-vtag" "hvc1" '
-}
-if(config_json.encoderValue=='av1_nvenc'){
-cmd +='"-pix_fmt" "p010le" '
-}
+  cmd += '"-c:v" "' + config_json.encoderValue + '" ';
 
-cmd+='-preset '+'"'+config_json.qualityValue+'" '
-if(config_json.isUseCrf==true){
-cmd+='"-crf" '+'"'+config_json.crfValue+'" '
-}
-else{
-cmd+='"-b:v" '+'"'+config_json.bitValue+'M" '
-}
+  if(config_json.encoderValue=='libx265'){
+  cmd +='"-pix_fmt" "yuv420p10le" "-profile:v" "main10" "-vtag" "hvc1" '
+  }
+  if(config_json.encoderValue=='libx264'){
+  cmd +='"-pix_fmt" "yuv420p" "-profile:v" "main" '
+  }
+  if(config_json.encoderValue=='libaom-av1'){
+  cmd +='"-pix_fmt" "yuv420p10le" '
+  }
+  if(config_json.encoderValue=='h264_nvenc'){
+  cmd +='"-pix_fmt" "yuv420p" '
+  }
+  if(config_json.encoderValue=='hevc_nvenc'){
+  cmd +='"-pix_fmt" "p010le" "-profile:v" "main10" "-vtag" "hvc1" '
+  }
+  if(config_json.encoderValue=='av1_nvenc'){
+  cmd +='"-pix_fmt" "p010le" '
+  }
 
-if(config_json.isSaveAudio==true){
-cmd+='"-c:a" "copy" '
-}
-else{
-cmd+='"-c:a" '+'"'+config_json.AudioContainer.toLowerCase()+'" '
+  cmd+='-preset '+'"'+config_json.qualityValue+'" '
+  if(config_json.isUseCrf==true){
+  cmd+='"-crf" '+'"'+config_json.crfValue+'" '
+  }
+  else{
+  cmd+='"-b:v" '+'"'+config_json.bitValue+'M" '
+  }
+  if(hasAudio==true){
+  if(config_json.isSaveAudio==true){
+  cmd+='"-c:a" "copy" '
+  }
+  else{
+  cmd+='"-c:a" '+'"'+config_json.AudioContainer.toLowerCase()+'" '
+  }
 }
 
 
@@ -315,22 +322,26 @@ export async function RunCommand(event, config_json): Promise<void> {
       const vpyPath = path.join(exeDir, "vpyFiles", `${baseName}.vpy`);
 
       // ========== 1. 获取输入视频信息 ==========
-      const ffprobeCommand = `"${ffprobePath}" -v error -select_streams v:0 -show_entries stream=width,height,avg_frame_rate,nb_frames -of json "${video}"`;
+      const ffprobeCommand = `"${ffprobePath}" -v error -show_streams -of json "${video}"`;
       const { stdout: probeOut } = await exec(ffprobeCommand);
       const metadata = JSON.parse(probeOut);
-      const videoStream = metadata.streams?.[0];
+
+      const allStreams = metadata.streams || [];
+      const videoStream = allStreams.find((s: any) => s.codec_type === 'video');
+      const hasAudio = allStreams.some((s: any) => s.codec_type === 'audio');
 
       if (videoStream) {
         const frameCount = videoStream.nb_frames || '未知';
         const frameRate = videoStream.avg_frame_rate || '未知';
         const resolution = `${videoStream.width}x${videoStream.height}`;
+        const audioText = hasAudio ? '是' : '否';
 
         event.sender.send('ffmpeg-output', `正在处理输入视频 ${video} 的信息:\n`);
         event.sender.send('ffmpeg-output', `帧数(输入): ${frameCount}\n`);
         event.sender.send('ffmpeg-output', `帧率(输入): ${frameRate}\n`);
         event.sender.send('ffmpeg-output', `分辨率(输入): ${resolution}\n`);
+        event.sender.send('ffmpeg-output', `是否含有音频: ${audioText}\n`);
       }
-
       // ========== 2. 生成 vpy 文件 ==========
       const vpyFile = generate_vpy(config_json, video);
       fs.writeFileSync(vpyPath, vpyFile);
@@ -368,7 +379,7 @@ export async function RunCommand(event, config_json): Promise<void> {
 
       vspipeInfoProcess.on('close', (code) => {
           removeProcess(vspipeInfoProcess);
-        event.sender.send('ffmpeg-output', `vspipe info 执行完毕，退出码: ${code}\n`);
+        event.sender.send('ffmpeg-output', `vspipe info 执行完毕，退出码: ${code}\n`);///////
 
          info = {
           width: vspipeOut.match(/Width:\s*(\d+)/)?.[1] || '未知',
@@ -382,7 +393,6 @@ export async function RunCommand(event, config_json): Promise<void> {
         event.sender.send('ffmpeg-output', `Height: ${info.height}\n`);
         event.sender.send('ffmpeg-output', `Frames: ${info.frames}\n`);
         event.sender.send('ffmpeg-output', `FPS: ${info.fps}\n`);
-
         resolve();
       });
 
@@ -393,7 +403,7 @@ export async function RunCommand(event, config_json): Promise<void> {
     });
 
       // ========== 4. 构建渲染命令 ==========
-      const cmd = generate_cmd(config_json, vipipePath, vpyPath, ffmpegPath, video);
+      const cmd = generate_cmd(config_json, vipipePath, vpyPath, ffmpegPath, video, hasAudio);
       event.sender.send('ffmpeg-output', `Executing command: ${cmd}\n`);
 
       // ========== 5. 渲染并监听输出 ==========
