@@ -1,7 +1,8 @@
 # VSET --Video SuperResolution Encode Tool
 基于*Vapoursynth*的图形化视频批量压制处理工具。
 
-最新开源稳定版本为4.0.0版本，欢迎大家使用、反馈。（不要问为什么这么久不更新，问就是在零号大坝跑刀搬水泥。）
+最新开源稳定版本为4.0.0版本，欢迎大家使用、反馈。有什么建议可以直接发issues，能解决的问题会尽量解决。
+（不要问为什么这么久不更新，问就是在零号大坝跑刀搬水泥。）
 软件图标还没设计好，先拿芙芙用着。
 
 <img src="https://github.com/user-attachments/assets/f8718b1a-acd4-4804-ae11-965d4240b222" width="300">
