@@ -7,6 +7,9 @@
       <el-button type="danger" @click="clearLogs">
         清空日志
       </el-button>
+      <el-button type="danger" @click="stopProcesses">
+        结束进程
+      </el-button>
     </div>
 
     <div class="log-container">
@@ -44,9 +47,16 @@ const logs = computed(() => logStore.logs)
 const logInstRef = ref<any>(null)
 const clearLogs = () => logStore.clearLog()
 
+
 // 绑定 app 状态 store
 const appStore = useAppStore()
 const isRunning = computed(() => appStore.isRunning)
+
+const stopProcesses = () => {
+  window.electron.ipcRenderer.send('stop-all-processes')
+  message.warning('已请求终止所有子进程')
+  appStore.setRunning(false)
+}
 
 // 引入其他 store 数据
 const InputConfigStore = useInputconfigStore()
