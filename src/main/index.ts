@@ -3,7 +3,6 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { RunCommand } from './RunCommand'
 import { killAllProcesses } from './childProcessManager'
-
 import ipc from './ipc'
 
 const appPath = app.getAppPath()
@@ -37,7 +36,7 @@ function createWindow(): BrowserWindow {
   })
 mainWindow.on('close', () => {
     console.log('⚠ mainWindow is closing, calling app.quit()');
-    app.quit(); // 这将触发 before-quit，进而 killAllProcesses
+    killAllProcesses();
   });
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
@@ -49,6 +48,11 @@ mainWindow.on('close', () => {
   return mainWindow
 }
 
+app.on('before-quit', () => {
+  console.log('⚠ 应用正在退出，终止所有子进程...');
+  killAllProcesses();
+});
+
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
 
@@ -57,6 +61,11 @@ app.whenReady().then(() => {
   })
 
   ipcMain.on('execute-command', RunCommand)
+
+  ipcMain.on('stop-all-processes', () => {
+  console.log('🛑 渲染进程请求终止所有子进程')
+  killAllProcesses()
+})
   
   ipcMain.on('generate-json', (_, data) => {
     const filePath = path.join(appPath, 'json', 'setting.json')
@@ -96,9 +105,6 @@ app.whenReady().then(() => {
   })
 })
 
-app.on('before-quit', () => {
-  killAllProcesses();
-});
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
