@@ -9,9 +9,10 @@ const appPath = app.getAppPath()
 const path = require('path')
 const fs = require('fs')
 
-// ✅ 修改函数签名，返回 BrowserWindow
+let mainWindow: BrowserWindow | null = null
+
 function createWindow(): BrowserWindow {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     minWidth: 900,
@@ -27,32 +28,60 @@ function createWindow(): BrowserWindow {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
-mainWindow.on('close', () => {
-    console.log('⚠ mainWindow is closing, calling app.quit()');
-    killAllProcesses();
-  });
+
+  // ✅ 点击“关闭按钮 X”时：优雅终止进程再退出
+  mainWindow.on('close', async (e) => {
+    if ((app as any).isQuitting) return
+
+    e.preventDefault()
+    ;(app as any).isQuitting = true
+
+    console.log('🛑 窗口关闭中，正在终止子进程...')
+    try {
+      await killAllProcesses()
+      console.log('✅ 所有子进程已终止，准备退出应用')
+    } catch (err) {
+      console.error('❌ 终止子进程时出错：', err)
+    }
+
+    // 手动退出
+    app.quit()
+  })
+
+  // ✅ 加载主页面
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  // ✅ 添加 return mainWindow
   return mainWindow
 }
 
-app.on('before-quit', () => {
-  console.log('⚠ 应用正在退出，终止所有子进程...');
-  killAllProcesses();
-});
+// ✅ 当用户点击任务栏关闭或调用 app.quit() 时，先清理子进程
+app.on('before-quit', async (event) => {
+  if ((app as any).isQuitting) return
+  event.preventDefault()
+  ;(app as any).isQuitting = true
 
+  try {
+    await killAllProcesses()
+  } catch (err) {
+    console.error('❌ killAllProcesses 失败：', err)
+  }
+
+  // 退出应用（再次触发 before-quit 也无害）
+  app.quit()
+})
+
+// ✅ 初始化窗口和主进程监听
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
 
@@ -63,10 +92,9 @@ app.whenReady().then(() => {
   ipcMain.on('execute-command', RunCommand)
 
   ipcMain.on('stop-all-processes', () => {
-  console.log('🛑 渲染进程请求终止所有子进程')
-  killAllProcesses()
-})
-  
+    killAllProcesses()
+  })
+
   ipcMain.on('generate-json', (_, data) => {
     const filePath = path.join(appPath, 'json', 'setting.json')
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
@@ -93,11 +121,10 @@ app.whenReady().then(() => {
     console.log('File path:', filePath)
   })
 
-  // ✅ 正确地获取 mainWindow 并传给 ipc
   const win = createWindow()
   ipc(win)
 
-  app.on('activate', function () {
+  app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       const newWin = createWindow()
       ipc(newWin)
@@ -105,6 +132,7 @@ app.whenReady().then(() => {
   })
 })
 
+// ✅ 所有窗口关闭时退出（除 macOS）
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
