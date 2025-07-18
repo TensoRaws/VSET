@@ -20,7 +20,7 @@ function createWindow(): BrowserWindow {
     show: false,
     autoHideMenuBar: true,
     icon: path.join(__dirname, '../../resources/fufu.png'),
-    title: 'VSET 4.0.0',
+    title: 'VSET 4.0.1',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -42,11 +42,8 @@ function createWindow(): BrowserWindow {
 
     e.preventDefault()
     ;(app as any).isQuitting = true
-
-    console.log('🛑 窗口关闭中，正在终止子进程...')
     try {
       await killAllProcesses()
-      console.log('✅ 所有子进程已终止，准备退出应用')
     } catch (err) {
       console.error('❌ 终止子进程时出错：', err)
     }
