@@ -1,0 +1,63 @@
+{
+  "name": "vset",
+  "productName": "VSET",
+  "version": "4.2.2",
+  "description": "VSET",
+  "author": "NangInShell",
+  "main": "./out/main/index.js",
+
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "scripts": {
+    "dev": "electron-vite dev",
+    "lint": "eslint . --fix",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "pnpm run typecheck:node && pnpm run typecheck:web",
+    "start": "electron-vite preview",
+    "build": "pnpm run typecheck && electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "build:win": "pnpm run build && electron-builder --win --dir"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "electron-updater": "^6.6.2",
+    "element-plus": "^2.10.4",
+    "iconv-lite": "^0.6.3",
+    "naive-ui": "^2.42.0",
+    "pinia": "^3.0.3",
+    "pinia-plugin-persistedstate": "^4.4.1",
+    "ps-tree": "^1.2.0",
+    "systeminformation": "^5.27.7",
+    "tree-kill": "^1.2.2",
+    "vicons": "^0.0.1",
+    "vue": "^3.5.17",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.17.0",
+    "@electron-toolkit/preload": "^3.0.2",
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@electron-toolkit/utils": "^4.0.0",
+    "@types/node": "^24.0.15",
+    "@vicons/ionicons5": "^0.13.0",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.6.0",
+    "electron": "^27.3.11",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "^4.0.0",
+    "eslint": "^9.31.0",
+    "eslint-plugin-vue": "^10.3.0",
+    "typescript": "^5.8.3",
+    "vite": "^5.4.10",
+    "vue-tsc": "^2.1.10"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron"
+    ]
+  }
+}
