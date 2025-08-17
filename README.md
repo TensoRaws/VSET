@@ -1,12 +1,6 @@
 # VSET --Video SuperResolution Encode Tool
 基于*Vapoursynth*的图形化视频批量压制处理工具。
 
-最新开源稳定版本为4.0.0版本，欢迎大家使用、反馈。有什么建议可以直接发issues，能解决的问题会尽量解决。
-（不要问为什么这么久不更新，问就是在零号大坝跑刀搬水泥。）
-软件图标还没设计好，先拿芙芙用着。
-
-<img src="https://github.com/user-attachments/assets/f8718b1a-acd4-4804-ae11-965d4240b222" width="300">
-
 ## [💬 感谢发电名单](https://github.com/NangInShell/VSET/blob/main/Thanks.md)
 感谢发电大佬们对本项目的支持以及所有测试用户的测试支持。以上链接包含了发电者名单和项目支出详情。
 
@@ -17,7 +11,6 @@
 ## 简介
 VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windows环境下使用**
 
-#### 特性  
 &#x2705; **UI**与交互逻辑优化   
 &#x2705; **动漫**视频超分辨率  
 
@@ -35,8 +28,6 @@ VSET是一款可以提升视频分辨率(Super-Resolution)的工具，**在Windo
 方法一：[百度网盘](https://pan.baidu.com/s/1RtnSbkfH6-KIOqVJbbv5Uw?pwd=nang)
 
 整合包下载解压后即可使用
-![75d5177e4d4772f8a83207800f74d44b](https://github.com/user-attachments/assets/b444ca0b-e594-4b68-9e1d-c5958fd89f2f)  
-![091d4fd37c3502cbee94ca6fe60c7347](https://github.com/user-attachments/assets/978ae51d-25ad-416f-9a62-b51f590daf89)  
 
 方法二：steam在线更新  
 敬请期待，如果可以争取到steam免费发放的话，开发者本人会把软件免费发放。

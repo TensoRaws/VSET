@@ -17,6 +17,10 @@ asarUnpack:
   - resources/*.svg
   - resources/*.ico
 
+extraResources:
+  - from: resources/VSET-core
+    to: VSET-core
+
 win:
   executableName: VSET
 

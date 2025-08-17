@@ -1,6 +1,6 @@
 import type { ChildProcess } from 'node:child_process'
 import kill from 'tree-kill'
-import { requestStop } from './RunCommand'
+import { requestStop } from './runCommand'
 
 const childProcesses: ChildProcess[] = []
 
