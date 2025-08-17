@@ -1,0 +1,37 @@
+import path from 'node:path'
+import { app } from 'electron'
+
+/**
+ * 获取 VSET-core 的路径
+ * dev模式下，存放在项目根目录下的 resources
+ * 在 electron-builder 中配置 extraResources，ASAR 打包时将它放入 app.asar 同级目录
+ * @returns {string} VSET-core 的路径
+ */
+export function getCorePath(): string {
+  if (process.env.NODE_ENV === 'development') {
+    return path.join(app.getAppPath(), 'resources', 'VSET-core')
+  }
+  else {
+    return path.join(app.getAppPath(), '..', 'VSET-core')
+  }
+}
+
+/**
+ * 获取 VSET-core 中的可执行文件路径
+ * @returns {object} 包含 vspipe、ffmpeg 和 ffprobe 的路径
+ */
+export function getExecPath(): { vspipe: string, ffmpeg: string, ffprobe: string } {
+  return {
+    vspipe: path.join(getCorePath(), 'VSPipe.exe'),
+    ffmpeg: path.join(getCorePath(), 'ffmpeg.exe'),
+    ffprobe: path.join(getCorePath(), 'ffprobe.exe'),
+  }
+}
+
+/**
+ * 获取 VSET-core 中的额外超分模型文件夹路径
+ * @returns {string} 额外超分模型文件夹路径
+ */
+export function getExtraSRModelPath(): string {
+  return path.join(getCorePath(), 'vs-coreplugins', 'models', 'VSET_ExtraSrModel')
+}

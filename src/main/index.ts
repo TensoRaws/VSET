@@ -1,5 +1,5 @@
 import { writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import path from 'node:path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, dialog, ipcMain, nativeImage, shell } from 'electron'
 import appIcon from '../../resources/icon.png?asset'
@@ -7,12 +7,8 @@ import { killAllProcesses } from './childProcessManager'
 import ipc from './ipc'
 import { preview, preview_frame, RunCommand } from './RunCommand'
 
-const appPath = app.getAppPath()
-
-let mainWindow: BrowserWindow | null = null
-
 function createWindow(): BrowserWindow {
-  mainWindow = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     width: 900,
     height: 700,
     minWidth: 900,
@@ -22,7 +18,7 @@ function createWindow(): BrowserWindow {
     icon: nativeImage.createFromPath(appIcon),
     title: 'VSET 4.2.2',
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
       sandbox: false,
     },
   })
@@ -57,9 +53,10 @@ function createWindow(): BrowserWindow {
   // ✅ 加载主页面
   if (is.dev && process.env.ELECTRON_RENDERER_URL) {
     mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
+    mainWindow.webContents.openDevTools()
   }
   else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
   }
 
   return mainWindow
@@ -82,7 +79,10 @@ app.on('before-quit', async (event) => {
   // 退出应用（再次触发 before-quit 也无害）
   app.quit()
 })
+
+// disable hardware acceleration for Compatibility for windows
 app.disableHardwareAcceleration()
+
 // ✅ 初始化窗口和主进程监听
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
@@ -101,7 +101,7 @@ app.whenReady().then(() => {
   })
 
   ipcMain.on('generate-json', (_, data) => {
-    const filePath = join(appPath, 'json', 'setting.json')
+    const filePath = path.join(data.outputfolder, 'setting.json')
     writeFileSync(filePath, JSON.stringify(data, null, 2))
   })
 

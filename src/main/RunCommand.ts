@@ -5,6 +5,7 @@ import path from 'node:path'
 import { promisify } from 'node:util'
 import iconv from 'iconv-lite'
 import { addProcess, removeProcess } from './childProcessManager'
+import { getExecPath, getExtraSRModelPath } from './getCorePath'
 
 const exec = promisify(execCallback)
 
@@ -388,9 +389,9 @@ function generate_vpy(config_json, videoName): string {
       const model_switch = {
         AniSD_DC_SPAN_x2: 'AniSD_DC_SPAN_x2',
       }
-      const exeDir = path.dirname(process.execPath)
 
-      const model = `${path.join(exeDir, 'package', 'vs-coreplugins', 'models', 'VSET_ExtraSrModel')}/${model_switch[config_json.SR_ExtraModelValue] || 'AniSD_DC_SPAN_x2'}`
+      const model = `${getExtraSRModelPath()}/${model_switch[config_json.SR_ExtraModelValue] || 'AniSD_DC_SPAN_x2'}`
+
       vpyContent += `res = vsmlrt.inference(res, network_path="${model}", backend=device_sr)\n`
     }
   }
@@ -583,14 +584,10 @@ export async function preview(event, config_json): Promise<void> {
   event.sender.send('preview-vpyPath', vpyPath)
   event.sender.send('ffmpeg-finish')
 }
-// D:\code\压缩包\VSET\package\VSPipe.exe -c y4m --start 5 --end 5 D:\code\压缩包\VSET\vpyfiles\output.vpy -
-// | D:\code\压缩包\VSET\package\ffmpeg.exe -y -f yuv4mpegpipe -i - -frames:v 1 output.png
 
 export async function preview_frame(event: any, vpyfile: string, currentFrame: number): Promise<void> {
-  // 工具路径
-  const exeDir = path.dirname(process.execPath)
-  const vspipePath = path.join(exeDir, 'package', 'VSPipe.exe')
-  const ffmpegPath = path.join(exeDir, 'package', 'ffmpeg.exe')
+  const vspipePath = getExecPath().vspipe
+  const ffmpegPath = getExecPath().ffmpeg
 
   // 构造一行命令
   const cmd = `"${vspipePath}" -c y4m --start ${currentFrame} --end ${currentFrame} "${vpyfile}" - | "${ffmpegPath}" -y -f yuv4mpegpipe -i - -frames:v 1 -vcodec png -f image2pipe -`
@@ -629,13 +626,11 @@ export async function preview_frame(event: any, vpyfile: string, currentFrame: n
 }
 
 export async function RunCommand(event, config_json): Promise<void> {
-  const videos = config_json.fileList
+  const vspipePath = getExecPath().vspipe
+  const ffmpegPath = getExecPath().ffmpeg
+  const ffprobePath = getExecPath().ffprobe
 
-  // 工具路径
-  const exeDir = path.dirname(process.execPath)
-  const vipipePath = path.join(exeDir, 'package', 'VSPipe.exe')
-  const ffmpegPath = path.join(exeDir, 'package', 'ffmpeg.exe')
-  const ffprobePath = path.join(exeDir, 'package', 'ffprobe.exe')
+  const videos = config_json.fileList
 
   shouldStop = false
 
@@ -648,7 +643,7 @@ export async function RunCommand(event, config_json): Promise<void> {
     try {
       // 生成唯一 vpy 路径
       const baseName = path.basename(video, path.extname(video))
-      const vpyPath = path.join(exeDir, 'vpyFiles', `${baseName}.vpy`)
+      const vpyPath = path.join(config_json.outputfolder, 'vpyFiles', `${baseName}.vpy`)
 
       // ========== 1. 获取输入视频信息 ==========
       const ffprobeCommand = `"${ffprobePath}" -v error -show_streams -of json "${video}"`
@@ -691,7 +686,7 @@ export async function RunCommand(event, config_json): Promise<void> {
         fps: '0',
       }
       await new Promise<void>((resolve, reject) => {
-        const vspipeInfoProcess = spawn(vipipePath, ['--info', vpyPath])
+        const vspipeInfoProcess = spawn(vspipePath, ['--info', vpyPath])
         addProcess(vspipeInfoProcess)
 
         let vspipeOut = '' // 用于保存 stdout 内容
@@ -736,7 +731,7 @@ export async function RunCommand(event, config_json): Promise<void> {
       })
 
       // ========== 4. 构建渲染命令 ==========
-      const cmd = generate_cmd(config_json, vipipePath, vpyPath, ffmpegPath, video, hasAudio, hasSubtitle)
+      const cmd = generate_cmd(config_json, vspipePath, vpyPath, ffmpegPath, video, hasAudio, hasSubtitle)
       event.sender.send('ffmpeg-output', `Executing command: ${cmd}\n`)
 
       // ========== 5. 渲染并监听输出 ==========
