@@ -1,7 +1,5 @@
 appId: com.vset.ai
 productName: VSET
-directories:
-  buildResources: build
 
 icon: resources/icon.png
 
