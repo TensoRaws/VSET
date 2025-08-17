@@ -2,7 +2,7 @@ const VfiMethod_options = [
   {
     value: 'Rife',
     label: 'Rife',
-  }
+  },
 ]
 
 const Inference_Vfi_options = [
@@ -21,7 +21,7 @@ const Inference_Vfi_options = [
   {
     value: 'NCNN',
     label: 'NCNN',
-  }
+  },
 ]
 
 const RifeModel_options = [
@@ -223,7 +223,7 @@ const Scale_Vfi_options = [
   {
     value: '32.0',
     label: '32.0',
-  }
+  },
 ]
 
 const vfi_numstreams_options = [
@@ -237,5 +237,4 @@ const vfi_numstreams_options = [
   },
 ]
 
-
-export { VfiMethod_options, Inference_Vfi_options, RifeModel_options,Scale_Vfi_options,vfi_numstreams_options};
+export { Inference_Vfi_options, RifeModel_options, Scale_Vfi_options, vfi_numstreams_options, VfiMethod_options }

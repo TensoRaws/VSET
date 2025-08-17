@@ -1,15 +1,15 @@
-import { contextBridge,ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { contextBridge, ipcRenderer } from 'electron'
 
 // Custom APIs for renderer
 const api = {
-  selectDirectory:() => {
+  selectDirectory: (): Promise<any> => {
     return ipcRenderer.invoke('selectDirectory')
   },
-  getCpuInfo:() => {
+  getCpuInfo: (): Promise<any> => {
     return ipcRenderer.invoke('getCpuInfo')
   },
-  getGpuInfo:() => {
+  getGpuInfo: (): Promise<any> => {
     return ipcRenderer.invoke('getGpuInfo')
   },
 }
@@ -21,10 +21,12 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
-  } catch (error) {
+  }
+  catch (error) {
     console.error(error)
   }
-} else {
+}
+else {
   // @ts-ignore (define in dts)
   window.electron = electronAPI
   // @ts-ignore (define in dts)

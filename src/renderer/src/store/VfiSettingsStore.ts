@@ -1,11 +1,9 @@
-import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
-export default defineStore('vfisettingconfig',()=>{
-
+export default defineStore('vfisettingconfig', () => {
   const useVfi = ref(false)
   const VfiMethodValue = ref('Rife')
-
 
   const RifeInferenceValue = ref('Cuda')
   const RifeModelValue = ref('v4_0')
@@ -14,8 +12,8 @@ export default defineStore('vfisettingconfig',()=>{
   const RifeEnsembleValue = ref(false)
   const RifeDetectionValue = ref(0.5)
 
-  const Vfi_numstreams=ref('1')
-  const Vfi_cudagraph=ref(false)
+  const Vfi_numstreams = ref('1')
+  const Vfi_cudagraph = ref(false)
 
   return {
     useVfi,
@@ -29,8 +27,6 @@ export default defineStore('vfisettingconfig',()=>{
     Vfi_numstreams,
     Vfi_cudagraph,
   }
-},
-{
-    persist: true
-  }
-)
+}, {
+  persist: true,
+})

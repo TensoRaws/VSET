@@ -1,19 +1,20 @@
 <script lang="ts">
-import { useRouter } from 'vue-router'
-import { defineComponent, h, ref, Component } from 'vue'
-import { NIcon } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
+import type { Component } from 'vue'
 import {
-  BookOutline as homeIcon,
-  AddCircleOutline as inputIcon,
   ConstructOutline as enhanceIcon,
   CameraOutline as filterIcon,
+  BookOutline as homeIcon,
+  AddCircleOutline as inputIcon,
   ColorFillOutline as outputIcon,
   SendOutline as rendingIcon,
-  SettingsOutline as settingIcon
+  SettingsOutline as settingIcon,
 } from '@vicons/ionicons5'
+import { NIcon } from 'naive-ui'
+import { defineComponent, h, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-function renderIcon (icon: Component) {
+function renderIcon(icon: Component) {
   return () => h(NIcon, null, { default: () => h(icon) })
 }
 
@@ -22,56 +23,54 @@ const menuOptions: MenuOption[] = [
     whateverLabel: '主页',
     whateverKey: 'home',
     icon: renderIcon(homeIcon),
-    path:'/'
+    path: '/',
   },
 
   {
     whateverLabel: '输入',
     whateverKey: 'input',
-    icon: renderIcon(inputIcon)
-    ,
-    path:'/input'
+    icon: renderIcon(inputIcon),
+    path: '/input',
   },
 
   {
     whateverLabel: '增强',
     whateverKey: 'enhance',
     icon: renderIcon(enhanceIcon),
-    path:'/enhance'
+    path: '/enhance',
   },
 
   {
     whateverLabel: '滤镜',
     whateverKey: 'filter',
     icon: renderIcon(filterIcon),
-    path:'/filter'
+    path: '/filter',
   },
 
   {
     whateverLabel: '输出',
     whateverKey: 'output',
     icon: renderIcon(outputIcon),
-    path:'/output'
+    path: '/output',
   },
 
   {
     whateverLabel: '渲染',
     whateverKey: 'rending',
     icon: renderIcon(rendingIcon),
-    path:'/rending'
+    path: '/rending',
   },
   {
     whateverLabel: '设置',
     whateverKey: 'setting',
     icon: renderIcon(settingIcon),
-    path:'/setting'
-  }
+    path: '/setting',
+  },
 
 ]
 
-
 export default defineComponent({
-  setup () {
+  setup() {
     const router = useRouter()
     const onMenuChange = (value: string) => {
       router.push(value)
@@ -82,9 +81,9 @@ export default defineComponent({
     return {
       collapsed: ref(true),
       menuOptions,
-      onMenuChange
+      onMenuChange,
     }
-  }
+  },
 })
 </script>
 
@@ -102,7 +101,6 @@ export default defineComponent({
           show-trigger
           @collapse="collapsed = true"
           @expand="collapsed = false"
-          
         >
           <n-menu
             :collapsed="collapsed"
@@ -113,18 +111,16 @@ export default defineComponent({
             label-field="whateverLabel"
             children-field="whateverChildren"
             @update:value="onMenuChange"
-  
           />
         </n-layout-sider>
 
         <n-layout-content content-style="padding: 24px;">
-          <router-view></router-view>
+          <router-view />
         </n-layout-content>
       </n-layout>
     </div>
   </n-message-provider>
 </template>
-
 
 <style scoped>
 .custom-sider {
@@ -150,5 +146,4 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 }
-
 </style>

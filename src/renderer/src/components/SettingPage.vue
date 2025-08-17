@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { ref,h,computed,onMounted  } from 'vue'
 import type { VNode } from 'vue'
-import { NButton, NImage, useMessage ,NIcon} from 'naive-ui'
-import { DownloadOutline } from '@vicons/ionicons5'
 import { useAppStore } from '@renderer/store/AppStore'
+import useFilterconfigStore from '@renderer/store/FilterStore'
+// ✅ 引入状态管理（其他配置）
+import useInputconfigStore from '@renderer/store/InputStore'
+import useSrsettingconfigStore from '@renderer/store/SrSettingsStore'
+import useVfisettingconfigStore from '@renderer/store/VfiSettingsStore'
+
+import { DownloadOutline } from '@vicons/ionicons5'
+import { NButton, NIcon, NImage, useMessage } from 'naive-ui'
+import { storeToRefs } from 'pinia'
+import { computed, h, onMounted, ref } from 'vue'
 
 const appStore = useAppStore()
 const message = useMessage()
@@ -15,17 +22,9 @@ const currentFrame = ref(0)
 const previewImageSrc = ref('')
 const loading = ref(false)
 const isRunning = computed(() => appStore.isRunning)
-import { storeToRefs } from 'pinia'
-
-// ✅ 引入状态管理（其他配置）
-import useInputconfigStore from '@renderer/store/InputStore'
-import useSrsettingconfigStore from '@renderer/store/SrSettingsStore'
-import useVfisettingconfigStore from '@renderer/store/VfiSettingsStore'
-import useFilterconfigStore from '@renderer/store/FilterStore'
 // 引入其他 store 数据
 const InputConfigStore = useInputconfigStore()
 const { fileList } = storeToRefs(InputConfigStore)
-
 
 const SrSettingStore = useSrsettingconfigStore()
 const {
@@ -45,25 +44,24 @@ const {
 
   Waifu2xInferenceValue,
   Waifu2xModelValue,
-  Waifu2xTileValue, 
+  Waifu2xTileValue,
 
   SwinIRInferenceValue,
   SwinIRModelValue,
   SwinIRTileValue,
 } = storeToRefs(SrSettingStore)
 
-
 const VfiSettingStore = useVfisettingconfigStore()
-  const {
-    useVfi,
-    VfiMethodValue,
-    RifeInferenceValue,
-    RifeModelValue,
-    RifeScaleValue,
-    RifeMultiValue,
-    RifeEnsembleValue,
-    RifeDetectionValue
-  } = storeToRefs(VfiSettingStore)
+const {
+  useVfi,
+  VfiMethodValue,
+  RifeInferenceValue,
+  RifeModelValue,
+  RifeScaleValue,
+  RifeMultiValue,
+  RifeEnsembleValue,
+  RifeDetectionValue,
+} = storeToRefs(VfiSettingStore)
 
 const FilterConfigStore = useFilterconfigStore()
 const {
@@ -80,7 +78,7 @@ const {
   ReduceLeft_AfterEnhance,
   ReduceRight_AfterEnhance,
   ReduceOn_AfterEnhance,
-  ReduceDown_AfterEnhance
+  ReduceDown_AfterEnhance,
 } = storeToRefs(FilterConfigStore)
 
 // 保存图片真实宽高
@@ -119,19 +117,19 @@ function customRenderToolbar(props: {
         circle: true,
         type: 'default',
         onClick: downloadImage,
-        style: 'margin: 0 6px; color: white;'
+        style: 'margin: 0 6px; color: white;',
       },
       {
-        icon: () => h(NIcon, null, { default: () => h(DownloadOutline) })
-      }
+        icon: () => h(NIcon, null, { default: () => h(DownloadOutline) }),
+      },
     ),
-    props.nodes.close
+    props.nodes.close,
   ]
 }
 
 function handlePreviewInfo(_event: any, data: any) {
   if (data && data.frames) {
-    frameCount.value = parseInt(data.frames)
+    frameCount.value = Number.parseInt(data.frames)
     message.success(`检测到 ${data.frames} 帧，尺寸 ${data.width}×${data.height}`)
   }
 }
@@ -142,18 +140,20 @@ function handlePreviewImage(_event: any, base64Img: string) {
     previewImageSrc.value = base64Img
     imageNaturalWidth.value = 0
     imageNaturalHeight.value = 0
-  } else {
+  }
+  else {
     message.error('帧图像加载失败')
   }
 }
 
-const startPreview = () => {
-  if (appStore.isRunning) return
+function startPreview() {
+  if (appStore.isRunning)
+    return
   appStore.setRunning(true)
 
   const fileListNames = fileList.value.map(file => (file.path).replace(/\\/g, '/'))
 
-const jsonData = {
+  const jsonData = {
     fileList: fileListNames,
     useSR: useSR.value,
     SRMethodValue: SRMethodValue.value,
@@ -168,22 +168,22 @@ const jsonData = {
     // ArtCNNInferenceValue: ArtCNNInferenceValue.value,
     // ArtCNNModelValue: ArtCNNModelValue.value,
     // ArtCNNTileValue: ArtCNNTileValue.value,
-    Waifu2xInferenceValue:Waifu2xInferenceValue.value,
-    Waifu2xModelValue:Waifu2xModelValue.value,
-    Waifu2xTileValue:Waifu2xTileValue.value, 
+    Waifu2xInferenceValue: Waifu2xInferenceValue.value,
+    Waifu2xModelValue: Waifu2xModelValue.value,
+    Waifu2xTileValue: Waifu2xTileValue.value,
     SwinIRInferenceValue: SwinIRInferenceValue.value,
     SwinIRModelValue: SwinIRModelValue.value,
     SwinIRTileValue: SwinIRTileValue.value,
 
-    useVfi:useVfi.value,
-    VfiMethodValue:VfiMethodValue.value,
-    RifeInferenceValue:RifeInferenceValue.value,
-    RifeModelValue:RifeModelValue.value,
-    RifeScaleValue:RifeScaleValue.value,
-    RifeMultiValue:RifeMultiValue.value,
-    RifeEnsembleValue:RifeEnsembleValue.value,
-    RifeDetectionValue:RifeDetectionValue.value,
-    
+    useVfi: useVfi.value,
+    VfiMethodValue: VfiMethodValue.value,
+    RifeInferenceValue: RifeInferenceValue.value,
+    RifeModelValue: RifeModelValue.value,
+    RifeScaleValue: RifeScaleValue.value,
+    RifeMultiValue: RifeMultiValue.value,
+    RifeEnsembleValue: RifeEnsembleValue.value,
+    RifeDetectionValue: RifeDetectionValue.value,
+
     UseResize_BeforeEnhance: UseResize_BeforeEnhance.value,
     UseResize_AfterEnhance: UseResize_AfterEnhance.value,
     ResizeWidth_BeforeEnhance: ResizeWidth_BeforeEnhance.value,
@@ -198,7 +198,7 @@ const jsonData = {
     ReduceRight_AfterEnhance: ReduceRight_AfterEnhance.value,
     ReduceOn_AfterEnhance: ReduceOn_AfterEnhance.value,
     ReduceDown_AfterEnhance: ReduceDown_AfterEnhance.value,
-}
+  }
 
   window.electron.ipcRenderer.once('preview-info', handlePreviewInfo)
   window.electron.ipcRenderer.once('preview-image', handlePreviewImage)
@@ -212,7 +212,8 @@ function previewFrame() {
 }
 
 function onFrameChange(val: number | null) {
-  if (appStore.isRunning) return
+  if (appStore.isRunning)
+    return
   appStore.setRunning(true)
   if (val !== null) {
     currentFrame.value = val
@@ -240,47 +241,45 @@ onMounted(() => {
 
 <template>
   <div class="preview-wrapper">
-
-      <div class="control-group">
-        <el-button type="success" @click="startPreview" :disabled="isRunning">
+    <div class="control-group">
+      <el-button type="success" :disabled="isRunning" @click="startPreview">
         {{ isRunning ? '运行中...' : '预览初始化' }}
       </el-button>
-        <span style="margin-left: 10px;">文件路径：{{ vpyFilePath }}</span>
-      </div>
+      <span style="margin-left: 10px;">文件路径：{{ vpyFilePath }}</span>
+    </div>
 
-      <div class="control-group">
-        <span>总帧数: {{ frameCount }}</span>
-        <el-slider
-          v-model="currentFrame"
-          :min="0"
-          :max="frameCount"
-          :step="1"
-          :disabled="isRunning"
-          @change="onFrameChange" 
-          style="margin-top: 10px; width: 100%;"
-          show-input
-        />
-   
-      </div>
+    <div class="control-group">
+      <span>总帧数: {{ frameCount }}</span>
+      <el-slider
+        v-model="currentFrame"
+        :min="0"
+        :max="frameCount"
+        :step="1"
+        :disabled="isRunning"
+        style="margin-top: 10px; width: 100%;"
+        show-input
+        @change="onFrameChange"
+      />
+    </div>
 
-      <div v-if="imageNaturalWidth && imageNaturalHeight" class="resolution-text" style="margin-bottom: 6px;">
-        当前图片分辨率: {{ imageNaturalWidth }} × {{ imageNaturalHeight }}
-      </div>
+    <div v-if="imageNaturalWidth && imageNaturalHeight" class="resolution-text" style="margin-bottom: 6px;">
+      当前图片分辨率: {{ imageNaturalWidth }} × {{ imageNaturalHeight }}
+    </div>
 
-      <div class="preview-box">
-        <div class="image-container">
-          <n-spin :show="loading">
-          <n-image
+    <div class="preview-box">
+      <div class="image-container">
+        <n-spin :show="loading">
+          <NImage
             v-if="previewImageSrc"
             :src="previewImageSrc"
             alt="帧预览图"
             object-fit="contain"
-            @load="onImageLoad"
             :render-toolbar="customRenderToolbar"
+            @load="onImageLoad"
           />
-          </n-spin>
-        </div>
+        </n-spin>
       </div>
+    </div>
   </div>
 </template>
 

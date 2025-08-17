@@ -1,8 +1,33 @@
+<script setup lang="ts">
+import useFilterconfigStore from '@renderer/store/FilterStore'
+import { storeToRefs } from 'pinia'
+
+const FilterConfigStore = useFilterconfigStore()
+const {
+  UseResize_BeforeEnhance,
+  UseResize_AfterEnhance,
+  ResizeWidth_BeforeEnhance,
+  ResizeHeight_BeforeEnhance,
+  ResizeWidth_AfterEnhance,
+  ResizeHeight_AfterEnhance,
+  ReduceLeft_BeforeEnhance,
+  ReduceRight_BeforeEnhance,
+  ReduceOn_BeforeEnhance,
+  ReduceDown_BeforeEnhance,
+  ReduceLeft_AfterEnhance,
+  ReduceRight_AfterEnhance,
+  ReduceOn_AfterEnhance,
+  ReduceDown_AfterEnhance,
+} = storeToRefs(FilterConfigStore)
+</script>
+
 <template>
   <div class="flex-container">
     <div style="border: 1px solid #dcdfe6; padding: 15px; border-radius: 6px; text-align: center;">
-    <el-text class="mx-1" size="large">预处理（AI渲染前工作）</el-text>
-</div>
+      <el-text class="mx-1" size="large">
+        预处理（AI渲染前工作）
+      </el-text>
+    </div>
     <div class="slider-demo-block">
       <span class="demonstration">视频长宽缩放(前)</span>
 
@@ -44,9 +69,11 @@
         <el-input-number v-model="ReduceDown_BeforeEnhance" :min="0" :max="1000" />
       </div>
     </div>
-<div style="border: 1px solid #dcdfe6; padding: 15px; border-radius: 6px; text-align: center;">
-    <el-text class="mx-1" size="large">后处理（AI渲染后工作）</el-text>
-</div>
+    <div style="border: 1px solid #dcdfe6; padding: 15px; border-radius: 6px; text-align: center;">
+      <el-text class="mx-1" size="large">
+        后处理（AI渲染后工作）
+      </el-text>
+    </div>
     <div class="slider-demo-block">
       <span class="demonstration">视频长宽缩放(末)</span>
 
@@ -90,29 +117,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import useFilterconfigStore from '@renderer/store/FilterStore'
-import { storeToRefs } from 'pinia'
-
-const FilterConfigStore = useFilterconfigStore()
-const {
-  UseResize_BeforeEnhance,
-  UseResize_AfterEnhance,
-  ResizeWidth_BeforeEnhance,
-  ResizeHeight_BeforeEnhance,
-  ResizeWidth_AfterEnhance,
-  ResizeHeight_AfterEnhance,
-  ReduceLeft_BeforeEnhance,
-  ReduceRight_BeforeEnhance,
-  ReduceOn_BeforeEnhance,
-  ReduceDown_BeforeEnhance,
-  ReduceLeft_AfterEnhance,
-  ReduceRight_AfterEnhance,
-  ReduceOn_AfterEnhance,
-  ReduceDown_AfterEnhance
-} = storeToRefs(FilterConfigStore)
-</script>
 
 <style scoped>
 .flex-container {

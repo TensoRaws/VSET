@@ -3,6 +3,8 @@ productName: VSET
 directories:
   buildResources: build
 
+icon: resources/icon.png
+
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -10,10 +12,12 @@ files:
   - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!resources/VSET-core/**'
 
 asarUnpack:
-  - resources/**
-  - package/**
+  - resources/*.png
+  - resources/*.svg
+  - resources/*.ico
 
 win:
   executableName: VSET

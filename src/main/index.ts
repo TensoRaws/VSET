@@ -1,13 +1,13 @@
-import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import { RunCommand,preview ,preview_frame} from './RunCommand'
+import { writeFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { electronApp, is, optimizer } from '@electron-toolkit/utils'
+import { app, BrowserWindow, dialog, ipcMain, nativeImage, shell } from 'electron'
+import appIcon from '../../resources/icon.png?asset'
 import { killAllProcesses } from './childProcessManager'
 import ipc from './ipc'
+import { preview, preview_frame, RunCommand } from './RunCommand'
 
 const appPath = app.getAppPath()
-const path = require('path')
-const fs = require('fs')
 
 let mainWindow: BrowserWindow | null = null
 
@@ -19,12 +19,12 @@ function createWindow(): BrowserWindow {
     minHeight: 670,
     show: false,
     autoHideMenuBar: true,
-    icon: path.join(__dirname, '../../resources/icon.png'),
+    icon: nativeImage.createFromPath(appIcon),
     title: 'VSET 4.2.2',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
-    }
+      sandbox: false,
+    },
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -38,13 +38,15 @@ function createWindow(): BrowserWindow {
 
   // ✅ 点击“关闭按钮 X”时：优雅终止进程再退出
   mainWindow.on('close', async (e) => {
-    if ((app as any).isQuitting) return
+    if ((app as any).isQuitting)
+      return
 
     e.preventDefault()
     ;(app as any).isQuitting = true
     try {
       await killAllProcesses()
-    } catch (err) {
+    }
+    catch (err) {
       console.error('❌ 终止子进程时出错：', err)
     }
 
@@ -53,9 +55,10 @@ function createWindow(): BrowserWindow {
   })
 
   // ✅ 加载主页面
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
+  if (is.dev && process.env.ELECTRON_RENDERER_URL) {
+    mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
+  }
+  else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
@@ -64,20 +67,22 @@ function createWindow(): BrowserWindow {
 
 // ✅ 当用户点击任务栏关闭或调用 app.quit() 时，先清理子进程
 app.on('before-quit', async (event) => {
-  if ((app as any).isQuitting) return
+  if ((app as any).isQuitting)
+    return
   event.preventDefault()
   ;(app as any).isQuitting = true
 
   try {
     await killAllProcesses()
-  } catch (err) {
+  }
+  catch (err) {
     console.error('❌ killAllProcesses 失败：', err)
   }
 
   // 退出应用（再次触发 before-quit 也无害）
   app.quit()
 })
-app.disableHardwareAcceleration();
+app.disableHardwareAcceleration()
 // ✅ 初始化窗口和主进程监听
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
@@ -87,7 +92,7 @@ app.whenReady().then(() => {
   })
 
   ipcMain.on('execute-command', RunCommand)
-  
+
   ipcMain.on('preview', preview)
   ipcMain.on('preview_frame', preview_frame)
 
@@ -96,14 +101,14 @@ app.whenReady().then(() => {
   })
 
   ipcMain.on('generate-json', (_, data) => {
-    const filePath = path.join(appPath, 'json', 'setting.json')
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+    const filePath = join(appPath, 'json', 'setting.json')
+    writeFileSync(filePath, JSON.stringify(data, null, 2))
   })
 
   ipcMain.on('open-folder-dialog', (event) => {
     dialog
       .showOpenDialog({
-        properties: ['openDirectory']
+        properties: ['openDirectory'],
       })
       .then((result) => {
         if (!result.canceled) {

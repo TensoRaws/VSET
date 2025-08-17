@@ -1,9 +1,9 @@
 import { dialog } from 'electron'
 
-export const selectDirectory = async () => {
+export async function selectDirectory(): Promise<string> {
   const res = await dialog.showOpenDialog({
     title: '选择文件夹',
-    properties: ['openDirectory', 'createDirectory']
+    properties: ['openDirectory', 'createDirectory'],
   })
-  return res.canceled === false ? res.filePaths[0].replace(/\\/g, '/') : ''
+  return !res.canceled ? res.filePaths[0].replace(/\\/g, '/') : ''
 }

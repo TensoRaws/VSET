@@ -1,27 +1,26 @@
-import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
-export default defineStore('filterconfig',()=>{
-    const UseResize_BeforeEnhance = ref(false)
-    const UseResize_AfterEnhance= ref(false)
- 
-    const ResizeWidth_BeforeEnhance = ref(1920)
-    const ResizeHeight_BeforeEnhance = ref(1080)
- 
-    const ResizeWidth_AfterEnhance = ref(3840)
-    const ResizeHeight_AfterEnhance = ref(2160)
- 
- 
-    const ReduceLeft_BeforeEnhance = ref(0)
-    const ReduceRight_BeforeEnhance = ref(0)
-    const ReduceOn_BeforeEnhance = ref(0)
-    const ReduceDown_BeforeEnhance = ref(0)
- 
-    const ReduceLeft_AfterEnhance = ref(0)
-    const ReduceRight_AfterEnhance = ref(0)
-    const ReduceOn_AfterEnhance = ref(0)
-    const ReduceDown_AfterEnhance = ref(0)
-  
+export default defineStore('filterconfig', () => {
+  const UseResize_BeforeEnhance = ref(false)
+  const UseResize_AfterEnhance = ref(false)
+
+  const ResizeWidth_BeforeEnhance = ref(1920)
+  const ResizeHeight_BeforeEnhance = ref(1080)
+
+  const ResizeWidth_AfterEnhance = ref(3840)
+  const ResizeHeight_AfterEnhance = ref(2160)
+
+  const ReduceLeft_BeforeEnhance = ref(0)
+  const ReduceRight_BeforeEnhance = ref(0)
+  const ReduceOn_BeforeEnhance = ref(0)
+  const ReduceDown_BeforeEnhance = ref(0)
+
+  const ReduceLeft_AfterEnhance = ref(0)
+  const ReduceRight_AfterEnhance = ref(0)
+  const ReduceOn_AfterEnhance = ref(0)
+  const ReduceDown_AfterEnhance = ref(0)
+
   return {
     UseResize_BeforeEnhance,
     UseResize_AfterEnhance,
@@ -36,11 +35,8 @@ export default defineStore('filterconfig',()=>{
     ReduceLeft_AfterEnhance,
     ReduceRight_AfterEnhance,
     ReduceOn_AfterEnhance,
-    ReduceDown_AfterEnhance
+    ReduceDown_AfterEnhance,
   }
-},
-{
-    persist: true
-  }
-
-)
+}, {
+  persist: true,
+})

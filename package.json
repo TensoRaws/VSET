@@ -5,7 +5,6 @@
   "description": "VSET",
   "author": "NangInShell",
   "main": "./out/main/index.js",
-
   "engines": {
     "node": ">=18",
     "pnpm": ">=8"
@@ -22,38 +21,38 @@
     "build:win": "pnpm run build && electron-builder --win --dir"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.3.1",
+    "@element-plus/icons-vue": "^2.3.2",
     "electron-updater": "^6.6.2",
-    "element-plus": "^2.10.4",
+    "element-plus": "^2.10.7",
     "iconv-lite": "^0.6.3",
     "naive-ui": "^2.42.0",
     "pinia": "^3.0.3",
-    "pinia-plugin-persistedstate": "^4.4.1",
+    "pinia-plugin-persistedstate": "^4.5.0",
     "ps-tree": "^1.2.0",
     "systeminformation": "^5.27.7",
     "tree-kill": "^1.2.2",
     "vicons": "^0.0.1",
-    "vue": "^3.5.17",
+    "vue": "^3.5.18",
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.17.0",
+    "@antfu/eslint-config": "^5.2.1",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@electron-toolkit/utils": "^4.0.0",
-    "@types/node": "^24.0.15",
+    "@types/node": "^24.3.0",
     "@vicons/ionicons5": "^0.13.0",
-    "@vitejs/plugin-vue": "^5.1.4",
+    "@vitejs/plugin-vue": "^5.2.4",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
     "electron": "^27.3.11",
     "electron-builder": "^26.0.12",
     "electron-vite": "^4.0.0",
-    "eslint": "^9.31.0",
-    "eslint-plugin-vue": "^10.3.0",
-    "typescript": "^5.8.3",
-    "vite": "^5.4.10",
-    "vue-tsc": "^2.1.10"
+    "eslint": "^9.33.0",
+    "eslint-plugin-vue": "^10.4.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2",
+    "vue-tsc": "^2.2.12"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

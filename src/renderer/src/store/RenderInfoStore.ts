@@ -1,10 +1,10 @@
-import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
-export default defineStore('renderconfig',()=>{
+export default defineStore('renderconfig', () => {
   const Rending_log = ref()
-  const ffmpeg_command= ref('')
-  
+  const ffmpeg_command = ref('')
+
   return {
     Rending_log,
     ffmpeg_command,

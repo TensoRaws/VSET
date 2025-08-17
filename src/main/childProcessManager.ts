@@ -1,14 +1,14 @@
-import { ChildProcess } from 'child_process'
+import type { ChildProcess } from 'node:child_process'
 import kill from 'tree-kill'
 import { requestStop } from './RunCommand'
 
 const childProcesses: ChildProcess[] = []
 
-export function addProcess(proc: ChildProcess) {
+export function addProcess(proc: ChildProcess): void {
   childProcesses.push(proc)
 }
 
-export function removeProcess(proc: ChildProcess) {
+export function removeProcess(proc: ChildProcess): void {
   const index = childProcesses.indexOf(proc)
   if (index !== -1) {
     childProcesses.splice(index, 1)
@@ -25,12 +25,14 @@ export async function killAllProcesses(): Promise<void> {
         kill(proc.pid, 'SIGKILL', (err) => {
           if (err) {
             console.error(`❌ 无法终止 PID=${proc.pid}:`, err)
-          } else {
+          }
+          else {
             console.log(`✅ 成功终止 PID=${proc.pid}`)
           }
           resolve()
         })
-      } else {
+      }
+      else {
         resolve()
       }
     })
