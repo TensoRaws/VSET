@@ -6,7 +6,7 @@ import appIcon from '../../resources/icon.png?asset'
 import { killAllProcesses } from './childProcessManager'
 import { getGenSettingsPath } from './getCorePath'
 import ipc from './ipc'
-import { preview, preview_frame, RunCommand } from './RunCommand'
+import { preview, preview_frame, RunCommand } from './runCommand'
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
@@ -86,7 +86,7 @@ app.disableHardwareAcceleration()
 
 // ✅ 初始化窗口和主进程监听
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('com.vset.ai')
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
