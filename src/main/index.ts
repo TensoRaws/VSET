@@ -63,24 +63,6 @@ function createWindow(): BrowserWindow {
   return mainWindow
 }
 
-// ✅ 当用户点击任务栏关闭或调用 app.quit() 时，先清理子进程
-app.on('before-quit', async (event) => {
-  if ((app as any).isQuitting)
-    return
-  event.preventDefault()
-  ;(app as any).isQuitting = true
-
-  try {
-    await killAllProcesses()
-  }
-  catch (err) {
-    console.error('❌ killAllProcesses 失败：', err)
-  }
-
-  // 退出应用（再次触发 before-quit 也无害）
-  app.quit()
-})
-
 // disable hardware acceleration for Compatibility for windows
 app.disableHardwareAcceleration()
 
@@ -143,4 +125,23 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+// ✅ 当用户点击任务栏关闭或调用 app.quit() 时，先清理子进程
+let isQuitting = false
+app.on('before-quit', async (event) => {
+  if (isQuitting) {
+    console.log('Quitting...')
+    return
+  }
+  console.log('Killing child process before quitting...')
+  event.preventDefault()
+  isQuitting = true
+  try {
+    await killAllProcesses()
+  }
+  catch (err) {
+    console.error('❌ killAllProcesses 失败：', err)
+  }
+  app.quit()
 })
