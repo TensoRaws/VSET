@@ -1,0 +1,10 @@
+node_modules
+dist
+out
+*.log*
+*.DS_Store
+/resources/VSET-core/
+/outputs/
+/.idea
+/coverage/
+/json/
