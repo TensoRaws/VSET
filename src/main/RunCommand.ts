@@ -5,7 +5,7 @@ import path from 'node:path'
 import { promisify } from 'node:util'
 import iconv from 'iconv-lite'
 import { addProcess, removeProcess } from './childProcessManager'
-import { getExecPath, getExtraSRModelPath } from './getCorePath'
+import { getExecPath, getExtraSRModelPath, getGenVpyPath } from './getCorePath'
 
 const exec = promisify(execCallback)
 
@@ -643,7 +643,7 @@ export async function RunCommand(event, config_json): Promise<void> {
     try {
       // 生成唯一 vpy 路径
       const baseName = path.basename(video, path.extname(video))
-      const vpyPath = path.join(config_json.outputfolder, 'vpyFiles', `${baseName}.vpy`)
+      const vpyPath = getGenVpyPath(config_json, baseName)
 
       // ========== 1. 获取输入视频信息 ==========
       const ffprobeCommand = `"${ffprobePath}" -v error -show_streams -of json "${video}"`

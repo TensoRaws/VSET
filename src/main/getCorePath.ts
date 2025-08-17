@@ -35,3 +35,22 @@ export function getExecPath(): { vspipe: string, ffmpeg: string, ffprobe: string
 export function getExtraSRModelPath(): string {
   return path.join(getCorePath(), 'vs-coreplugins', 'models', 'VSET_ExtraSrModel')
 }
+
+/**
+ * 获取 VSET 生成的设置文件路径
+ * 暂时存放在 config_json.outputfolder 目录下
+ * @param config_json
+ */
+export function getGenSettingsPath(config_json): string {
+  return path.join(config_json.outputfolder, 'setting.json')
+}
+
+/**
+ * 获取 VSET 生成的 vpy 文件路径
+ * 暂时存放在 config_json.outputfolder 目录下
+ * @param config_json
+ * @param base_name 生成的 vpy 文件名（不含扩展名）
+ */
+export function getGenVpyPath(config_json, base_name: string): string {
+  return path.join(config_json.outputfolder, `${base_name}.vpy`)
+}

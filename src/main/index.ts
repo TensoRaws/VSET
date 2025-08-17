@@ -4,6 +4,7 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, dialog, ipcMain, nativeImage, shell } from 'electron'
 import appIcon from '../../resources/icon.png?asset'
 import { killAllProcesses } from './childProcessManager'
+import { getGenSettingsPath } from './getCorePath'
 import ipc from './ipc'
 import { preview, preview_frame, RunCommand } from './RunCommand'
 
@@ -53,7 +54,7 @@ function createWindow(): BrowserWindow {
   // ✅ 加载主页面
   if (is.dev && process.env.ELECTRON_RENDERER_URL) {
     mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
   }
   else {
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
@@ -101,7 +102,7 @@ app.whenReady().then(() => {
   })
 
   ipcMain.on('generate-json', (_, data) => {
-    const filePath = path.join(data.outputfolder, 'setting.json')
+    const filePath = getGenSettingsPath(data)
     writeFileSync(filePath, JSON.stringify(data, null, 2))
   })
 
