@@ -33,10 +33,22 @@ jobs:
         with:
           version: 10
 
+      - name: fetch VSET-core # fetch VSET-core from https://github.com/TensoRaws/VSET-core/releases
+        run: |
+          cd resources
+          $baseUrl = "https://github.com/TensoRaws/VSET-core/releases/download/v4.2-0819"
+          1..5 | ForEach-Object {
+              $url = "$baseUrl/VSET-core.7z.00$_"
+              Write-Host "Downloading $url ..."
+              Invoke-WebRequest -Uri $url -OutFile "VSET-core.7z.00$_"
+          }
+          7z x VSET-core.7z.001 -oVSET-core -y
+          Remove-Item VSET-core.7z.*
+
       - name: build
         run: |
           pnpm install
-          pnpm run build:win-${{ matrix.os-version }}
+          pnpm run build:win
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
