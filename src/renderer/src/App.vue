@@ -7,8 +7,8 @@ import {
   BookOutline as homeIcon,
   AddCircleOutline as inputIcon,
   ColorFillOutline as outputIcon,
+  GlassesOutline as PreviewIcon,
   SendOutline as rendingIcon,
-  SettingsOutline as settingIcon,
 } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
 import { defineComponent, h, ref } from 'vue'
@@ -61,10 +61,10 @@ const menuOptions: MenuOption[] = [
     path: '/rending',
   },
   {
-    whateverLabel: '设置',
-    whateverKey: 'setting',
-    icon: renderIcon(settingIcon),
-    path: '/setting',
+    whateverLabel: '预览',
+    whateverKey: 'preview',
+    icon: renderIcon(PreviewIcon),
+    path: '/preview',
   },
 
 ]

@@ -5,8 +5,8 @@ import FilterPage from '../components/FilterPage.vue'
 import HomePage from '../components/HomePage.vue'
 import InputPage from '../components/InputPage.vue'
 import OutputPage from '../components/OutputPage.vue'
+import PreviewPage from '../components/PreviewPage.vue'
 import RendingPage from '../components/RendingPage.vue'
-import SettingPage from '../components/SettingPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -45,9 +45,9 @@ const routes: Array<RouteRecordRaw> = [
     component: RendingPage,
   },
   {
-    path: '/setting',
-    name: 'SettingPage',
-    component: SettingPage,
+    path: '/preview',
+    name: 'PreviewPage',
+    component: PreviewPage,
   },
 ]
 
