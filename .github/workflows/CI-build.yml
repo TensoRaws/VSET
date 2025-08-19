@@ -57,7 +57,6 @@ jobs:
         run: |
           cd .\dist\win-unpacked
           7z a -t7z -r -mx=9 -m0=lzma2 -ms=on -v1g VSET.7z *
-          ls -l
 
       - name: upload-unpacked-x64
         if: matrix.os-version == 'x64'
