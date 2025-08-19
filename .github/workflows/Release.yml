@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      DATE: ${{ steps.get_date.outputs.DATE }}
+    steps:
+      - name: Get current date
+        id: get_date
+        run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+  windows:
+    strategy:
+      matrix:
+        os-version: ['x64']
+
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: fetch VSET-core # fetch VSET-core from https://github.com/TensoRaws/VSET-core/releases
+        run: |
+          cd resources
+          $baseUrl = "https://github.com/TensoRaws/VSET-core/releases/download/v4.2-0819"
+          1..5 | ForEach-Object {
+              $url = "$baseUrl/VSET-core.7z.00$_"
+              Write-Host "Downloading $url ..."
+              Invoke-WebRequest -Uri $url -OutFile "VSET-core.7z.00$_"
+          }
+          7z x VSET-core.7z.001 -oVSET-core -y
+          Remove-Item VSET-core.7z.*
+
+      - name: build
+        run: |
+          pnpm install
+          pnpm run build:win
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: zip-unpacked-x64
+        if: matrix.os-version == 'x64'
+        run: |
+          cd .\dist\win-unpacked
+          7z a -r -v1g VSET.7z *
+
+      - name: upload-unpacked-x64
+        if: matrix.os-version == 'x64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: VSET
+          path: dist/win-unpacked/*.7z*
+
+  Release:
+    needs: [setup, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: asset
+
+      - name: Flatten asset directory
+        run: |
+          tree asset
+          mkdir dist
+          find asset -type f -print0 | xargs -0 -I{} cp "{}" dist/
+          cd dist && ls -l
+
+      - name: Create Release and Upload Release Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ needs.setup.outputs.DATE }}
+          tag_name: ${{ needs.setup.outputs.DATE }}
+          body: Auto Release.
+          draft: false
+          prerelease: false
+          files: dist/*
