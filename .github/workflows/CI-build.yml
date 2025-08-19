@@ -37,7 +37,7 @@ jobs:
         run: |
           cd resources
           $baseUrl = "https://github.com/TensoRaws/VSET-core/releases/download/v4.2-0819"
-          1..5 | ForEach-Object {
+          1..4 | ForEach-Object {
               $url = "$baseUrl/VSET-core.7z.00$_"
               Write-Host "Downloading $url ..."
               Invoke-WebRequest -Uri $url -OutFile "VSET-core.7z.00$_"
