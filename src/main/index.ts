@@ -7,7 +7,8 @@ import { killAllProcesses } from './childProcessManager'
 import { getGenSettingsPath } from './getCorePath'
 import { getCpuInfo, getGpuInfo } from './getSystemInfo'
 import { openDirectory } from './openDirectory'
-import { preview, previewFrame, runCommand } from './runCommand'
+import { preview, previewFrame } from './previewOutput'
+import { runCommand } from './runCommand'
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
