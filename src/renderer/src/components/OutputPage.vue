@@ -57,7 +57,13 @@ function changeSelect(value: string) {
 }
 
 async function selectDirectory() {
-  outputfolder.value = await window.electron.ipcRenderer.invoke('open-folder-dialog', ['openDirectory'])
+  const pathList = await window.electron.ipcRenderer.invoke('open-folder-dialog', ['openDirectory'])
+  if (pathList && pathList.length > 0) {
+    outputfolder.value = pathList[0]
+  }
+  else {
+    console.log('No folder selected or selection was cancelled.')
+  }
 }
 </script>
 

@@ -64,5 +64,3 @@ jobs:
         with:
           name: Final2x-windows-${{ matrix.os-version }}-unpacked
           path: dist/win-unpacked/*.7z
-
-
