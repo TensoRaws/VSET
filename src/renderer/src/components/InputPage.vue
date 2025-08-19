@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { Delete, UploadFilled } from '@element-plus/icons-vue'
-
-// const fileList = ref([]);
-
 import useInputconfigStore from '@renderer/store/InputStore'
 import { storeToRefs } from 'pinia'
 

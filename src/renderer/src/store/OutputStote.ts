@@ -306,7 +306,6 @@ export default defineStore('outputconfig', () => {
     AudioContainer_options,
 
     outputfolder,
-
   }
 }, {
   persist: {

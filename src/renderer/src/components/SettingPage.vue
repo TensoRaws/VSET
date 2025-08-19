@@ -4,9 +4,10 @@ import { useAppStore } from '@renderer/store/AppStore'
 import useFilterconfigStore from '@renderer/store/FilterStore'
 // ✅ 引入状态管理（其他配置）
 import useInputconfigStore from '@renderer/store/InputStore'
+import useOutputconfigStore from '@renderer/store/OutputStote'
 import useSrsettingconfigStore from '@renderer/store/SrSettingsStore'
-import useVfisettingconfigStore from '@renderer/store/VfiSettingsStore'
 
+import useVfisettingconfigStore from '@renderer/store/VfiSettingsStore'
 import { DownloadOutline } from '@vicons/ionicons5'
 import { NButton, NIcon, NImage, useMessage } from 'naive-ui'
 import { storeToRefs } from 'pinia'
@@ -80,6 +81,20 @@ const {
   ReduceOn_AfterEnhance,
   ReduceDown_AfterEnhance,
 } = storeToRefs(FilterConfigStore)
+
+const OutputConfigStore = useOutputconfigStore()
+const {
+  bitValue,
+  crfValue,
+  encoderValue,
+  qualityValue,
+  videoContainer,
+  AudioContainer,
+  isUseCrf,
+  isSaveAudio,
+  isSavesubtitle,
+  outputfolder,
+} = storeToRefs(OutputConfigStore)
 
 // 保存图片真实宽高
 const imageNaturalWidth = ref(0)
@@ -198,6 +213,17 @@ function startPreview() {
     ReduceRight_AfterEnhance: ReduceRight_AfterEnhance.value,
     ReduceOn_AfterEnhance: ReduceOn_AfterEnhance.value,
     ReduceDown_AfterEnhance: ReduceDown_AfterEnhance.value,
+
+    bitValue: bitValue.value,
+    crfValue: crfValue.value,
+    encoderValue: encoderValue.value,
+    qualityValue: qualityValue.value,
+    videoContainer: videoContainer.value,
+    AudioContainer: AudioContainer.value,
+    isUseCrf: isUseCrf.value,
+    isSaveAudio: isSaveAudio.value,
+    isSavesubtitle: isSavesubtitle.value,
+    outputfolder: outputfolder.value,
   }
 
   window.electron.ipcRenderer.once('preview-info', handlePreviewInfo)
@@ -208,7 +234,7 @@ function startPreview() {
 function previewFrame() {
   loading.value = true
   window.electron.ipcRenderer.once('preview-image', handlePreviewImage)
-  window.electron.ipcRenderer.send('preview_frame', vpyFilePath.value, currentFrame.value)
+  window.electron.ipcRenderer.send('preview-frame', vpyFilePath.value, currentFrame.value)
 }
 
 function onFrameChange(val: number | null) {

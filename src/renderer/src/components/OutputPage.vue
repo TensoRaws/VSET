@@ -57,7 +57,7 @@ function changeSelect(value: string) {
 }
 
 async function selectDirectory() {
-  outputfolder.value = await window.api.selectDirectory()
+  outputfolder.value = await window.electron.ipcRenderer.invoke('open-folder-dialog', ['openDirectory'])
 }
 </script>
 

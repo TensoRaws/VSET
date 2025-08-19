@@ -1,12 +1,13 @@
 import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, dialog, ipcMain, nativeImage, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeImage, shell } from 'electron'
 import appIcon from '../../resources/icon.png?asset'
 import { killAllProcesses } from './childProcessManager'
 import { getGenSettingsPath } from './getCorePath'
-import ipc from './ipc'
-import { preview, preview_frame, RunCommand } from './runCommand'
+import { getCpuInfo, getGpuInfo } from './getSystemInfo'
+import { openDirectory } from './openDirectory'
+import { preview, previewFrame, runCommand } from './runCommand'
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
@@ -24,6 +25,27 @@ function createWindow(): BrowserWindow {
     },
   })
 
+  // ipcMain
+  ipcMain.on('execute-command', runCommand)
+
+  ipcMain.on('preview', preview)
+
+  ipcMain.on('preview-frame', previewFrame)
+
+  ipcMain.on('stop-all-processes', killAllProcesses)
+
+  ipcMain.on('generate-json', (_, data) => {
+    const filePath = getGenSettingsPath(data)
+    writeFileSync(filePath, JSON.stringify(data, null, 2))
+  })
+
+  ipcMain.handle('open-folder-dialog', openDirectory)
+
+  ipcMain.handle('get-gpu-info', getGpuInfo)
+
+  ipcMain.handle('get-cpu-info', getCpuInfo)
+
+  // mainWindow
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()
   })
@@ -33,25 +55,10 @@ function createWindow(): BrowserWindow {
     return { action: 'deny' }
   })
 
-  // ✅ 点击“关闭按钮 X”时：优雅终止进程再退出
-  mainWindow.on('close', async (e) => {
-    if ((app as any).isQuitting)
-      return
-
-    e.preventDefault()
-    ;(app as any).isQuitting = true
-    try {
-      await killAllProcesses()
-    }
-    catch (err) {
-      console.error('❌ 终止子进程时出错：', err)
-    }
-
-    // 手动退出
+  mainWindow.on('close', async () => {
     app.quit()
   })
 
-  // ✅ 加载主页面
   if (is.dev && process.env.ELECTRON_RENDERER_URL) {
     mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
     // mainWindow.webContents.openDevTools()
@@ -74,48 +81,11 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  ipcMain.on('execute-command', RunCommand)
-
-  ipcMain.on('preview', preview)
-  ipcMain.on('preview_frame', preview_frame)
-
-  ipcMain.on('stop-all-processes', () => {
-    killAllProcesses()
-  })
-
-  ipcMain.on('generate-json', (_, data) => {
-    const filePath = getGenSettingsPath(data)
-    writeFileSync(filePath, JSON.stringify(data, null, 2))
-  })
-
-  ipcMain.on('open-folder-dialog', (event) => {
-    dialog
-      .showOpenDialog({
-        properties: ['openDirectory'],
-      })
-      .then((result) => {
-        if (!result.canceled) {
-          event.sender.send('selected-folder', result.filePaths[0])
-        }
-      })
-      .catch((err) => {
-        console.error('Error opening folder dialog:', err)
-      })
-  })
-
-  ipcMain.on('ping', () => console.log('pong'))
-
-  ipcMain.on('upload-file', (_, filePath) => {
-    console.log('File path:', filePath)
-  })
-
-  const win = createWindow()
-  ipc(win)
+  createWindow()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      const newWin = createWindow()
-      ipc(newWin)
+      createWindow()
     }
   })
 })

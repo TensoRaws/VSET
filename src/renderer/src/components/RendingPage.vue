@@ -220,6 +220,8 @@ function StartSR() {
     outputfolder: outputfolder.value,
   }
 
+  console.log('JSON data:', jsonData)
+
   window.electron.ipcRenderer.send('generate-json', jsonData)
   window.electron.ipcRenderer.send('execute-command', jsonData)
 }

@@ -509,9 +509,8 @@ export function requestStop(): void {
 }
 
 export async function preview(event, config_json): Promise<void> {
-  // 工具路径
-  const exeDir = path.dirname(process.execPath)
-  const vipipePath = path.join(exeDir, 'package', 'VSPipe.exe')
+  const vspipePath = getExecPath().vspipe
+
   const videos = config_json.fileList
   if (videos?.length === 0) {
     event.sender.send('ffmpeg-finish')
@@ -520,7 +519,7 @@ export async function preview(event, config_json): Promise<void> {
   const video = videos[0]
 
   const baseName = path.basename(video, path.extname(video))
-  const vpyPath = path.join(exeDir, 'vpyFiles', `${baseName}.vpy`)
+  const vpyPath = getGenVpyPath(config_json, baseName)
 
   // ========== 生成 vpy 文件 ==========
   const vpyFile = generate_vpy(config_json, video)
@@ -538,7 +537,7 @@ export async function preview(event, config_json): Promise<void> {
     fps: '0',
   }
   await new Promise<void>((resolve, reject) => {
-    const vspipeInfoProcess = spawn(vipipePath, ['--info', vpyPath])
+    const vspipeInfoProcess = spawn(vspipePath, ['--info', vpyPath])
     addProcess(vspipeInfoProcess)
 
     let vspipeOut = '' // 用于保存 stdout 内容
@@ -567,12 +566,7 @@ export async function preview(event, config_json): Promise<void> {
         fps: vspipeOut.match(/FPS:\s*([\d/]+)\s*\(([\d.]+) fps\)/)?.[2] || '0',
       }
 
-      event.sender.send('preview-info', {
-        width: info.width,
-        height: info.height,
-        frames: info.frames,
-        fps: info.fps,
-      })
+      event.sender.send('preview-info', info)
       resolve()
     })
 
@@ -585,7 +579,7 @@ export async function preview(event, config_json): Promise<void> {
   event.sender.send('ffmpeg-finish')
 }
 
-export async function preview_frame(event: any, vpyfile: string, currentFrame: number): Promise<void> {
+export async function previewFrame(event: any, vpyfile: string, currentFrame: number): Promise<void> {
   const vspipePath = getExecPath().vspipe
   const ffmpegPath = getExecPath().ffmpeg
 
@@ -625,7 +619,7 @@ export async function preview_frame(event: any, vpyfile: string, currentFrame: n
   })
 }
 
-export async function RunCommand(event, config_json): Promise<void> {
+export async function runCommand(event, config_json): Promise<void> {
   const vspipePath = getExecPath().vspipe
   const ffmpegPath = getExecPath().ffmpeg
   const ffprobePath = getExecPath().ffprobe

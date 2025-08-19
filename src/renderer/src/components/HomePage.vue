@@ -5,50 +5,18 @@ import img2 from '../assets/fufu2.avif'
 import img3 from '../assets/fufu3.avif'
 import img4 from '../assets/fufu4.avif'
 
-declare global {
-  interface Window {
-    _cachedSystemInfo?: {
-      cpu: string[] | null
-      gpu: string[] | null
-    }
-  }
-}
-
 const CPUInfo = ref<Array<string>>([])
 const GPUInfo = ref<Array<string>>([])
 const GPUMainInfo = ref('')
 const currentTime = ref('')
 
-// 从 window 全局缓存中读取或初始化
-if (!window._cachedSystemInfo) {
-  window._cachedSystemInfo = {
-    cpu: null as Array<string> | null,
-    gpu: null as Array<string> | null,
-  }
-}
-
 async function getCPUInfo() {
-  if (window._cachedSystemInfo!.cpu) {
-    CPUInfo.value = window._cachedSystemInfo!.cpu
-  }
-  else {
-    const info = await window.api.getCpuInfo()
-    CPUInfo.value = info
-    window._cachedSystemInfo!.cpu = info
-  }
+  CPUInfo.value = await window.electron.ipcRenderer.invoke('get-cpu-info')
 }
 
 async function getGPUInfo() {
-  if (window._cachedSystemInfo!.gpu) {
-    GPUInfo.value = window._cachedSystemInfo!.gpu
-    GPUMainInfo.value = GPUInfo.value[0]
-  }
-  else {
-    const info = await window.api.getGpuInfo()
-    GPUInfo.value = info
-    GPUMainInfo.value = GPUInfo.value[0]
-    window._cachedSystemInfo!.gpu = info
-  }
+  GPUInfo.value = await window.electron.ipcRenderer.invoke('get-gpu-info')
+  GPUMainInfo.value = GPUInfo.value[0]
 }
 
 function updateTime() {

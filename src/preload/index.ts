@@ -1,18 +1,8 @@
 import { electronAPI } from '@electron-toolkit/preload'
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge } from 'electron'
 
 // Custom APIs for renderer
-const api = {
-  selectDirectory: (): Promise<any> => {
-    return ipcRenderer.invoke('selectDirectory')
-  },
-  getCpuInfo: (): Promise<any> => {
-    return ipcRenderer.invoke('getCpuInfo')
-  },
-  getGpuInfo: (): Promise<any> => {
-    return ipcRenderer.invoke('getGpuInfo')
-  },
-}
+const api = {}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
