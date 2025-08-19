@@ -42,7 +42,7 @@
     "@electron-toolkit/utils": "^4.0.0",
     "@types/node": "^24.3.0",
     "@vicons/ionicons5": "^0.13.0",
-    "@vitejs/plugin-vue": "^5.2.4",
+    "@vitejs/plugin-vue": "^6.0.1",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
     "electron": "^27.3.11",
