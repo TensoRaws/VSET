@@ -56,11 +56,11 @@ jobs:
         if: matrix.os-version == 'x64'
         run: |
           cd .\dist\win-unpacked
-          7z a -r Final2x-windows-${{ matrix.os-version }}-unpacked.7z *
+          7z a -r -v1g VSET.7z *
 
       - name: upload-unpacked-x64
         if: matrix.os-version == 'x64'
         uses: actions/upload-artifact@v4
         with:
-          name: Final2x-windows-${{ matrix.os-version }}-unpacked
-          path: dist/win-unpacked/*.7z
+          name: VSET
+          path: dist/win-unpacked/*.7z*
