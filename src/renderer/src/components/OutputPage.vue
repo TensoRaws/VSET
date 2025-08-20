@@ -46,15 +46,13 @@ const {
   isSaveAudio,
   isSaveSubtitle,
 
-  outputfolder,
-  isUseCustomParams,
-  CustomParams,
+  outputFolder,
 } = storeToRefs(OutputConfigStore)
 
 async function selectDirectory() {
   const pathList = await window.electron.ipcRenderer.invoke('open-folder-dialog', ['openDirectory'])
   if (pathList && pathList.length > 0) {
-    outputfolder.value = pathList[0]
+    outputFolder.value = pathList[0]
   }
   else {
     console.log('No folder selected or selection was cancelled.')
@@ -303,7 +301,7 @@ async function selectDirectory() {
     <div class="slider-demo-block">
       <span class="demonstration">输出文件夹</span>
       <el-input
-        v-model="outputfolder"
+        v-model="outputFolder"
         style="max-width: 600px"
         placeholder="请设置输出文件夹"
       >
@@ -313,43 +311,6 @@ async function selectDirectory() {
           </el-button>
         </template>
       </el-input>
-    </div>
-
-    <div class="flex-container-extra">
-      <n-button
-        type="primary" size="small" style="height: 30px; width: 130px; background-color: #409eff; border-color: #ff6600; font-size: 18px; padding: 10px 24px; border-radius: 9px;"
-        @click="ShowCustomExtra"
-      >
-        自定义
-      </n-button>
-      <n-drawer v-model:show="CustomExtra" :width="400">
-        <n-drawer-content title="在使用之前，请确保自身具备一定的压制知识。">
-          <span class="demonstration" style="font-size: 20px;color: black;">自定义视频压制参数</span>
-          <div class="slider-demo-block">
-            <el-switch
-              v-model="isUseCustomParams"
-              size="large"
-              active-text="启用"
-              inactive-text="关闭"
-            />
-          </div>
-          <div class="slider-demo-block">
-            <el-input
-              v-model="CustomParams"
-              style="width: 100%; font-size: 18px;"
-              :rows="4"
-              type="textarea"
-              spellcheck="false"
-              placeholder="Please input"
-            />
-          </div>
-          <div
-            style="margin-top: 10px; font-size: 14px; color: #333; word-break: break-all;"
-            v-html="highlightedCommand"
-          />
-          <n-divider />
-        </n-drawer-content>
-      </n-drawer>
     </div>
   </div>
 </template>

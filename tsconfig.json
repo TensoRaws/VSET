@@ -1,7 +1,4 @@
 {
-  "compilerOptions": {
-    "declaration": false
-  },
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }],
   "files": []
 }

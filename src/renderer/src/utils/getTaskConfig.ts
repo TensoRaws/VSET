@@ -1,4 +1,4 @@
-import type { JsonData } from '@renderer/type/config'
+import type { TaskConfig } from '@renderer/type/taskConfig'
 
 // 引入 store
 import useInputconfigStore from '@renderer/store/InputStore'
@@ -7,7 +7,7 @@ import useOutputconfigStore from '@renderer/store/OutputStore'
 import { storeToRefs } from 'pinia'
 
 // ✅ 生成 JSON 数据的函数
-export function buildJsonData(): JsonData {
+export function buildJsonData(): TaskConfig {
   // Input
   const InputConfigStore = useInputconfigStore()
   const { fileList } = storeToRefs(InputConfigStore)
@@ -19,7 +19,7 @@ export function buildJsonData(): JsonData {
     AudioContainer,
     isSaveAudio,
     isSaveSubtitle,
-    outputfolder,
+    outputFolder,
     videoContainer,
   } = storeToRefs(OutputConfigStore)
 
@@ -29,7 +29,7 @@ export function buildJsonData(): JsonData {
     AudioContainer: AudioContainer.value,
     isSaveAudio: isSaveAudio.value,
     isSaveSubtitle: isSaveSubtitle.value,
-    outputfolder: String(outputfolder.value),
+    outputFolder: outputFolder.value,
     videoContainer: videoContainer.value,
   }
 }

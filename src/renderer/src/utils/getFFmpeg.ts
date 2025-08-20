@@ -3,7 +3,7 @@ import useOutputconfigStore from '@renderer/store/OutputStore'
 import { storeToRefs } from 'pinia'
 
 // ✅ 生成 JSON 数据的函数
-export function buildFfmpegCMD(): string[] {
+export function buildFFmpegCMD(): string[] {
   // Output
   const OutputConfigStore = useOutputconfigStore()
   const {

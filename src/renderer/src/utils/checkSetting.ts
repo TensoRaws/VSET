@@ -13,10 +13,10 @@ export function CheckSetting(): boolean {
     RifeEnsembleValue,
   } = storeToRefs(VfiSettingStore)
   const {
-    outputfolder,
+    outputFolder,
   } = storeToRefs(OutputConfigStore)
 
-  if (!outputfolder.value) {
+  if (!outputFolder.value) {
     return false// 终止后续执行
   }
 

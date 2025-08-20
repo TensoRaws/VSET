@@ -28,7 +28,7 @@ export default defineStore('outputconfig', () => {
   const isSaveAudio = ref(false)
   const isSaveSubtitle = ref(false)
 
-  const outputfolder = ref('')
+  const outputFolder = ref('')
   const isUseCustomParams = ref(false)
   const CustomParams = ref('')
 
@@ -58,7 +58,7 @@ export default defineStore('outputconfig', () => {
     isSaveAudio,
     isSaveSubtitle,
 
-    outputfolder,
+    outputFolder,
     isUseCustomParams,
     CustomParams,
   }

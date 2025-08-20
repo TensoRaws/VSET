@@ -1,8 +1,8 @@
-export interface JsonData {
+export interface TaskConfig {
   fileList: string[]
   AudioContainer: string
   isSaveAudio: boolean
   isSaveSubtitle: boolean
   videoContainer: string
-  outputfolder: string
+  outputFolder: string
 }

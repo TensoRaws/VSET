@@ -4,7 +4,7 @@ import { useAppStore } from '@renderer/store/AppStore'
 // ✅ 引入状态管理（其他配置）
 import useInputconfigStore from '@renderer/store/InputStore'
 
-import { buildVpyContent } from '@renderer/utils/getVpyConfig'
+import { buildVpyContent } from '@renderer/utils/getVpy'
 import { DownloadOutline } from '@vicons/ionicons5'
 import { NButton, NIcon, NImage, useMessage } from 'naive-ui'
 import { storeToRefs } from 'pinia'

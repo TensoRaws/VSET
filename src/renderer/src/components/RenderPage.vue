@@ -8,9 +8,9 @@ import { useLogStore } from '@renderer/store/LogStore'
 
 // 引入其他 store 数据
 import { CheckSetting } from '@renderer/utils/checkSetting'
-import { buildFfmpegCMD } from '@renderer/utils/getFfmpegConfig'
+import { buildFFmpegCMD } from '@renderer/utils/getFFmpeg'
 import { buildJsonData } from '@renderer/utils/getTaskConfig'
-import { buildVpyContent } from '@renderer/utils/getVpyConfig'
+import { buildVpyContent } from '@renderer/utils/getVpy'
 
 import { useMessage } from 'naive-ui'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -98,7 +98,7 @@ function StartSR() {
   appStore.setRunning(true) // ✅ 设置为运行中，禁用按钮
 
   const vpyContent = buildVpyContent()
-  const ffmpegCMD = buildFfmpegCMD()
+  const ffmpegCMD = buildFFmpegCMD()
   const taskConfig = buildJsonData()
 
   window.electron.ipcRenderer.send('generate-json', taskConfig)
