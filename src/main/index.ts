@@ -8,7 +8,7 @@ import { getGenSettingsPath } from './getCorePath'
 import { getCpuInfo, getGpuInfo } from './getSystemInfo'
 import { openDirectory } from './openDirectory'
 import { preview, previewFrame } from './previewOutput'
-import { runCommand } from './runCommand'
+import { PauseCommand, runCommand } from './runCommand'
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
@@ -19,7 +19,7 @@ function createWindow(): BrowserWindow {
     show: false,
     autoHideMenuBar: true,
     icon: nativeImage.createFromPath(appIcon),
-    title: 'VSET 4.2.2',
+    title: 'VSET 4.3.6',
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -29,6 +29,8 @@ function createWindow(): BrowserWindow {
   // ipcMain
   ipcMain.on('execute-command', runCommand)
 
+  ipcMain.on('pause', PauseCommand)
+
   ipcMain.on('preview', preview)
 
   ipcMain.on('preview-frame', previewFrame)
@@ -36,7 +38,7 @@ function createWindow(): BrowserWindow {
   ipcMain.on('stop-all-processes', killAllProcesses)
 
   ipcMain.on('generate-json', (_, data) => {
-    const filePath = getGenSettingsPath(data)
+    const filePath = getGenSettingsPath()
     writeFileSync(filePath, JSON.stringify(data, null, 2))
   })
 

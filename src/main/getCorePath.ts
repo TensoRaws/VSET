@@ -41,8 +41,8 @@ export function getExtraSRModelPath(): string {
  * 暂时存放在 config_json.outputfolder 目录下
  * @param config_json
  */
-export function getGenSettingsPath(config_json): string {
-  return path.join(config_json.outputfolder, 'setting.json')
+export function getGenSettingsPath(): string {
+  return path.join(app.getAppPath(), 'resources', 'json', 'setting.json')
 }
 
 /**
@@ -51,6 +51,6 @@ export function getGenSettingsPath(config_json): string {
  * @param config_json
  * @param base_name 生成的 vpy 文件名（不含扩展名）
  */
-export function getGenVpyPath(config_json, base_name: string): string {
-  return path.join(config_json.outputfolder, `${base_name}.vpy`)
+export function getGenVpyPath(base_name: string): string {
+  return path.join(app.getAppPath(), 'resources', 'vpyfiles', `${base_name}.vpy`)
 }

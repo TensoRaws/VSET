@@ -7,7 +7,7 @@ export interface FileWithPath extends File {
 }
 
 export default defineStore('inputConfig', () => {
-  const fileList = ref<FileWithPath[]>([])
+  const fileList = ref<{ path: string }[]>([])
 
   return {
     fileList,
