@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export default defineStore('outputconfig', () => {
+export default defineStore('outputConfig', () => {
   const bitValue = ref(20)
   const crfValue = ref(16)
   const cqValue = ref(25)

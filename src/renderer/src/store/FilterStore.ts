@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export default defineStore('filterconfig', () => {
+export default defineStore('filterConfig', () => {
   const UseResize_BeforeEnhance = ref(false)
   const UseResize_AfterEnhance = ref(false)
 

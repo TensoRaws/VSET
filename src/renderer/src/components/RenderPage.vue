@@ -9,7 +9,7 @@ import { useLogStore } from '@renderer/store/LogStore'
 // 引入其他 store 数据
 import { CheckSetting } from '@renderer/utils/checkSetting'
 import { buildFFmpegCMD } from '@renderer/utils/getFFmpeg'
-import { buildJsonData } from '@renderer/utils/getTaskConfig'
+import { buildTaskConfig } from '@renderer/utils/getTaskConfig'
 import { buildVpyContent } from '@renderer/utils/getVpy'
 
 import { useMessage } from 'naive-ui'
@@ -99,7 +99,7 @@ function StartSR() {
 
   const vpyContent = buildVpyContent()
   const ffmpegCMD = buildFFmpegCMD()
-  const taskConfig = buildJsonData()
+  const taskConfig = buildTaskConfig()
 
   window.electron.ipcRenderer.send('generate-json', taskConfig)
   window.electron.ipcRenderer.send('execute-command', vpyContent, taskConfig, ffmpegCMD)

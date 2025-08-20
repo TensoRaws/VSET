@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export default defineStore('vfisettingconfig', () => {
+export default defineStore('VfiSettingConfig', () => {
   const useVfi = ref(false)
   const VfiMethodValue = ref('Rife')
 

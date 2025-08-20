@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export default defineStore('srsettingconfig', () => {
+export default defineStore('SrSettingConfig', () => {
   const useSR = ref(true)
   const SRMethodValue = ref('Real_cugan')
 
