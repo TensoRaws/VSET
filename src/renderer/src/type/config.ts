@@ -3,4 +3,6 @@ export interface JsonData {
   AudioContainer: string
   isSaveAudio: boolean
   isSaveSubtitle: boolean
+  videoContainer: string
+  outputfolder: string
 }

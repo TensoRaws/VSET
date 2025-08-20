@@ -23,9 +23,7 @@ export function buildFfmpegCMD(): string[] {
     H264amfQualityValue,
     HevcqsvQualityValue,
     H264qsvQualityValue,
-    videoContainer,
     isUseCrf,
-    outputfolder,
     isUseCustomParams,
     CustomParams,
   } = storeToRefs(OutputConfigStore)
@@ -172,7 +170,7 @@ export function buildFfmpegCMD(): string[] {
       } `
   }
 
-  cmd_minor += `"${outputfolder.value}/` + `__VIDEO_NAME__` + `_enhance` + `.${videoContainer.value.toLowerCase()}"`
+  cmd_minor += `"__VIDEO_NAME__"`
 
   const vspipecmd = `"-c" "y4m" "__VPY_PATH__" "-"`
   return [vspipecmd, cmd_major, cmd_minor]

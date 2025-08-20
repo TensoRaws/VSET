@@ -148,9 +148,9 @@ export async function runCommand(event, vpyContent, taskConfig, ffmpegCMD): Prom
       const ffmpegMinorArgs = ffmpegCMD[2]
       const ffmpeg_audio_sub_Args = generate_cmd(taskConfig, hasAudio, hasSubtitle)
 
-      const ffmpegArgs = ffmpegMajorArgs.replace('__VIDEO_PATH__', video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace('__VIDEO_NAME__', baseName)
+      const ffmpegArgs = ffmpegMajorArgs.replace('__VIDEO_PATH__', video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace('__VIDEO_NAME__', path.join(taskConfig.outputfolder, `${baseName}_enchance.`) + taskConfig.videoContainer.toLowerCase())
 
-      const full_cmd = `${vspipePath + vspipeArgs} | ${ffmpegPath}${ffmpegArgs}`
+      const full_cmd = `${`"${vspipePath}" ${vspipeArgs}`} | "${ffmpegPath}" ${ffmpegArgs}`
       event.sender.send('ffmpeg-output', `Executing command: ${full_cmd}\n`)
 
       // ========== 5. 渲染并监听输出 ==========
@@ -219,8 +219,7 @@ export async function runCommand(event, vpyContent, taskConfig, ffmpegCMD): Prom
   event.sender.send('ffmpeg-finish')
 }
 
-// eslint-disable-next-line ts/explicit-function-return-type
-export async function PauseCommand(event, data: { isPause: boolean, vspipePID: number }) {
+export async function PauseCommand(event, data: { isPause: boolean, vspipePID: number }): Promise<void> {
   const pssuspendPath = path.join(getCorePath(), 'pssuspend.exe')
   const { isPause, vspipePID } = data
   const action = isPause ? '' : '-r'

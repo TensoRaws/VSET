@@ -19,6 +19,8 @@ export function buildJsonData(): JsonData {
     AudioContainer,
     isSaveAudio,
     isSaveSubtitle,
+    outputfolder,
+    videoContainer,
   } = storeToRefs(OutputConfigStore)
 
   // ✅ 返回 JSON 对象
@@ -27,5 +29,7 @@ export function buildJsonData(): JsonData {
     AudioContainer: AudioContainer.value,
     isSaveAudio: isSaveAudio.value,
     isSaveSubtitle: isSaveSubtitle.value,
+    outputfolder: String(outputfolder.value),
+    videoContainer: videoContainer.value,
   }
 }
