@@ -6,7 +6,7 @@ import HomePage from '../components/HomePage.vue'
 import InputPage from '../components/InputPage.vue'
 import OutputPage from '../components/OutputPage.vue'
 import PreviewPage from '../components/PreviewPage.vue'
-import RendingPage from '../components/RendingPage.vue'
+import RenderPage from '../components/RenderPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -42,7 +42,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/rending',
     name: 'RendingPage',
-    component: RendingPage,
+    component: RenderPage,
   },
   {
     path: '/preview',

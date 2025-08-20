@@ -5,24 +5,15 @@ import path from 'node:path'
 import iconv from 'iconv-lite'
 import { addProcess, removeProcess } from './childProcessManager'
 import { getExecPath, getGenVpyPath } from './getCorePath'
-import { generate_vpy } from './runCommand'
 
-export async function preview(event, config_json): Promise<void> {
+export async function preview(event, video, vpyContent): Promise<void> {
   const vspipePath = getExecPath().vspipe
 
-  const videos = config_json.fileList
-  if (videos?.length === 0) {
-    event.sender.send('ffmpeg-finish')
-    return
-  }
-  const video = videos[0]
-
   const baseName = path.basename(video, path.extname(video))
-  const vpyPath = getGenVpyPath(config_json, baseName)
+  const vpyPath = getGenVpyPath(baseName)
 
   // ========== 生成 vpy 文件 ==========
-  const vpyFile = generate_vpy(config_json, video)
-  writeFileSync(vpyPath, vpyFile)
+  writeFileSync(vpyPath, vpyContent.replace('__VIDEO_PATH__', video))
 
   let info: {
     width: string
