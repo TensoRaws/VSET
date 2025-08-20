@@ -42,7 +42,7 @@ export function getExtraSRModelPath(): string {
  * @param config_json
  */
 export function getGenSettingsPath(): string {
-  return path.join(app.getAppPath(), 'json', 'setting.json')
+  return path.join(app.getAppPath(), 'resources', 'json', 'setting.json')
 }
 
 /**
@@ -52,5 +52,5 @@ export function getGenSettingsPath(): string {
  * @param base_name 生成的 vpy 文件名（不含扩展名）
  */
 export function getGenVpyPath(base_name: string): string {
-  return path.join(app.getAppPath(), 'vpyFiles', `${base_name}.vpy`)
+  return path.join(app.getAppPath(), 'resources', 'vpyfiles', `${base_name}.vpy`)
 }
