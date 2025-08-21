@@ -8,22 +8,22 @@ import { addProcess, removeProcess } from './childProcessManager'
 import { getExecPath, getGenVpyPath } from './getCorePath'
 import { writeVpyFile } from './writeFile'
 
-export async function preview(event: IpcMainEvent, task_config: TaskConfig): Promise<void> {
+export async function preview(event: IpcMainEvent, taskConfig: TaskConfig): Promise<void> {
   const vspipePath = getExecPath().vspipe
 
-  if (!task_config.fileList || task_config.fileList.length === 0) {
+  if (!taskConfig.fileList || taskConfig.fileList.length === 0) {
     event.sender.send('ffmpeg-output', '错误: 没有提供用于预览的文件。\n')
     event.sender.send('ffmpeg-finish')
     return
   }
 
-  const video = task_config.fileList[0] // 只预览第一个视频
+  const video = taskConfig.fileList[0] // 只预览第一个视频
 
   // ========== 生成 vpy 文件 ==========
   // 生成唯一 vpy 路径
   const baseName = path.basename(video, path.extname(video))
-  const vpyPath = getGenVpyPath(task_config, baseName)
-  await writeVpyFile(null, vpyPath, task_config.vpyContent, video)
+  const vpyPath = getGenVpyPath(taskConfig, baseName)
+  await writeVpyFile(null, vpyPath, taskConfig.vpyContent, video)
 
   let info: {
     width: string
@@ -79,12 +79,12 @@ export async function preview(event: IpcMainEvent, task_config: TaskConfig): Pro
   event.sender.send('ffmpeg-finish')
 }
 
-export async function previewFrame(event: IpcMainEvent, vpy_path: string, current_frame: number): Promise<void> {
+export async function previewFrame(event: IpcMainEvent, vpyPath: string, currentFrame: number): Promise<void> {
   const vspipePath = getExecPath().vspipe
   const ffmpegPath = getExecPath().ffmpeg
 
   // 构造一行命令
-  const cmd = `"${vspipePath}" -c y4m --start ${current_frame} --end ${current_frame} "${vpy_path}" - | "${ffmpegPath}" -y -f yuv4mpegpipe -i - -frames:v 1 -vcodec png -f image2pipe -`
+  const cmd = `"${vspipePath}" -c y4m --start ${currentFrame} --end ${currentFrame} "${vpyPath}" - | "${ffmpegPath}" -y -f yuv4mpegpipe -i - -frames:v 1 -vcodec png -f image2pipe -`
 
   const vspipePreviewProcess = spawn(cmd, { shell: true })
   addProcess(vspipePreviewProcess)

@@ -38,16 +38,16 @@ export function getExtraSRModelPath(): string {
 
 /**
  * 获取 VSET 生成的设置文件路径
- * 暂时存放在 config_json.outputfolder 目录下
+ * 暂时存放在 outputfolder 目录下
  */
-export function getGenSettingsPath(task_config: TaskConfig): string {
-  return path.join(task_config.outputFolder, 'setting.json')
+export function getGenSettingsPath(taskConfig: TaskConfig): string {
+  return path.join(taskConfig.outputFolder, 'setting.json')
 }
 
 /**
  * 获取 VSET 生成的 vpy 文件路径
- * 暂时存放在 config_json.outputfolder 目录下
+ * 暂时存放在 outputfolder 目录下
  */
-export function getGenVpyPath(task_config: TaskConfig, base_name: string): string {
-  return path.join(task_config.outputFolder, `${base_name}.vpy`)
+export function getGenVpyPath(taskConfig: TaskConfig, baseName: string): string {
+  return path.join(taskConfig.outputFolder, `${baseName}.vpy`)
 }

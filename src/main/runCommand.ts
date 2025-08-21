@@ -23,32 +23,32 @@ export function requestStop(): void {
   shouldStop = true
 }
 
-function generate_cmd(task_config: TaskConfig, hasAudio: boolean, hasSubtitle: boolean): string {
+function generate_cmd(taskConfig: TaskConfig, hasAudio: boolean, hasSubtitle: boolean): string {
   let cmd = ''
   if (hasAudio) {
     cmd += '"-map" "1:a" '
-    if (task_config.isSaveAudio) {
+    if (taskConfig.isSaveAudio) {
       cmd += '"-c:a" "copy" '
     }
     else {
-      cmd += `"-c:a" ` + `"${task_config.audioContainer.toLowerCase()}" `
+      cmd += `"-c:a" ` + `"${taskConfig.audioContainer.toLowerCase()}" `
     }
   }
-  if (hasSubtitle && task_config.isSaveSubtitle) {
+  if (hasSubtitle && taskConfig.isSaveSubtitle) {
     cmd += '"-map" "1:s" "-c:s" "copy" '
   }
   return cmd
 }
 
-export async function runCommand(event: IpcMainEvent, task_config: TaskConfig): Promise<void> {
-  const vpyContent = task_config.vpyContent
-  const ffmpegCMD = task_config.ffmpegCMD
+export async function runCommand(event: IpcMainEvent, taskConfig: TaskConfig): Promise<void> {
+  const vpyContent = taskConfig.vpyContent
+  const ffmpegCMD = taskConfig.ffmpegCMD
 
   const vspipePath = getExecPath().vspipe
   const ffmpegPath = getExecPath().ffmpeg
   const ffprobePath = getExecPath().ffprobe
 
-  const videos = Array.isArray(task_config.fileList) ? task_config.fileList : []
+  const videos = Array.isArray(taskConfig.fileList) ? taskConfig.fileList : []
 
   shouldStop = false
 
@@ -87,7 +87,7 @@ export async function runCommand(event: IpcMainEvent, task_config: TaskConfig): 
       // ========== 2. 生成 vpy 文件 ==========
       // 生成唯一 vpy 路径
       const baseName = path.basename(video, path.extname(video))
-      const vpyPath = getGenVpyPath(task_config, baseName)
+      const vpyPath = getGenVpyPath(taskConfig, baseName)
       await writeVpyFile(null, vpyPath, vpyContent, video)
 
       // ========== 3. 获取输出视频信息 ==========
@@ -151,9 +151,9 @@ export async function runCommand(event: IpcMainEvent, task_config: TaskConfig): 
       const vspipeArgs = ffmpegCMD[0].replace('__VPY_PATH__', vpyPath)
       const ffmpegMajorArgs = ffmpegCMD[1]
       const ffmpegMinorArgs = ffmpegCMD[2]
-      const ffmpeg_audio_sub_Args = generate_cmd(task_config, hasAudio, hasSubtitle)
+      const ffmpeg_audio_sub_Args = generate_cmd(taskConfig, hasAudio, hasSubtitle)
 
-      const ffmpegArgs = ffmpegMajorArgs.replace('__VIDEO_PATH__', video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace('__VIDEO_NAME__', path.join(task_config.outputFolder, `${baseName}_enhance`) + task_config.videoContainer)
+      const ffmpegArgs = ffmpegMajorArgs.replace('__VIDEO_PATH__', video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace('__VIDEO_NAME__', path.join(taskConfig.outputFolder, `${baseName}_enhance`) + taskConfig.videoContainer)
 
       const full_cmd = `${`"${vspipePath}" ${vspipeArgs}`} | "${ffmpegPath}" ${ffmpegArgs}`
       event.sender.send('ffmpeg-output', `Executing command: ${full_cmd}\n`)
