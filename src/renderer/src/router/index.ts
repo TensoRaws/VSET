@@ -40,8 +40,8 @@ const routes: Array<RouteRecordRaw> = [
     component: OutputPage,
   },
   {
-    path: '/rending',
-    name: 'RendingPage',
+    path: '/render',
+    name: 'RenderPage',
     component: RenderPage,
   },
   {

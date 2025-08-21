@@ -11,6 +11,12 @@ import { writeVpyFile } from './writeFile'
 export async function preview(event: IpcMainEvent, task_config: TaskConfig): Promise<void> {
   const vspipePath = getExecPath().vspipe
 
+  if (!task_config.fileList || task_config.fileList.length === 0) {
+    event.sender.send('ffmpeg-output', '错误: 没有提供用于预览的文件。\n')
+    event.sender.send('ffmpeg-finish')
+    return
+  }
+
   const video = task_config.fileList[0] // 只预览第一个视频
 
   // ========== 生成 vpy 文件 ==========

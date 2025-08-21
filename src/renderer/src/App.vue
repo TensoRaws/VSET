@@ -8,7 +8,7 @@ import {
   AddCircleOutline as inputIcon,
   ColorFillOutline as outputIcon,
   GlassesOutline as PreviewIcon,
-  SendOutline as rendingIcon,
+  SendOutline as renderingIcon,
 } from '@vicons/ionicons5'
 import { NIcon } from 'naive-ui'
 import { defineComponent, h, ref } from 'vue'
@@ -56,9 +56,9 @@ const menuOptions: MenuOption[] = [
 
   {
     whateverLabel: '渲染',
-    whateverKey: 'rending',
-    icon: renderIcon(rendingIcon),
-    path: '/rending',
+    whateverKey: 'render',
+    icon: renderIcon(renderingIcon),
+    path: '/render',
   },
   {
     whateverLabel: '预览',
