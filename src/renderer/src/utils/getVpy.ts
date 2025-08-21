@@ -73,18 +73,13 @@ export function buildVpyContent(): string {
 
   // 前置缩放(需要在此改进色彩控制)
   if (UseResize_BeforeEnhance.value === true) {
-    vpyContent
-            += `res = core.resize.Bicubic(clip=res,width=${ResizeWidth_BeforeEnhance.value
-      },height=${ResizeHeight_BeforeEnhance.value},format=vs.YUV420P16)\n`
+    vpyContent += `res = core.resize.Bicubic(clip=res,width=${ResizeWidth_BeforeEnhance.value},height=${ResizeHeight_BeforeEnhance.value},format=vs.YUV420P16)\n`
   }
   else {
     vpyContent += 'res = core.resize.Bicubic(clip=res,format=vs.YUV420P16)\n'
   }
 
-  vpyContent += `res = core.std.Crop(clip=res,left=${ReduceLeft_BeforeEnhance.value
-  }, right=${ReduceRight_BeforeEnhance.value
-  }, top=${ReduceOn_BeforeEnhance.value
-  }, bottom=${ReduceDown_BeforeEnhance.value})\n`
+  vpyContent += `res = core.std.Crop(clip=res,left=${ReduceLeft_BeforeEnhance.value}, right=${ReduceRight_BeforeEnhance.value}, top=${ReduceOn_BeforeEnhance.value}, bottom=${ReduceDown_BeforeEnhance.value})\n`
 
   // 超分
   if (useSR.value === true) {
@@ -309,9 +304,9 @@ export function buildVpyContent(): string {
         AniSD_DC_SPAN_x2: 'AniSD_DC_SPAN_x2.onnx',
       }
 
-      const model = `$__EXTRA_MODEL_PATH__/${model_switch[SR_ExtraModelValue.value] || 'AniSD_DC_SPAN_x2.onnx'}`
+      const model = `__EXTRA_MODEL_PATH__/${model_switch[SR_ExtraModelValue.value] || 'AniSD_DC_SPAN_x2.onnx'}`
 
-      vpyContent += `res = vsmlrt.inference(res, network_path="${model}", backend=device_sr)\n`
+      vpyContent += `res = vsmlrt.inference(res, network_path=r"${model}", backend=device_sr)\n`
     }
   }
 
