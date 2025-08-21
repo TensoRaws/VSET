@@ -1,17 +1,19 @@
+import type { TaskConfig } from '@shared/type/taskConfig'
+import type { IpcMainEvent } from 'electron'
 import type { Buffer } from 'node:buffer'
 import { exec as execCallback, spawn } from 'node:child_process'
-import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { promisify } from 'node:util'
 import iconv from 'iconv-lite'
 import { addProcess, removeProcess } from './childProcessManager'
 import { getCorePath, getExecPath, getGenVpyPath } from './getCorePath'
+import { writeVpyFile } from './writeFile'
 
 const exec = promisify(execCallback)
-function splitArgs(str): string[] {
-  return str
-    .match(/"[^"]+"|\S+/g) // 匹配带引号的或普通的
-    .map(s => s.replace(/^"|"$/g, '')) // 去掉首尾引号
+
+function splitArgs(str: string): string[] {
+  const matches = str.match(/"[^"]+"|\S+/g)
+  return matches ? matches.map(s => s.replace(/^"|"$/g, '')) : []
 }
 
 // 中断循环
@@ -21,29 +23,32 @@ export function requestStop(): void {
   shouldStop = true
 }
 
-function generate_cmd(taskconfig, hasAudio, hasSubtitle): string {
+function generate_cmd(task_config: TaskConfig, hasAudio: boolean, hasSubtitle: boolean): string {
   let cmd = ''
   if (hasAudio) {
     cmd += '"-map" "1:a" '
-    if (taskconfig.isSaveAudio === true) {
+    if (task_config.isSaveAudio) {
       cmd += '"-c:a" "copy" '
     }
     else {
-      cmd += `"-c:a" ` + `"${taskconfig.AudioContainer.toLowerCase()}" `
+      cmd += `"-c:a" ` + `"${task_config.audioContainer.toLowerCase()}" `
     }
   }
-  if (hasSubtitle && taskconfig.isSavesubtitle === true) {
+  if (hasSubtitle && task_config.isSaveSubtitle) {
     cmd += '"-map" "1:s" "-c:s" "copy" '
   }
   return cmd
 }
 
-export async function runCommand(event, vpyContent, taskConfig, ffmpegCMD): Promise<void> {
+export async function runCommand(event: IpcMainEvent, task_config: TaskConfig): Promise<void> {
+  const vpyContent = task_config.vpyContent
+  const ffmpegCMD = task_config.ffmpegCMD
+
   const vspipePath = getExecPath().vspipe
   const ffmpegPath = getExecPath().ffmpeg
   const ffprobePath = getExecPath().ffprobe
 
-  const videos = Array.isArray(taskConfig.fileList) ? taskConfig.fileList : []
+  const videos = Array.isArray(task_config.fileList) ? task_config.fileList : []
 
   shouldStop = false
 
@@ -54,10 +59,6 @@ export async function runCommand(event, vpyContent, taskConfig, ffmpegCMD): Prom
       break
     }
     try {
-      // 生成唯一 vpy 路径
-      const baseName = path.basename(video, path.extname(video))
-      const vpyPath = getGenVpyPath(baseName)
-
       // ========== 1. 获取输入视频信息 ==========
       const ffprobeCommand = `"${ffprobePath}" -v error -show_streams -of json "${video}"`
       const { stdout: probeOut } = await exec(ffprobeCommand)
@@ -82,8 +83,12 @@ export async function runCommand(event, vpyContent, taskConfig, ffmpegCMD): Prom
         event.sender.send('ffmpeg-output', `是否含有音频: ${audioText}\n`)
         event.sender.send('ffmpeg-output', `是否含有字幕: ${subtitleText}\n`)
       }
+
       // ========== 2. 生成 vpy 文件 ==========
-      writeFileSync(vpyPath, vpyContent.replace('__VIDEO_PATH__', video))
+      // 生成唯一 vpy 路径
+      const baseName = path.basename(video, path.extname(video))
+      const vpyPath = getGenVpyPath(task_config, baseName)
+      await writeVpyFile(null, vpyPath, vpyContent, video)
 
       // ========== 3. 获取输出视频信息 ==========
       let info: {
@@ -146,9 +151,9 @@ export async function runCommand(event, vpyContent, taskConfig, ffmpegCMD): Prom
       const vspipeArgs = ffmpegCMD[0].replace('__VPY_PATH__', vpyPath)
       const ffmpegMajorArgs = ffmpegCMD[1]
       const ffmpegMinorArgs = ffmpegCMD[2]
-      const ffmpeg_audio_sub_Args = generate_cmd(taskConfig, hasAudio, hasSubtitle)
+      const ffmpeg_audio_sub_Args = generate_cmd(task_config, hasAudio, hasSubtitle)
 
-      const ffmpegArgs = ffmpegMajorArgs.replace('__VIDEO_PATH__', video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace('__VIDEO_NAME__', path.join(taskConfig.outputfolder, `${baseName}_enchance.`) + taskConfig.videoContainer.toLowerCase())
+      const ffmpegArgs = ffmpegMajorArgs.replace('__VIDEO_PATH__', video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace('__VIDEO_NAME__', path.join(task_config.outputFolder, `${baseName}_enchance.`) + task_config.videoContainer.toLowerCase())
 
       const full_cmd = `${`"${vspipePath}" ${vspipeArgs}`} | "${ffmpegPath}" ${ffmpegArgs}`
       event.sender.send('ffmpeg-output', `Executing command: ${full_cmd}\n`)
@@ -219,7 +224,7 @@ export async function runCommand(event, vpyContent, taskConfig, ffmpegCMD): Prom
   event.sender.send('ffmpeg-finish')
 }
 
-export async function PauseCommand(event, data: { isPause: boolean, vspipePID: number }): Promise<void> {
+export async function PauseCommand(event: IpcMainEvent, data: { isPause: boolean, vspipePID: number }): Promise<void> {
   const pssuspendPath = path.join(getCorePath(), 'pssuspend.exe')
   const { isPause, vspipePID } = data
   const action = isPause ? '' : '-r'

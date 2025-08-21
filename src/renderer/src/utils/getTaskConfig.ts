@@ -1,9 +1,11 @@
-import type { TaskConfig } from '@renderer/type/taskConfig'
+import type { TaskConfig } from '@shared/type/taskConfig'
 
 // 引入 store
 import useInputconfigStore from '@renderer/store/InputStore'
 import useOutputconfigStore from '@renderer/store/OutputStore'
 
+import { buildFFmpegCMD } from '@renderer/utils/getFFmpeg'
+import { buildVpyContent } from '@renderer/utils/getVpy'
 import { storeToRefs } from 'pinia'
 
 // ✅ 生成 JSON 数据的函数
@@ -16,20 +18,21 @@ export function buildTaskConfig(): TaskConfig {
   // Output
   const OutputConfigStore = useOutputconfigStore()
   const {
-    AudioContainer,
+    audioContainer,
     isSaveAudio,
     isSaveSubtitle,
     outputFolder,
     videoContainer,
   } = storeToRefs(OutputConfigStore)
 
-  // ✅ 返回 JSON 对象
   return {
     fileList: fileListNames,
-    AudioContainer: AudioContainer.value,
-    isSaveAudio: isSaveAudio.value,
-    isSaveSubtitle: isSaveSubtitle.value,
     outputFolder: outputFolder.value,
     videoContainer: videoContainer.value,
+    audioContainer: audioContainer.value,
+    vpyContent: buildVpyContent(),
+    ffmpegCMD: buildFFmpegCMD(),
+    isSaveAudio: isSaveAudio.value,
+    isSaveSubtitle: isSaveSubtitle.value,
   }
 }

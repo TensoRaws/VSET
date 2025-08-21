@@ -1,5 +1,3 @@
-import path from 'node:path'
-
 import useFilterconfigStore from '@renderer/store/FilterStore'
 import useSrsettingconfigStore from '@renderer/store/SrSettingsStore'
 import useVfisettingconfigStore from '@renderer/store/VfiSettingsStore'
@@ -310,16 +308,8 @@ export function buildVpyContent(): string {
       const model_switch = {
         AniSD_DC_SPAN_x2: 'AniSD_DC_SPAN_x2.onnx',
       }
-      const exeDir = path.dirname(process.execPath)
 
-      const model = (path.join(
-        exeDir,
-        'package',
-        'vs-coreplugins',
-        'models',
-        'VSET_ExtraSrModel',
-        model_switch[SR_ExtraModelValue.value] || 'AniSD_DC_SPAN_x2.onnx',
-      )).replace(/\\/g, '/')
+      const model = `$__EXTRA_MODEL_PATH__/${model_switch[SR_ExtraModelValue.value] || 'AniSD_DC_SPAN_x2.onnx'}`
 
       vpyContent += `res = vsmlrt.inference(res, network_path="${model}", backend=device_sr)\n`
     }

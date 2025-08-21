@@ -40,7 +40,7 @@ const {
   H264qsvQualityValue,
 
   videoContainer,
-  AudioContainer,
+  audioContainer,
   isUseCrf,
 
   isSaveAudio,
@@ -272,7 +272,7 @@ async function selectDirectory() {
       <span class="demonstration">音频格式</span>
 
       <el-select
-        v-model="AudioContainer"
+        v-model="audioContainer"
         placeholder="Select"
         size="large"
         style="width: 240px"

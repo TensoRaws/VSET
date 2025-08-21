@@ -12,7 +12,7 @@ export const useAppStore = defineStore('app', {
     setRunning(val: boolean) {
       this.isRunning = val
     },
-    sePauste(val: boolean) {
+    setPause(val: boolean) {
       this.isPause = val
     },
     setVspipePID(val: number) {

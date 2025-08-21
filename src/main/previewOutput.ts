@@ -1,19 +1,23 @@
+import type { TaskConfig } from '@shared/type/taskConfig'
+import type { IpcMainEvent } from 'electron'
 import { Buffer } from 'node:buffer'
 import { spawn } from 'node:child_process'
-import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 import iconv from 'iconv-lite'
 import { addProcess, removeProcess } from './childProcessManager'
 import { getExecPath, getGenVpyPath } from './getCorePath'
+import { writeVpyFile } from './writeFile'
 
-export async function preview(event, video, vpyContent): Promise<void> {
+export async function preview(event: IpcMainEvent, task_config: TaskConfig): Promise<void> {
   const vspipePath = getExecPath().vspipe
 
-  const baseName = path.basename(video, path.extname(video))
-  const vpyPath = getGenVpyPath(baseName)
+  const video = task_config.fileList[0] // 只预览第一个视频
 
   // ========== 生成 vpy 文件 ==========
-  writeFileSync(vpyPath, vpyContent.replace('__VIDEO_PATH__', video))
+  // 生成唯一 vpy 路径
+  const baseName = path.basename(video, path.extname(video))
+  const vpyPath = getGenVpyPath(task_config, baseName)
+  await writeVpyFile(null, vpyPath, task_config.vpyContent, video)
 
   let info: {
     width: string
@@ -69,7 +73,7 @@ export async function preview(event, video, vpyContent): Promise<void> {
   event.sender.send('ffmpeg-finish')
 }
 
-export async function previewFrame(event: any, vpyfile: string, currentFrame: number): Promise<void> {
+export async function previewFrame(event: IpcMainEvent, vpyfile: string, currentFrame: number): Promise<void> {
   const vspipePath = getExecPath().vspipe
   const ffmpegPath = getExecPath().ffmpeg
 

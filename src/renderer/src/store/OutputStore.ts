@@ -22,15 +22,13 @@ export default defineStore('outputConfig', () => {
   const H264qsvQualityValue = ref('medium')
 
   const videoContainer = ref('MP4')
-  const AudioContainer = ref('AAC')
+  const audioContainer = ref('AAC')
 
   const isUseCrf = ref(true)
   const isSaveAudio = ref(false)
   const isSaveSubtitle = ref(false)
 
   const outputFolder = ref('')
-  const isUseCustomParams = ref(false)
-  const CustomParams = ref('')
 
   return {
     bitValue,
@@ -52,15 +50,13 @@ export default defineStore('outputConfig', () => {
     H264qsvQualityValue,
 
     videoContainer,
-    AudioContainer,
+    audioContainer,
     isUseCrf,
 
     isSaveAudio,
     isSaveSubtitle,
 
     outputFolder,
-    isUseCustomParams,
-    CustomParams,
   }
 }, {
   persist: true,

@@ -2,12 +2,10 @@
 import type { VNode } from 'vue'
 import { useAppStore } from '@renderer/store/AppStore'
 // ✅ 引入状态管理（其他配置）
-import useInputconfigStore from '@renderer/store/InputStore'
 
-import { buildVpyContent } from '@renderer/utils/getVpy'
+import { buildTaskConfig } from '@renderer/utils/getTaskConfig'
 import { DownloadOutline } from '@vicons/ionicons5'
 import { NButton, NIcon, NImage, useMessage } from 'naive-ui'
-import { storeToRefs } from 'pinia'
 import { computed, h, onMounted, ref } from 'vue'
 
 const appStore = useAppStore()
@@ -20,9 +18,6 @@ const currentFrame = ref(0)
 const previewImageSrc = ref('')
 const loading = ref(false)
 const isRunning = computed(() => appStore.isRunning)
-// 引入其他 store 数据
-const InputConfigStore = useInputconfigStore()
-const { fileList } = storeToRefs(InputConfigStore)
 
 // 保存图片真实宽高
 const imageNaturalWidth = ref(0)
@@ -94,16 +89,11 @@ function startPreview() {
     return
   appStore.setRunning(true)
 
-  const fileListNames = fileList.value.map(file => (file.path).replace(/\\/g, '/'))
-  if (fileListNames?.length === 0) {
-    return
-  }
-  const video = fileListNames[0]
-  const vpyContent = buildVpyContent()
+  const taskConfig = buildTaskConfig()
 
   window.electron.ipcRenderer.once('preview-info', handlePreviewInfo)
   window.electron.ipcRenderer.once('preview-image', handlePreviewImage)
-  window.electron.ipcRenderer.send('preview', video, vpyContent)
+  window.electron.ipcRenderer.send('preview', taskConfig)
 }
 
 function previewFrame() {

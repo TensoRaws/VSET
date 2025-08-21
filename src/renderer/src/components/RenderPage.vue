@@ -8,9 +8,7 @@ import { useLogStore } from '@renderer/store/LogStore'
 
 // 引入其他 store 数据
 import { CheckSetting } from '@renderer/utils/checkSetting'
-import { buildFFmpegCMD } from '@renderer/utils/getFFmpeg'
 import { buildTaskConfig } from '@renderer/utils/getTaskConfig'
-import { buildVpyContent } from '@renderer/utils/getVpy'
 
 import { useMessage } from 'naive-ui'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -32,7 +30,7 @@ function stopProcesses() {
   window.electron.ipcRenderer.send('stop-all-processes')
   message.warning('已请求终止所有子进程')
   appStore.setRunning(false)
-  appStore.sePauste(true)
+  appStore.setPause(true)
 }
 
 // ✅ IPC 输出回调
@@ -76,10 +74,10 @@ function Pause() {
   })
 
   if (isPause.value) {
-    appStore.sePauste(false)
+    appStore.setPause(false)
   }
   else {
-    appStore.sePauste(true)
+    appStore.setPause(true)
   }
 }
 
@@ -92,17 +90,16 @@ onBeforeUnmount(() => {
 function StartSR() {
   // 调用参数错误查询函数
   if (!CheckSetting()) {
+    console.log('参数错误，无法启动渲染流程')
+    message.error('参数错误，无法启动渲染流程', { duration: 5000 })
     return
   }
 
   appStore.setRunning(true) // ✅ 设置为运行中，禁用按钮
 
-  const vpyContent = buildVpyContent()
-  const ffmpegCMD = buildFFmpegCMD()
   const taskConfig = buildTaskConfig()
-
   window.electron.ipcRenderer.send('generate-json', taskConfig)
-  window.electron.ipcRenderer.send('execute-command', vpyContent, taskConfig, ffmpegCMD)
+  window.electron.ipcRenderer.send('execute-command', taskConfig)
 }
 
 // ✅ 日志自动滚动到底部
