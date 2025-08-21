@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export default defineStore('outputConfig', () => {
+export default defineStore('outputConfig0', () => {
   const bitValue = ref(20)
   const crfValue = ref(16)
   const cqValue = ref(25)
@@ -21,7 +21,7 @@ export default defineStore('outputConfig', () => {
   const HevcqsvQualityValue = ref('medium')
   const H264qsvQualityValue = ref('medium')
 
-  const videoContainer = ref('MP4')
+  const videoContainer = ref('.mp4')
   const audioContainer = ref('AAC')
 
   const isUseCrf = ref(true)
