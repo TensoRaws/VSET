@@ -153,7 +153,7 @@ export async function runCommand(event: IpcMainEvent, task_config: TaskConfig): 
       const ffmpegMinorArgs = ffmpegCMD[2]
       const ffmpeg_audio_sub_Args = generate_cmd(task_config, hasAudio, hasSubtitle)
 
-      const ffmpegArgs = ffmpegMajorArgs.replace('__VIDEO_PATH__', video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace('__VIDEO_NAME__', path.join(task_config.outputFolder, `${baseName}_enchance.`) + task_config.videoContainer.toLowerCase())
+      const ffmpegArgs = ffmpegMajorArgs.replace('__VIDEO_PATH__', video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace('__VIDEO_NAME__', path.join(task_config.outputFolder, `${baseName}_enhance`) + task_config.videoContainer)
 
       const full_cmd = `${`"${vspipePath}" ${vspipeArgs}`} | "${ffmpegPath}" ${ffmpegArgs}`
       event.sender.send('ffmpeg-output', `Executing command: ${full_cmd}\n`)

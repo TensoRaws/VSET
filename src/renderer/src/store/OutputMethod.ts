@@ -477,15 +477,15 @@ const QSVH264_options = [
 
 const VideoContainer_options = [
   {
-    value: 'mp4',
+    value: '.mp4',
     label: 'MP4',
   },
   {
-    value: 'mkv',
+    value: '.mkv',
     label: 'MKV',
   },
   {
-    value: 'mov',
+    value: '.mov',
     label: 'MOV',
   },
 ]
