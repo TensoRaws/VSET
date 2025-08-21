@@ -2,7 +2,7 @@ import { dialog } from 'electron'
 
 /**
  * @description Open a directory or file/multiple files
- * @param _ Unused parameter, can be used for context in future
+ * @param _ IpcMainEvent
  * @param p The properties of the dialog
  */
 export async function openDirectory(_, p: Array<'openFile' | 'openDirectory' | 'multiSelections'>): Promise<Array<string>> {

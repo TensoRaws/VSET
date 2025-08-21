@@ -388,7 +388,7 @@ export function buildVpyContent(): string {
         || RifeModelValue.value === 'v4_26') {
         tilesize_requirement = 64
       }
-      vpyContent += `Borders=${tilesize_requirement} / ${RifeScaleValue}\n`
+      vpyContent += `Borders=${tilesize_requirement} / ${RifeScaleValue.value}\n`
       vpyContent += 'res_height = (Borders - res.height % Borders) \n'
       vpyContent += 'res_width  = (Borders - res.width  % Borders) \n'
       vpyContent += 'res = core.std.AddBorders(clip=res, right=res_width, bottom=res_height)\n'
