@@ -206,7 +206,7 @@ export async function runCommand(event: IpcMainEvent, task_config: TaskConfig): 
         })
 
         renderProcess.on('close', () => {
-          // removeProcess(renderProcess)
+          removeProcess(renderProcess)
           event.sender.send('ffmpeg-output', 'finish\n')
           resolve()
         })
