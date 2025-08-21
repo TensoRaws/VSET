@@ -79,12 +79,12 @@ export async function preview(event: IpcMainEvent, task_config: TaskConfig): Pro
   event.sender.send('ffmpeg-finish')
 }
 
-export async function previewFrame(event: IpcMainEvent, vpyfile: string, currentFrame: number): Promise<void> {
+export async function previewFrame(event: IpcMainEvent, vpy_path: string, current_frame: number): Promise<void> {
   const vspipePath = getExecPath().vspipe
   const ffmpegPath = getExecPath().ffmpeg
 
   // 构造一行命令
-  const cmd = `"${vspipePath}" -c y4m --start ${currentFrame} --end ${currentFrame} "${vpyfile}" - | "${ffmpegPath}" -y -f yuv4mpegpipe -i - -frames:v 1 -vcodec png -f image2pipe -`
+  const cmd = `"${vspipePath}" -c y4m --start ${current_frame} --end ${current_frame} "${vpy_path}" - | "${ffmpegPath}" -y -f yuv4mpegpipe -i - -frames:v 1 -vcodec png -f image2pipe -`
 
   const vspipePreviewProcess = spawn(cmd, { shell: true })
   addProcess(vspipePreviewProcess)
