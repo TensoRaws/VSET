@@ -2,13 +2,12 @@
 import { Delete, Lock, WarningFilled } from '@element-plus/icons-vue'
 // ✅ 引入 App 状态 store（isRunning）
 import { useAppStore } from '@renderer/store/AppStore'
-
 // ✅ 引入日志 store
 import { useLogStore } from '@renderer/store/LogStore'
-
 // 引入其他 store 数据
 import { CheckSetting } from '@renderer/utils/checkSetting'
 import { buildTaskConfig } from '@renderer/utils/getTaskConfig'
+import { IpcChannelName } from '@shared/constant/ipc'
 
 import { useMessage } from 'naive-ui'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -40,20 +39,20 @@ function handleOutput(_, msg: string) {
 
 // ✅ 挂载监听器
 onMounted(() => {
-  window.electron.ipcRenderer.removeAllListeners('ffmpeg-output')
-  window.electron.ipcRenderer.on('ffmpeg-output', handleOutput)
+  window.electron.ipcRenderer.removeAllListeners(IpcChannelName.FFMPEG_OUTPUT)
+  window.electron.ipcRenderer.on(IpcChannelName.FFMPEG_OUTPUT, handleOutput)
 
-  window.electron.ipcRenderer.removeAllListeners('vspipePID')
-  window.electron.ipcRenderer.removeAllListeners('ffmpegPID')
+  window.electron.ipcRenderer.removeAllListeners(IpcChannelName.VSPIPE_PID)
+  window.electron.ipcRenderer.removeAllListeners(IpcChannelName.FFMPEG_PID)
 
-  window.electron.ipcRenderer.on('vspipePID', (_, pid: number) => {
+  window.electron.ipcRenderer.on(IpcChannelName.VSPIPE_PID, (_, pid: number) => {
     appStore.setVspipePID(pid)
   })
-  window.electron.ipcRenderer.on('ffmpegPID', (_, pid: number) => {
+  window.electron.ipcRenderer.on(IpcChannelName.FFMPEG_PID, (_, pid: number) => {
     appStore.setFfmpegPID(pid)
   })
 
-  window.electron.ipcRenderer.on('ffmpeg-finish', () => {
+  window.electron.ipcRenderer.on(IpcChannelName.FFMPEG_FINISHED, () => {
     appStore.setRunning(false) // ✅ 渲染完成后恢复按钮
   })
 })
@@ -82,8 +81,8 @@ function Pause() {
 }
 
 onBeforeUnmount(() => {
-  window.electron.ipcRenderer.removeListener('ffmpeg-output', handleOutput)
-  window.electron.ipcRenderer.removeAllListeners('ffmpeg-finish')
+  window.electron.ipcRenderer.removeListener(IpcChannelName.FFMPEG_OUTPUT, handleOutput)
+  window.electron.ipcRenderer.removeAllListeners(IpcChannelName.FFMPEG_FINISHED)
 })
 
 // ✅ 启动渲染流程
@@ -98,8 +97,8 @@ function StartSR() {
   appStore.setRunning(true) // ✅ 设置为运行中，禁用按钮
 
   const taskConfig = buildTaskConfig()
-  window.electron.ipcRenderer.send('generate-json', taskConfig)
-  window.electron.ipcRenderer.send('execute-command', taskConfig)
+  window.electron.ipcRenderer.send(IpcChannelName.GENERATE_JSON, taskConfig)
+  window.electron.ipcRenderer.send(IpcChannelName.EXECUTE_COMMAND, taskConfig)
 }
 
 // ✅ 日志自动滚动到底部

@@ -4,13 +4,13 @@ import { useAppStore } from '@renderer/store/AppStore'
 // ✅ 引入状态管理（其他配置）
 
 import { buildTaskConfig } from '@renderer/utils/getTaskConfig'
+import { IpcChannelName } from '@shared/constant/ipc'
 import { DownloadOutline } from '@vicons/ionicons5'
 import { NButton, NIcon, NImage, useMessage } from 'naive-ui'
 import { computed, h, onMounted, ref } from 'vue'
 
 const appStore = useAppStore()
 const message = useMessage()
-
 const vpyFilePath = ref('目标.vpy')
 
 const frameCount = ref<number>(0)
@@ -91,15 +91,15 @@ function startPreview() {
 
   const taskConfig = buildTaskConfig()
 
-  window.electron.ipcRenderer.once('preview-info', handlePreviewInfo)
-  window.electron.ipcRenderer.once('preview-image', handlePreviewImage)
-  window.electron.ipcRenderer.send('preview', taskConfig)
+  window.electron.ipcRenderer.once(IpcChannelName.PREVIEW_INFO, handlePreviewInfo)
+  window.electron.ipcRenderer.once(IpcChannelName.PREVIEW_IMAGE, handlePreviewImage)
+  window.electron.ipcRenderer.send(IpcChannelName.PREVIEW, taskConfig)
 }
 
 function previewFrame() {
   loading.value = true
-  window.electron.ipcRenderer.once('preview-image', handlePreviewImage)
-  window.electron.ipcRenderer.send('preview-frame', vpyFilePath.value, currentFrame.value)
+  window.electron.ipcRenderer.once(IpcChannelName.PREVIEW_IMAGE, handlePreviewImage)
+  window.electron.ipcRenderer.send(IpcChannelName.PREVIEW_FRAME, vpyFilePath.value, currentFrame.value)
 }
 
 function onFrameChange(val: number | null) {
@@ -120,11 +120,11 @@ function onImageLoad(event: Event) {
 
 // ✅ 挂载监听器
 onMounted(() => {
-  window.electron.ipcRenderer.on('ffmpeg-finish', () => {
+  window.electron.ipcRenderer.on(IpcChannelName.FFMPEG_FINISHED, () => {
     appStore.setRunning(false) // ✅ 渲染完成后恢复按钮
   })
 
-  window.electron.ipcRenderer.on('preview-vpyPath', (_event, vpyfile: string) => {
+  window.electron.ipcRenderer.on(IpcChannelName.PREVIEW_VPY_PATH, (_event, vpyfile: string) => {
     vpyFilePath.value = vpyfile
   })
 })

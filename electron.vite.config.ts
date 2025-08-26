@@ -5,6 +5,12 @@ import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 export default defineConfig({
   main: {
     plugins: [externalizeDepsPlugin()],
+    resolve: {
+      alias: {
+        '@shared': resolve('src/shared'),
+        '@main': resolve('src/main'),
+      },
+    },
   },
   preload: {
     plugins: [externalizeDepsPlugin()],
@@ -13,8 +19,10 @@ export default defineConfig({
     resolve: {
       alias: {
         '@renderer': resolve('src/renderer/src'),
+        '@shared': resolve('src/shared'),
       },
     },
     plugins: [vue()],
   },
+
 })

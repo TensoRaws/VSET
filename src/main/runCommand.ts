@@ -4,6 +4,8 @@ import type { Buffer } from 'node:buffer'
 import { exec as execCallback, spawn } from 'node:child_process'
 import path from 'node:path'
 import { promisify } from 'node:util'
+import { IpcChannelName } from '@shared/constant/ipc'
+import { MagicStr } from '@shared/constant/magicStr'
 import iconv from 'iconv-lite'
 import { addProcess, removeProcess } from './childProcessManager'
 import { getCorePath, getExecPath, getGenVpyPath } from './getCorePath'
@@ -54,7 +56,7 @@ export async function runCommand(event: IpcMainEvent, taskConfig: TaskConfig): P
 
   for (const video of videos) {
     if (shouldStop) {
-      event.sender.send('ffmpeg-output', `已终止循环:\n`)
+      event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `已终止循环:\n`)
       shouldStop = false
       break
     }
@@ -76,12 +78,12 @@ export async function runCommand(event: IpcMainEvent, taskConfig: TaskConfig): P
         const audioText = hasAudio ? '是' : '否'
         const subtitleText = hasSubtitle ? '是' : '否' // 字幕信息
 
-        event.sender.send('ffmpeg-output', `正在处理输入视频 ${video} 的信息:\n`)
-        event.sender.send('ffmpeg-output', `帧数(输入): ${frameCount}\n`)
-        event.sender.send('ffmpeg-output', `帧率(输入): ${frameRate}\n`)
-        event.sender.send('ffmpeg-output', `分辨率(输入): ${resolution}\n`)
-        event.sender.send('ffmpeg-output', `是否含有音频: ${audioText}\n`)
-        event.sender.send('ffmpeg-output', `是否含有字幕: ${subtitleText}\n`)
+        event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `正在处理输入视频 ${video} 的信息:\n`)
+        event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `帧数(输入): ${frameCount}\n`)
+        event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `帧率(输入): ${frameRate}\n`)
+        event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `分辨率(输入): ${resolution}\n`)
+        event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `是否含有音频: ${audioText}\n`)
+        event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `是否含有字幕: ${subtitleText}\n`)
       }
 
       // ========== 2. 生成 vpy 文件 ==========
@@ -104,7 +106,7 @@ export async function runCommand(event: IpcMainEvent, taskConfig: TaskConfig): P
       }
       await new Promise<void>((resolve, reject) => {
         const vspipeInfoProcess = spawn(vspipePath, ['--info', vpyPath])
-        addProcess(vspipeInfoProcess)
+        addProcess('vspipe', vspipeInfoProcess)
 
         let vspipeOut = '' // 用于保存 stdout 内容
         // eslint-disable-next-line unused-imports/no-unused-vars
@@ -113,18 +115,18 @@ export async function runCommand(event: IpcMainEvent, taskConfig: TaskConfig): P
         vspipeInfoProcess.stdout.on('data', (data: Buffer) => {
           const str = iconv.decode(data, 'gbk')
           vspipeOut += str
-          event.sender.send('ffmpeg-output', `${str}`)
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `${str}`)
         })
 
         vspipeInfoProcess.stderr.on('data', (data: Buffer) => {
           const str = iconv.decode(data, 'gbk')
           stderrOut += str
-          event.sender.send('ffmpeg-output', `${str}`)
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `${str}`)
         })
 
         vspipeInfoProcess.on('close', (code) => {
           removeProcess(vspipeInfoProcess)
-          event.sender.send('ffmpeg-output', `vspipe info 执行完毕，退出码: ${code}\n`)///////
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `vspipe info 执行完毕，退出码: ${code}\n`)///////
 
           info = {
             width: vspipeOut.match(/Width:\s*(\d+)/)?.[1] || '未知',
@@ -133,47 +135,48 @@ export async function runCommand(event: IpcMainEvent, taskConfig: TaskConfig): P
             fps: vspipeOut.match(/FPS:\s*([\d/]+)\s*\(([\d.]+) fps\)/)?.[2] || '0',
           }
 
-          event.sender.send('ffmpeg-output', `======= 输出视频信息 =======\n`)
-          event.sender.send('ffmpeg-output', `宽: ${info.width}\n`)
-          event.sender.send('ffmpeg-output', `高: ${info.height}\n`)
-          event.sender.send('ffmpeg-output', `帧数: ${info.frames}\n`)
-          event.sender.send('ffmpeg-output', `帧率: ${info.fps}\n`)
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `======= 输出视频信息 =======\n`)
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `宽: ${info.width}\n`)
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `高: ${info.height}\n`)
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `帧数: ${info.frames}\n`)
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `帧率: ${info.fps}\n`)
           resolve()
         })
 
         vspipeInfoProcess.on('error', (err) => {
-          event.sender.send('ffmpeg-output', `vspipe 执行出错: ${err.message}\n`)
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `vspipe 执行出错: ${err.message}\n`)
           reject(err)
         })
       })
 
       // ========== 4. 构建渲染命令 ==========
-      const vspipeArgs = ffmpegCMD[0].replace('__VPY_PATH__', vpyPath)
+      const vspipeArgs = ffmpegCMD[0].replace(MagicStr.VPY_PATH, vpyPath)
       const ffmpegMajorArgs = ffmpegCMD[1]
       const ffmpegMinorArgs = ffmpegCMD[2]
       const ffmpeg_audio_sub_Args = generate_cmd(taskConfig, hasAudio, hasSubtitle)
 
-      const ffmpegArgs = ffmpegMajorArgs.replace('__VIDEO_PATH__', video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace('__VIDEO_NAME__', path.join(taskConfig.outputFolder, `${baseName}_enhance`) + taskConfig.videoContainer)
+      const ffmpegArgs = ffmpegMajorArgs.replace(MagicStr.VIDEO_PATH, video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace(MagicStr.VIDEO_NAME, path.join(taskConfig.outputFolder, `${baseName}_enhance`) + taskConfig.videoContainer)
 
       const full_cmd = `${`"${vspipePath}" ${vspipeArgs}`} | "${ffmpegPath}" ${ffmpegArgs}`
-      event.sender.send('ffmpeg-output', `Executing command: ${full_cmd}\n`)
+      event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `Executing command: ${full_cmd}\n`)
 
       // ========== 5. 渲染并监听输出 ==========
       await new Promise<void>((resolve, reject) => {
         const renderProcess = spawn(ffmpegPath, splitArgs(ffmpegArgs), { shell: false })
         const vspipeProc = spawn(vspipePath, splitArgs(vspipeArgs), { shell: false })
 
-        event.sender.send('vspipePID', vspipeProc.pid)
-        event.sender.send('ffmpegPID', renderProcess.pid)
-        event.sender.send('ffmpeg-output', `vspipePID:${vspipeProc.pid}  ||  ffmpegPID:${renderProcess.pid} \n`)
+        event.sender.send(IpcChannelName.VSPIPE_PID, vspipeProc.pid)
+        event.sender.send(IpcChannelName.FFMPEG_PID, renderProcess.pid)
+        console.log(`ffmpegPID:${renderProcess.pid}`)
+        console.log(`vspipePID:${vspipeProc.pid}`)
+        event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `vspipePID:${vspipeProc.pid}  ||  ffmpegPID:${renderProcess.pid} \n`)
 
         vspipeProc.stdout.pipe(renderProcess.stdin)
-
-        addProcess(renderProcess)
-        addProcess(vspipeProc)
+        addProcess('ffmpeg', renderProcess)
+        addProcess('vspipe', vspipeProc)
 
         renderProcess.stdout.on('data', (data) => {
-          event.sender.send('ffmpeg-output', data.toString())
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, data.toString())
         })
 
         renderProcess.stderr.on('data', (data) => {
@@ -194,20 +197,20 @@ export async function runCommand(event: IpcMainEvent, taskConfig: TaskConfig): P
             const minutes = Math.floor((estSeconds % 3600) / 60)
             const seconds = Math.floor(estSeconds % 60)
 
-            event.sender.send('ffmpeg-output', `[Progress_vspipe_ffmpeg]已渲染/总帧数: ${frame} / ${totalFrames} `
+            event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `[Progress_vspipe_ffmpeg]已渲染/总帧数: ${frame} / ${totalFrames} `
             + `速度(FPS): ${fps} `
             + `预计剩余时间：${hours}h ${minutes}min ${seconds}s `
             + `已渲染的时间长度: ${time} `
             + `比特率: ${bitrate}\n`)
           }
           else {
-            event.sender.send('ffmpeg-output', str)
+            event.sender.send(IpcChannelName.FFMPEG_OUTPUT, str)
           }
         })
 
         renderProcess.on('close', () => {
           removeProcess(renderProcess)
-          event.sender.send('ffmpeg-output', 'finish\n')
+          event.sender.send(IpcChannelName.FFMPEG_OUTPUT, 'finish\n')
           resolve()
         })
 
@@ -218,10 +221,10 @@ export async function runCommand(event: IpcMainEvent, taskConfig: TaskConfig): P
     }
     catch (error) {
       const errMsg = error instanceof Error ? error.message : String(error)
-      event.sender.send('ffmpeg-output', `处理视频 ${video} 时出错: ${errMsg}\n`)
+      event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `处理视频 ${video} 时出错: ${errMsg}\n`)
     }
   }
-  event.sender.send('ffmpeg-finish')
+  event.sender.send(IpcChannelName.FFMPEG_FINISHED)
 }
 
 export async function PauseCommand(event: IpcMainEvent, data: { isPause: boolean, vspipePID: number }): Promise<void> {
@@ -231,6 +234,6 @@ export async function PauseCommand(event: IpcMainEvent, data: { isPause: boolean
 
   const vspipeProc = spawn(pssuspendPath, ['-accepteula', action, vspipePID.toString()], { shell: true })
   vspipeProc.on('close', () => {
-    event.sender.send('ffmpeg-output', `${isPause ? '暂停' : '恢复'}完成\n`)
+    event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `${isPause ? '暂停' : '恢复'}完成\n`)
   })
 }
