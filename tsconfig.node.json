@@ -4,6 +4,9 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
+      "@main/*": [
+        "src/main/*"
+      ],
       "@shared/*": [
         "src/shared/*"
       ]
@@ -14,6 +17,7 @@
     "electron.vite.config.*",
     "src/main/**/*",
     "src/preload/**/*",
+    "src/preload/*.d.ts",
     "src/shared/**/*"
   ]
 }

@@ -1,4 +1,4 @@
-# VSET --Video SuperResolution Encode Tool
+# VSET
 基于*Vapoursynth*的图形化视频批量压制处理工具。
 
 ## [💬 感谢发电名单](https://github.com/NangInShell/VSET/blob/main/Thanks.md)

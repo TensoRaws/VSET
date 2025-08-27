@@ -23,7 +23,7 @@ const isRunning = computed(() => appStore.isRunning)
 const imageNaturalWidth = ref(0)
 const imageNaturalHeight = ref(0)
 
-function downloadImage() {
+function downloadImage(): void {
   const a = document.createElement('a')
   a.href = previewImageSrc.value
   a.download = 'preview.png'
@@ -40,7 +40,7 @@ function customRenderToolbar(props: {
     download: VNode
     close: VNode
   }
-}) {
+}): Array<VNode> {
   return [
     props.nodes.rotateCounterclockwise,
     props.nodes.rotateClockwise,
@@ -65,14 +65,14 @@ function customRenderToolbar(props: {
   ]
 }
 
-function handlePreviewInfo(_event: any, data: any) {
+function handlePreviewInfo(_event: any, data: any): void {
   if (data && data.frames) {
     frameCount.value = Number.parseInt(data.frames)
     message.success(`检测到 ${data.frames} 帧，尺寸 ${data.width}×${data.height}`)
   }
 }
 
-function handlePreviewImage(_event: any, base64Img: string) {
+function handlePreviewImage(_event: any, base64Img: string): void {
   loading.value = false
   if (base64Img) {
     previewImageSrc.value = base64Img
@@ -84,7 +84,7 @@ function handlePreviewImage(_event: any, base64Img: string) {
   }
 }
 
-function startPreview() {
+function startPreview(): void {
   if (appStore.isRunning)
     return
   appStore.setRunning(true)
@@ -96,13 +96,13 @@ function startPreview() {
   window.electron.ipcRenderer.send(IpcChannelName.PREVIEW, taskConfig)
 }
 
-function previewFrame() {
+function previewFrame(): void {
   loading.value = true
   window.electron.ipcRenderer.once(IpcChannelName.PREVIEW_IMAGE, handlePreviewImage)
   window.electron.ipcRenderer.send(IpcChannelName.PREVIEW_FRAME, vpyFilePath.value, currentFrame.value)
 }
 
-function onFrameChange(val: number | null) {
+function onFrameChange(val: number | null): void {
   if (appStore.isRunning)
     return
   appStore.setRunning(true)
@@ -112,7 +112,7 @@ function onFrameChange(val: number | null) {
   }
 }
 
-function onImageLoad(event: Event) {
+function onImageLoad(event: Event): void {
   const img = event.target as HTMLImageElement
   imageNaturalWidth.value = img.naturalWidth
   imageNaturalHeight.value = img.naturalHeight

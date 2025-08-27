@@ -8,21 +8,21 @@ const {
   fileList,
 } = storeToRefs(InputConfigStore)
 
-function openFile() {
+function openFile(): void {
   const input = document.getElementById('open') as HTMLInputElement | null
   if (input) {
     input.click()
   }
 }
 
-function handleFileChange(event) {
+function handleFileChange(event): void {
   const files = event.target.files
   if (files.length > 0) {
     handleFiles(files)
   }
 }
 
-function handleDrop(event) {
+function handleDrop(event): void {
   event.preventDefault()
   const files = event.dataTransfer.files
   if (files.length > 0) {
@@ -30,17 +30,17 @@ function handleDrop(event) {
   }
 }
 
-function handleFiles(files) {
+function handleFiles(files): void {
   for (let i = 0; i < files.length; i++) {
     fileList.value.push(files[i])
   }
 }
 
-function removeFile(index) {
+function removeFile(index): void {
   fileList.value.splice(index, 1) // 根据索引删除文件
 }
 
-function clearFileList() {
+function clearFileList(): void {
   fileList.value = []
 }
 </script>

@@ -49,7 +49,7 @@ const {
   outputFolder,
 } = storeToRefs(OutputConfigStore)
 
-async function selectDirectory() {
+async function selectDirectory(): Promise<void> {
   const pathList = await window.electron.ipcRenderer.invoke('open-folder-dialog', ['openDirectory'])
   if (pathList && pathList.length > 0) {
     outputFolder.value = pathList[0]

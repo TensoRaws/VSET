@@ -18,14 +18,14 @@ const message = useMessage()
 const logStore = useLogStore()
 const logs = computed(() => logStore.logs)
 const logInstRef = ref<any>(null)
-const clearLogs = () => logStore.clearLog()
+const clearLogs = (): void => logStore.clearLog()
 
 // 绑定 app 状态 store
 const appStore = useAppStore()
 const isRunning = computed(() => appStore.isRunning)
 const isPause = computed(() => appStore.isPause)
 
-function stopProcesses() {
+function stopProcesses(): void {
   window.electron.ipcRenderer.send('stop-all-processes')
   message.warning('已请求终止所有子进程')
   appStore.setRunning(false)
@@ -33,7 +33,7 @@ function stopProcesses() {
 }
 
 // ✅ IPC 输出回调
-function handleOutput(_, msg: string) {
+function handleOutput(_, msg: string): void {
   logStore.appendLog(msg)
 }
 
@@ -57,7 +57,7 @@ onMounted(() => {
   })
 })
 
-function Pause() {
+function Pause(): void {
   const isPauseValue = isPause.value
   const vspipePID = appStore.vspipePID
   // const ffmpegPID = appStore.ffmpegPID
@@ -86,7 +86,7 @@ onBeforeUnmount(() => {
 })
 
 // ✅ 启动渲染流程
-function StartSR() {
+function StartSR(): void {
   // 调用参数错误查询函数
   if (!CheckSetting()) {
     console.log('参数错误，无法启动渲染流程')

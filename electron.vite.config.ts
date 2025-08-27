@@ -7,8 +7,8 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()],
     resolve: {
       alias: {
-        '@shared': resolve('src/shared'),
         '@main': resolve('src/main'),
+        '@shared': resolve('src/shared'),
       },
     },
   },
@@ -24,5 +24,4 @@ export default defineConfig({
     },
     plugins: [vue()],
   },
-
 })

@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { MenuOption } from 'naive-ui'
-import type { Component } from 'vue'
+import type { Component, VNode } from 'vue'
 import {
   ConstructOutline as enhanceIcon,
   CameraOutline as filterIcon,
@@ -14,7 +14,7 @@ import { NIcon } from 'naive-ui'
 import { defineComponent, h, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-function renderIcon(icon: Component) {
+function renderIcon(icon: Component): () => VNode {
   return () => h(NIcon, null, { default: () => h(icon) })
 }
 
@@ -72,7 +72,7 @@ const menuOptions: MenuOption[] = [
 export default defineComponent({
   setup() {
     const router = useRouter()
-    const onMenuChange = (value: string) => {
+    const onMenuChange = (value: string): void => {
       router.push(value)
     }
 

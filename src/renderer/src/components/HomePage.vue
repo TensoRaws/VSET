@@ -10,16 +10,16 @@ const GPUInfo = ref<Array<string>>([])
 const GPUMainInfo = ref('')
 const currentTime = ref('')
 
-async function getCPUInfo() {
+async function getCPUInfo(): Promise<void> {
   CPUInfo.value = await window.electron.ipcRenderer.invoke('get-cpu-info')
 }
 
-async function getGPUInfo() {
+async function getGPUInfo(): Promise<void> {
   GPUInfo.value = await window.electron.ipcRenderer.invoke('get-gpu-info')
   GPUMainInfo.value = GPUInfo.value[0]
 }
 
-function updateTime() {
+function updateTime(): void {
   const now = new Date()
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')

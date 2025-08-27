@@ -69,10 +69,11 @@ const {
 const SrExtra = ref(false)
 const VfiExtra = ref(false)
 
-function ShowSrExtra() {
+function ShowSrExtra(): void {
   SrExtra.value = true
 }
-function ShowVfiExtra() {
+
+function ShowVfiExtra(): void {
   VfiExtra.value = true
 }
 </script>
