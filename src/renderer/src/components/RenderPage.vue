@@ -20,7 +20,7 @@ const isRunning = computed(() => appStore.isRunning)
 const isPause = computed(() => appStore.isPause)
 
 function stopProcesses(): void {
-  window.electron.ipcRenderer.send('stop-all-processes')
+  window.electron.ipcRenderer.send(IpcChannelSend.STOP_ALL_PROCESSES)
   message.warning('已请求终止所有子进程')
   appStore.setRunning(false)
   appStore.setPause(true)
@@ -56,12 +56,12 @@ function Pause(): void {
   const vspipePID = appStore.vspipePID
   // const ffmpegPID = appStore.ffmpegPID
 
-  if (vspipePID === 0 || isRunning.value === false) {
+  if (vspipePID === 0 || !isRunning.value) {
     message.info('进程还没启动，暂停无效', { duration: 5000 })
     return
   }
 
-  window.electron.ipcRenderer.send('pause', {
+  window.electron.ipcRenderer.send(IpcChannelSend.PAUSE, {
     isPause: isPauseValue,
     vspipePID,
   })
