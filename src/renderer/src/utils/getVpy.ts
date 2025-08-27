@@ -1,10 +1,9 @@
 import useFilterconfigStore from '@renderer/store/FilterStore'
 import useSrsettingconfigStore from '@renderer/store/SrSettingsStore'
 import useVfisettingconfigStore from '@renderer/store/VfiSettingsStore'
-
+import { MagicStr } from '@shared/constant/magicStr'
 import { storeToRefs } from 'pinia'
 
-// ✅ 生成 JSON 数据的函数
 export function buildVpyContent(): string {
   // SR
   const SrSettingStore = useSrsettingconfigStore()
@@ -78,7 +77,7 @@ GitHub: https://github.com/TensoRaws/VSET
 
   vpyContent += 'import vapoursynth as vs\n'
   vpyContent += 'core = vs.core\n'
-  vpyContent += `res = core.lsmas.LWLibavSource(r"__VIDEO_PATH__")\n`
+  vpyContent += `res = core.lsmas.LWLibavSource(r"${MagicStr.VIDEO_PATH}")\n`
   vpyContent += 'from vsmlrt import CUGAN,RealESRGAN,Waifu2x,RIFE,Backend\n'
   vpyContent += 'import vsmlrt\n'
 
@@ -315,7 +314,7 @@ GitHub: https://github.com/TensoRaws/VSET
         AniSD_DC_SPAN_x2: 'AniSD_DC_SPAN_x2.onnx',
       }
 
-      const model = `__EXTRA_MODEL_PATH__/${model_switch[SR_ExtraModelValue.value] || 'AniSD_DC_SPAN_x2.onnx'}`
+      const model = `${MagicStr.EXTRA_MODEL_PATH}/${model_switch[SR_ExtraModelValue.value] || 'AniSD_DC_SPAN_x2.onnx'}`
 
       vpyContent += `res = vsmlrt.inference(res, network_path=r"${model}", backend=device_sr)\n`
     }

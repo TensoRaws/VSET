@@ -1,8 +1,7 @@
-// 引入 store
 import useOutputconfigStore from '@renderer/store/OutputStore'
+import { MagicStr } from '@shared/constant/magicStr'
 import { storeToRefs } from 'pinia'
 
-// ✅ 生成 JSON 数据的函数
 export function buildFFmpegCMD(): string[] {
   // Output
   const OutputConfigStore = useOutputconfigStore()
@@ -161,8 +160,8 @@ export function buildFFmpegCMD(): string[] {
           }" `
   }
 
-  cmd_minor += `"__VIDEO_NAME__"`
+  cmd_minor += `"${MagicStr.VIDEO_NAME}"`
 
-  const vspipecmd = `"-c" "y4m" "__VPY_PATH__" "-"`
+  const vspipecmd = `"-c" "y4m" "${MagicStr.VPY_PATH}" "-"`
   return [vspipecmd, cmd_major, cmd_minor]
 }
