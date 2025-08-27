@@ -3,7 +3,7 @@ import type { IpcMainEvent } from 'electron'
 import { Buffer } from 'node:buffer'
 import { spawn } from 'node:child_process'
 import path from 'node:path'
-import { IpcChannelName } from '@shared/constant/ipc'
+import { IpcChannelOn } from '@shared/constant/ipc'
 import iconv from 'iconv-lite'
 import { addProcess, removeProcess } from './childProcessManager'
 import { getExecPath, getGenVpyPath } from './getCorePath'
@@ -13,8 +13,8 @@ export async function preview(event: IpcMainEvent, taskConfig: TaskConfig): Prom
   const vspipePath = getExecPath().vspipe
 
   if (!taskConfig.fileList || taskConfig.fileList.length === 0) {
-    event.sender.send(IpcChannelName.FFMPEG_OUTPUT, '错误: 没有提供用于预览的文件。\n')
-    event.sender.send(IpcChannelName.FFMPEG_FINISHED)
+    event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, '错误: 没有提供用于预览的文件。\n')
+    event.sender.send(IpcChannelOn.FFMPEG_FINISHED)
     return
   }
 
@@ -48,18 +48,18 @@ export async function preview(event: IpcMainEvent, taskConfig: TaskConfig): Prom
     vspipeInfoProcess.stdout.on('data', (data: Buffer) => {
       const str = iconv.decode(data, 'gbk')
       vspipeOut += str
-      event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `${str}`)
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `${str}`)
     })
 
     vspipeInfoProcess.stderr.on('data', (data: Buffer) => {
       const str = iconv.decode(data, 'gbk')
       stderrOut += str
-      event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `${str}`)
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `${str}`)
     })
 
     vspipeInfoProcess.on('close', (code) => {
       removeProcess(vspipeInfoProcess)
-      event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `vspipe info 执行完毕，退出码: ${code}\n`)///////
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `vspipe info 执行完毕，退出码: ${code}\n`)///////
       info = {
         width: vspipeOut.match(/Width:\s*(\d+)/)?.[1] || '未知',
         height: vspipeOut.match(/Height:\s*(\d+)/)?.[1] || '未知',
@@ -67,17 +67,17 @@ export async function preview(event: IpcMainEvent, taskConfig: TaskConfig): Prom
         fps: vspipeOut.match(/FPS:\s*([\d/]+)\s*\(([\d.]+) fps\)/)?.[2] || '0',
       }
 
-      event.sender.send(IpcChannelName.PREVIEW_INFO, info)
+      event.sender.send(IpcChannelOn.PREVIEW_INFO, info)
       resolve()
     })
 
     vspipeInfoProcess.on('error', (err) => {
-      event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `vspipe 执行出错: ${err.message}\n`)
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `vspipe 执行出错: ${err.message}\n`)
       reject(err)
     })
   })
-  event.sender.send(IpcChannelName.PREVIEW_VPY_PATH, vpyPath)
-  event.sender.send(IpcChannelName.FFMPEG_FINISHED)
+  event.sender.send(IpcChannelOn.PREVIEW_VPY_PATH, vpyPath)
+  event.sender.send(IpcChannelOn.FFMPEG_FINISHED)
 }
 
 export async function previewFrame(event: IpcMainEvent, vpyPath: string, currentFrame: number): Promise<void> {
@@ -98,7 +98,7 @@ export async function previewFrame(event: IpcMainEvent, vpyPath: string, current
 
   vspipePreviewProcess.stderr.on('data', (data: Buffer) => {
     const str = iconv.decode(data, 'gbk')
-    event.sender.send(IpcChannelName.FFMPEG_OUTPUT, str)
+    event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, str)
   })
 
   vspipePreviewProcess.on('close', (code) => {
@@ -106,16 +106,16 @@ export async function previewFrame(event: IpcMainEvent, vpyPath: string, current
     if (code === 0) {
       const buffer = Buffer.concat(chunks)
       const base64 = `data:image/png;base64,${buffer.toString('base64')}`
-      event.sender.send(IpcChannelName.PREVIEW_IMAGE, base64)
+      event.sender.send(IpcChannelOn.PREVIEW_IMAGE, base64)
     }
     else {
-      event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `预览失败，退出码: ${code}`)
-      event.sender.send(IpcChannelName.PREVIEW_IMAGE, null)
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `预览失败，退出码: ${code}`)
+      event.sender.send(IpcChannelOn.PREVIEW_IMAGE, null)
     }
-    event.sender.send(IpcChannelName.FFMPEG_FINISHED)
+    event.sender.send(IpcChannelOn.FFMPEG_FINISHED)
   })
 
   vspipePreviewProcess.on('error', (err) => {
-    event.sender.send(IpcChannelName.FFMPEG_OUTPUT, `命令执行出错: ${err.message}`)
+    event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `命令执行出错: ${err.message}`)
   })
 }

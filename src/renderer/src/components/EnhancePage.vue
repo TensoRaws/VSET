@@ -2,9 +2,7 @@
 import useSrsettingconfigStore from '@renderer/store/SrSettingsStore'
 import useVfisettingconfigStore from '@renderer/store/VfiSettingsStore'
 import { storeToRefs } from 'pinia'
-
 import { ref } from 'vue'
-
 import {
   Inference_options,
   RealcuganModel_options,
@@ -15,7 +13,6 @@ import {
   SRMethod_options,
   VsmlrtTile_options,
   Waifu2xModel_options,
-  // ArtCNNModel_options,
 } from '../store/SRMethod'
 import {
   Inference_Vfi_options,

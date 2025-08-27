@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import type { VNode } from 'vue'
 import { useAppStore } from '@renderer/store/AppStore'
-// ✅ 引入状态管理（其他配置）
-
 import { buildTaskConfig } from '@renderer/utils/getTaskConfig'
-import { IpcChannelName } from '@shared/constant/ipc'
+import { IpcChannelOn, IpcChannelSend } from '@shared/constant/ipc'
 import { DownloadOutline } from '@vicons/ionicons5'
 import { NButton, NIcon, NImage, useMessage } from 'naive-ui'
 import { computed, h, onMounted, ref } from 'vue'
@@ -91,15 +89,15 @@ function startPreview(): void {
 
   const taskConfig = buildTaskConfig()
 
-  window.electron.ipcRenderer.once(IpcChannelName.PREVIEW_INFO, handlePreviewInfo)
-  window.electron.ipcRenderer.once(IpcChannelName.PREVIEW_IMAGE, handlePreviewImage)
-  window.electron.ipcRenderer.send(IpcChannelName.PREVIEW, taskConfig)
+  window.electron.ipcRenderer.once(IpcChannelOn.PREVIEW_INFO, handlePreviewInfo)
+  window.electron.ipcRenderer.once(IpcChannelOn.PREVIEW_IMAGE, handlePreviewImage)
+  window.electron.ipcRenderer.send(IpcChannelSend.PREVIEW, taskConfig)
 }
 
 function previewFrame(): void {
   loading.value = true
-  window.electron.ipcRenderer.once(IpcChannelName.PREVIEW_IMAGE, handlePreviewImage)
-  window.electron.ipcRenderer.send(IpcChannelName.PREVIEW_FRAME, vpyFilePath.value, currentFrame.value)
+  window.electron.ipcRenderer.once(IpcChannelOn.PREVIEW_IMAGE, handlePreviewImage)
+  window.electron.ipcRenderer.send(IpcChannelSend.PREVIEW_FRAME, vpyFilePath.value, currentFrame.value)
 }
 
 function onFrameChange(val: number | null): void {
@@ -120,11 +118,11 @@ function onImageLoad(event: Event): void {
 
 // ✅ 挂载监听器
 onMounted(() => {
-  window.electron.ipcRenderer.on(IpcChannelName.FFMPEG_FINISHED, () => {
+  window.electron.ipcRenderer.on(IpcChannelOn.FFMPEG_FINISHED, () => {
     appStore.setRunning(false) // ✅ 渲染完成后恢复按钮
   })
 
-  window.electron.ipcRenderer.on(IpcChannelName.PREVIEW_VPY_PATH, (_event, vpyfile: string) => {
+  window.electron.ipcRenderer.on(IpcChannelOn.PREVIEW_VPY_PATH, (_event, vpyfile: string) => {
     vpyFilePath.value = vpyfile
   })
 })

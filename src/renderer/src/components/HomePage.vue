@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { IpcChannelInvoke } from '@shared/constant/ipc'
 import { onMounted, onUnmounted, ref } from 'vue'
 import img1 from '../assets/fufu1.avif'
 import img2 from '../assets/fufu2.avif'
@@ -11,11 +12,11 @@ const GPUMainInfo = ref('')
 const currentTime = ref('')
 
 async function getCPUInfo(): Promise<void> {
-  CPUInfo.value = await window.electron.ipcRenderer.invoke('get-cpu-info')
+  CPUInfo.value = await window.electron.ipcRenderer.invoke(IpcChannelInvoke.GET_CPU_INFO)
 }
 
 async function getGPUInfo(): Promise<void> {
-  GPUInfo.value = await window.electron.ipcRenderer.invoke('get-gpu-info')
+  GPUInfo.value = await window.electron.ipcRenderer.invoke(IpcChannelInvoke.GET_GPU_INFO)
   GPUMainInfo.value = GPUInfo.value[0]
 }
 

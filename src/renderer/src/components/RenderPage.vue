@@ -1,26 +1,20 @@
 <script setup lang="ts">
 import { Delete, Lock, WarningFilled } from '@element-plus/icons-vue'
-// ✅ 引入 App 状态 store（isRunning）
 import { useAppStore } from '@renderer/store/AppStore'
-// ✅ 引入日志 store
 import { useLogStore } from '@renderer/store/LogStore'
-// 引入其他 store 数据
 import { CheckSetting } from '@renderer/utils/checkSetting'
 import { buildTaskConfig } from '@renderer/utils/getTaskConfig'
-import { IpcChannelName } from '@shared/constant/ipc'
-
+import { IpcChannelOn, IpcChannelSend } from '@shared/constant/ipc'
 import { useMessage } from 'naive-ui'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const message = useMessage()
 
-// 绑定日志 store
 const logStore = useLogStore()
 const logs = computed(() => logStore.logs)
 const logInstRef = ref<any>(null)
 const clearLogs = (): void => logStore.clearLog()
 
-// 绑定 app 状态 store
 const appStore = useAppStore()
 const isRunning = computed(() => appStore.isRunning)
 const isPause = computed(() => appStore.isPause)
@@ -39,20 +33,20 @@ function handleOutput(_, msg: string): void {
 
 // ✅ 挂载监听器
 onMounted(() => {
-  window.electron.ipcRenderer.removeAllListeners(IpcChannelName.FFMPEG_OUTPUT)
-  window.electron.ipcRenderer.on(IpcChannelName.FFMPEG_OUTPUT, handleOutput)
+  window.electron.ipcRenderer.removeAllListeners(IpcChannelOn.FFMPEG_OUTPUT)
+  window.electron.ipcRenderer.on(IpcChannelOn.FFMPEG_OUTPUT, handleOutput)
 
-  window.electron.ipcRenderer.removeAllListeners(IpcChannelName.VSPIPE_PID)
-  window.electron.ipcRenderer.removeAllListeners(IpcChannelName.FFMPEG_PID)
+  window.electron.ipcRenderer.removeAllListeners(IpcChannelOn.VSPIPE_PID)
+  window.electron.ipcRenderer.removeAllListeners(IpcChannelOn.FFMPEG_PID)
 
-  window.electron.ipcRenderer.on(IpcChannelName.VSPIPE_PID, (_, pid: number) => {
+  window.electron.ipcRenderer.on(IpcChannelOn.VSPIPE_PID, (_, pid: number) => {
     appStore.setVspipePID(pid)
   })
-  window.electron.ipcRenderer.on(IpcChannelName.FFMPEG_PID, (_, pid: number) => {
+  window.electron.ipcRenderer.on(IpcChannelOn.FFMPEG_PID, (_, pid: number) => {
     appStore.setFfmpegPID(pid)
   })
 
-  window.electron.ipcRenderer.on(IpcChannelName.FFMPEG_FINISHED, () => {
+  window.electron.ipcRenderer.on(IpcChannelOn.FFMPEG_FINISHED, () => {
     appStore.setRunning(false) // ✅ 渲染完成后恢复按钮
   })
 })
@@ -81,8 +75,8 @@ function Pause(): void {
 }
 
 onBeforeUnmount(() => {
-  window.electron.ipcRenderer.removeListener(IpcChannelName.FFMPEG_OUTPUT, handleOutput)
-  window.electron.ipcRenderer.removeAllListeners(IpcChannelName.FFMPEG_FINISHED)
+  window.electron.ipcRenderer.removeListener(IpcChannelOn.FFMPEG_OUTPUT, handleOutput)
+  window.electron.ipcRenderer.removeAllListeners(IpcChannelOn.FFMPEG_FINISHED)
 })
 
 // ✅ 启动渲染流程
@@ -97,8 +91,8 @@ function StartSR(): void {
   appStore.setRunning(true) // ✅ 设置为运行中，禁用按钮
 
   const taskConfig = buildTaskConfig()
-  window.electron.ipcRenderer.send(IpcChannelName.GENERATE_JSON, taskConfig)
-  window.electron.ipcRenderer.send(IpcChannelName.EXECUTE_COMMAND, taskConfig)
+  window.electron.ipcRenderer.send(IpcChannelSend.GENERATE_JSON, taskConfig)
+  window.electron.ipcRenderer.send(IpcChannelSend.EXECUTE_COMMAND, taskConfig)
 }
 
 // ✅ 日志自动滚动到底部

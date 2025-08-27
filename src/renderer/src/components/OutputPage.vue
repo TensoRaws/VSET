@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useOutputconfigStore from '@renderer/store/OutputStore'
+import { IpcChannelInvoke } from '@shared/constant/ipc'
 import { storeToRefs } from 'pinia'
-
 import {
   AmfH264_options,
   AmfH265_options,
@@ -50,7 +50,7 @@ const {
 } = storeToRefs(OutputConfigStore)
 
 async function selectDirectory(): Promise<void> {
-  const pathList = await window.electron.ipcRenderer.invoke('open-folder-dialog', ['openDirectory'])
+  const pathList = await window.electron.ipcRenderer.invoke(IpcChannelInvoke.OPEN_DIRECTORY_DIALOG, ['openDirectory'])
   if (pathList && pathList.length > 0) {
     outputFolder.value = pathList[0]
   }

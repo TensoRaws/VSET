@@ -1,22 +1,38 @@
-export enum IpcChannelName {
-  FFMPEG_OUTPUT = 'ffmpeg-output',
-  VSPIPE_PID = 'vspipePID',
-  FFMPEG_PID = 'ffmpegPID',
-  FFMPEG_FINISHED = 'ffmpeg-finish',
+/**
+ * 渲染进程 → 主进程（invoke/handle）
+ */
+export enum IpcChannelInvoke {
+  OPEN_DIRECTORY_DIALOG = 'ipc:open-directory-dialog',
+  GET_GPU_INFO = 'ipc:get-gpu-info',
+  GET_CPU_INFO = 'ipc:get-cpu-info',
+}
 
-  EXECUTE_COMMAND = 'execute-command',
-  GENERATE_JSON = 'generate-json',
+/**
+ * 渲染进程 → 主进程（send/on，单向）
+ */
+export enum IpcChannelSend {
+  EXECUTE_COMMAND = 'ipc:send:execute-command',
+  PAUSE = 'ipc:send:pause',
 
-  PREVIEW_VPY_PATH = 'preview-vpyPath',
-  PREVIEW_IMAGE = 'preview-image',
-  PREVIEW_FRAME = 'preview-frame',
-  PREVIEW_INFO = 'preview-info',
-  PREVIEW = 'preview',
+  PREVIEW = 'ipc:send:preview',
+  PREVIEW_FRAME = 'ipc:send:preview-frame',
 
-  PAUSE = 'pause',
-  STOP_ALL_PROCESSES = 'stop-all-processes',
+  STOP_ALL_PROCESSES = 'ipc:send:stop-all-processes',
 
-  OPEN_FOLDER_DIALOG = 'open-folder-dialog',
-  GET_GPU_INFO = 'get-gpu-info',
-  GET_CPU_INFO = 'get-cpu-info',
+  GENERATE_JSON = 'ipc:send:generate-json',
+}
+
+/**
+ * 主进程 → 渲染进程（send/on，主进程主动 emit）
+ */
+export enum IpcChannelOn {
+  VSPIPE_PID = 'ipc:on:vspipe-pid',
+  FFMPEG_PID = 'ipc:on:ffmpeg-pid',
+
+  FFMPEG_OUTPUT = 'ipc:on:ffmpeg-output',
+  FFMPEG_FINISHED = 'ipc:on:ffmpeg-finished',
+
+  PREVIEW_VPY_PATH = 'ipc:on:preview-vpy-path',
+  PREVIEW_IMAGE = 'ipc:on:preview-image',
+  PREVIEW_INFO = 'ipc:on:preview-info',
 }
