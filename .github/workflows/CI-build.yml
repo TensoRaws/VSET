@@ -33,10 +33,10 @@ jobs:
         with:
           version: 10
 
-      - name: fetch VSET-core # fetch VSET-core from https://github.com/TensoRaws/VSET-core/releases
+      - name: fetch VSET-core # fetch VSET-core from https://github.com/EutropicAI/VSET-core/releases
         run: |
           cd resources
-          $baseUrl = "https://github.com/TensoRaws/VSET-core/releases/download/v4.2-0819"
+          $baseUrl = "https://github.com/EutropicAI/VSET-core/releases/download/v4.2-0819"
           1..4 | ForEach-Object {
               $url = "$baseUrl/VSET-core.7z.00$_"
               Write-Host "Downloading $url ..."
