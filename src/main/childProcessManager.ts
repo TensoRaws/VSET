@@ -29,10 +29,6 @@ function safeUnpipe(): void {
       vspipe.proc.stdout.unpipe(ffmpeg.proc.stdin)
     }
     catch {}
-    try {
-      ffmpeg.proc.stdin.end()
-    }
-    catch {}
   }
 }
 
