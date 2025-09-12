@@ -16,7 +16,7 @@ importers:
         version: 6.6.2
       element-plus:
         specifier: ^2.11.1
-        version: 2.11.1(vue@3.5.20(typescript@5.9.2))
+        version: 2.11.2(vue@3.5.20(typescript@5.9.2))
       iconv-lite:
         specifier: ^0.6.3
         version: 0.6.3
@@ -1335,8 +1335,8 @@ packages:
   date-fns@3.6.0:
     resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
 
-  dayjs@1.11.14:
-    resolution: {integrity: sha512-E8fIdSxUlyqSA8XYGnNa3IkIzxtEmFjI+JU/6ic0P1zmSqyL6HyG5jHnpPjRguDNiaHLpfvHKWFiohNsJLqcJQ==}
+  dayjs@1.11.18:
+    resolution: {integrity: sha512-zFBQ7WFRvVRhKcWoUh+ZA1g2HVgUbsZm9sbddh8EC5iv93sui8DVVz1Npvz+r6meo9VKfa8NyLWBsQK1VvIKPA==}
 
   de-indent@1.0.2:
     resolution: {integrity: sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==}
@@ -1474,8 +1474,8 @@ packages:
     engines: {node: '>= 12.20.55'}
     hasBin: true
 
-  element-plus@2.11.1:
-    resolution: {integrity: sha512-weYFIniyNXTAe9vJZnmZpYzurh4TDbdKhBsJwhbzuo0SDZ8PLwHVll0qycJUxc6SLtH+7A9F7dvdDh5CnqeIVA==}
+  element-plus@2.11.2:
+    resolution: {integrity: sha512-sTMDXtgeqy17TUsBSH/DL3h1/5sqIOVUUgXFoVbdD8lWWYssKrDX50CEYy4k29tYJhPHKZyFSwcLJsIajr+dDA==}
     peerDependencies:
       vue: ^3.2.0
 
@@ -4686,7 +4686,7 @@ snapshots:
 
   date-fns@3.6.0: {}
 
-  dayjs@1.11.14: {}
+  dayjs@1.11.18: {}
 
   de-indent@1.0.2: {}
 
@@ -4882,7 +4882,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  element-plus@2.11.1(vue@3.5.20(typescript@5.9.2)):
+  element-plus@2.11.2(vue@3.5.20(typescript@5.9.2)):
     dependencies:
       '@ctrl/tinycolor': 3.6.1
       '@element-plus/icons-vue': 2.3.2(vue@3.5.20(typescript@5.9.2))
@@ -4892,7 +4892,7 @@ snapshots:
       '@types/lodash-es': 4.17.12
       '@vueuse/core': 9.13.0(vue@3.5.20(typescript@5.9.2))
       async-validator: 4.2.5
-      dayjs: 1.11.14
+      dayjs: 1.11.18
       escape-html: 1.0.3
       lodash: 4.17.21
       lodash-es: 4.17.21
