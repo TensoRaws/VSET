@@ -70,7 +70,7 @@ These magic strings will be replaced in final script:
     - Video Path: __VIDEO_PATH__
     - Extra Model Path: __EXTRA_MODEL_PATH__
 
-GitHub: https://github.com/TensoRaws/VSET
+GitHub: https://github.com/EutropicAI/VSET
 """
 \n
 `
