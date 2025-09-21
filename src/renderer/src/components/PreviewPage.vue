@@ -145,7 +145,7 @@ onMounted(() => {
         :max="frameCount"
         :step="1"
         :disabled="isRunning"
-        style="margin-top: 10px; width: 100%;"
+        style="margin-top: 10px; width: 100%; margin-left: 12px"
         show-input
         @change="onFrameChange"
       />
