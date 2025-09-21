@@ -12,14 +12,15 @@ import { writeSettingsJson } from './writeFile'
 
 function createWindow(): BrowserWindow {
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 700,
-    minWidth: 900,
-    minHeight: 670,
+    width: 1000,
+    height: 875,
+    minWidth: 1000,
+    minHeight: 875,
     show: false,
     autoHideMenuBar: true,
+    frame: false,
+    resizable: true,
     icon: nativeImage.createFromPath(appIcon),
-    title: 'VSET 4.3.6',
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -27,6 +28,23 @@ function createWindow(): BrowserWindow {
   })
 
   // ipcMain
+
+  ipcMain.on('window:minimize', () => {
+    mainWindow?.minimize()
+  })
+
+  ipcMain.on('window:maximize', () => {
+    if (mainWindow?.isMaximized()) {
+      mainWindow.unmaximize()
+    }
+    else {
+      mainWindow?.maximize()
+    }
+  })
+
+  ipcMain.on('window:close', () => {
+    mainWindow?.close()
+  })
   ipcMain.on(IpcChannelSend.EXECUTE_COMMAND, runCommand)
 
   ipcMain.on(IpcChannelSend.PAUSE, PauseCommand)

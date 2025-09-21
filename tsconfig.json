@@ -1,4 +1,5 @@
 {
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }],
-  "files": []
+  "files": [],
+  "types": ["vite/client"]
 }

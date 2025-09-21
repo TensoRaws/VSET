@@ -66,31 +66,33 @@ onUnmounted(() => {
       >
     </n-carousel>
 
-    <div class="slider-demo-block">
-      <span class="demonstration">CPU</span>
-      <el-tag type="primary" size="large">
-        {{ CPUInfo }}
-      </el-tag>
-    </div>
+    <n-card title="系统信息" :bordered="false" class="system-info-card">
+      <div class="slider-demo-block">
+        <span class="demonstration">CPU</span>
+        <el-tag type="primary" size="large">
+          {{ CPUInfo }}
+        </el-tag>
+      </div>
 
-    <div class="slider-demo-block">
-      <span class="demonstration">GPU</span>
-      <el-select v-model="GPUMainInfo" placeholder="GPU列表" style="max-width: 300px">
-        <el-option
-          v-for="(item, index) in GPUInfo"
-          :key="index"
-          :label="`${index}: ${item}`"
-          :value="item"
-        />
-      </el-select>
-    </div>
+      <div class="slider-demo-block">
+        <span class="demonstration">GPU</span>
+        <el-select v-model="GPUMainInfo" placeholder="GPU列表" style="max-width: 300px">
+          <el-option
+            v-for="(item, index) in GPUInfo"
+            :key="index"
+            :label="`${index}: ${item}`"
+            :value="item"
+          />
+        </el-select>
+      </div>
 
-    <div class="slider-demo-block">
-      <span class="demonstration">当前时间</span>
-      <el-tag type="success" size="large">
-        {{ currentTime }}
-      </el-tag>
-    </div>
+      <div class="slider-demo-block">
+        <span class="demonstration">当前时间</span>
+        <el-tag type="success" size="large">
+          {{ currentTime }}
+        </el-tag>
+      </div>
+    </n-card>
   </div>
 </template>
 
@@ -105,6 +107,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   flex-basis: calc(100% - 20px);
+  margin-bottom: 16px;
 }
 
 .slider-demo-block .demonstration {
@@ -122,5 +125,10 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 15px;
+}
+
+.system-info-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
 }
 </style>
