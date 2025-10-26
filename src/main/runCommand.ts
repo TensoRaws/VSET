@@ -42,13 +42,118 @@ function generate_cmd(taskConfig: TaskConfig, hasAudio: boolean, hasSubtitle: bo
   return cmd
 }
 
+// 新增：获取输入视频信息的独立函数
+async function getInputVideoInfo(event: IpcMainEvent, video: string): Promise<{
+  hasAudio: boolean
+  hasSubtitle: boolean
+  videoStream: any
+}> {
+  const ffprobePath = getExecPath().ffprobe
+
+  const ffprobeCommand = `"${ffprobePath}" -v error -show_streams -of json "${video}"`
+  const { stdout: probeOut } = await exec(ffprobeCommand)
+  const metadata = JSON.parse(probeOut)
+
+  const allStreams = metadata.streams || []
+  const videoStream = allStreams.find((s: any) => s.codec_type === 'video')
+  const hasAudio = allStreams.some((s: any) => s.codec_type === 'audio')
+  const hasSubtitle = allStreams.some((s: any) => s.codec_type === 'subtitle')
+
+  if (videoStream) {
+    const frameCount = videoStream.nb_frames || '未知'
+    const frameRate = videoStream.avg_frame_rate || '未知'
+    const resolution = `${videoStream.width}x${videoStream.height}`
+    const audioText = hasAudio ? '是' : '否'
+    const subtitleText = hasSubtitle ? '是' : '否'
+
+    event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `正在处理输入视频 ${video} 的信息:\n`)
+    event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `帧数(输入): ${frameCount}\n`)
+    event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `帧率(输入): ${frameRate}\n`)
+    event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `分辨率(输入): ${resolution}\n`)
+    event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `是否含有音频: ${audioText}\n`)
+    event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `是否含有字幕: ${subtitleText}\n`)
+  }
+
+  return {
+    hasAudio,
+    hasSubtitle,
+    videoStream,
+  }
+}
+
+// 新增：获取输出视频信息的独立函数
+async function getOutputVideoInfo(event: IpcMainEvent, vpyPath: string): Promise<{
+  width: string
+  height: string
+  frames: string
+  fps: string
+}> {
+  const vspipePath = getExecPath().vspipe
+
+  const info: {
+    width: string
+    height: string
+    frames: string
+    fps: string
+  } = {
+    width: '未知',
+    height: '未知',
+    frames: '0',
+    fps: '0',
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    const vspipeInfoProcess = spawn(vspipePath, ['--info', vpyPath])
+    addProcess('vspipe', vspipeInfoProcess)
+
+    let vspipeOut = '' // 用于保存 stdout 内容
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    let stderrOut = '' // 用于保存 stderr 内容
+
+    vspipeInfoProcess.stdout.on('data', (data: Buffer) => {
+      const str = iconv.decode(data, 'gbk')
+      vspipeOut += str
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `${str}`)
+    })
+
+    vspipeInfoProcess.stderr.on('data', (data: Buffer) => {
+      const str = iconv.decode(data, 'gbk')
+      stderrOut += str
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `${str}`)
+    })
+
+    vspipeInfoProcess.on('close', (code) => {
+      removeProcess(vspipeInfoProcess)
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `vspipe info 执行完毕，退出码: ${code}\n`)
+
+      info.width = vspipeOut.match(/Width:\s*(\d+)/)?.[1] || '未知'
+      info.height = vspipeOut.match(/Height:\s*(\d+)/)?.[1] || '未知'
+      info.frames = vspipeOut.match(/Frames:\s*(\d+)/)?.[1] || '0'
+      info.fps = vspipeOut.match(/FPS:\s*([\d/]+)\s*\(([\d.]+) fps\)/)?.[2] || '0'
+
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `======= 输出视频信息 =======\n`)
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `宽: ${info.width}\n`)
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `高: ${info.height}\n`)
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `帧数: ${info.frames}\n`)
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `帧率: ${info.fps}\n`)
+      resolve()
+    })
+
+    vspipeInfoProcess.on('error', (err) => {
+      event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `vspipe 执行出错: ${err.message}\n`)
+      reject(err)
+    })
+  })
+
+  return info
+}
+
 export async function runCommand(event: IpcMainEvent, taskConfig: TaskConfig): Promise<void> {
   const vpyContent = taskConfig.vpyContent
   const ffmpegCMD = taskConfig.ffmpegCMD
 
   const vspipePath = getExecPath().vspipe
   const ffmpegPath = getExecPath().ffmpeg
-  const ffprobePath = getExecPath().ffprobe
 
   const videos = Array.isArray(taskConfig.fileList) ? taskConfig.fileList : []
 
@@ -62,99 +167,21 @@ export async function runCommand(event: IpcMainEvent, taskConfig: TaskConfig): P
     }
     try {
       // ========== 1. 获取输入视频信息 ==========
-      const ffprobeCommand = `"${ffprobePath}" -v error -show_streams -of json "${video}"`
-      const { stdout: probeOut } = await exec(ffprobeCommand)
-      const metadata = JSON.parse(probeOut)
-
-      const allStreams = metadata.streams || []
-      const videoStream = allStreams.find((s: any) => s.codec_type === 'video')
-      const hasAudio = allStreams.some((s: any) => s.codec_type === 'audio')
-      const hasSubtitle = allStreams.some((s: any) => s.codec_type === 'subtitle')
-
-      if (videoStream) {
-        const frameCount = videoStream.nb_frames || '未知'
-        const frameRate = videoStream.avg_frame_rate || '未知'
-        const resolution = `${videoStream.width}x${videoStream.height}`
-        const audioText = hasAudio ? '是' : '否'
-        const subtitleText = hasSubtitle ? '是' : '否' // 字幕信息
-
-        event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `正在处理输入视频 ${video} 的信息:\n`)
-        event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `帧数(输入): ${frameCount}\n`)
-        event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `帧率(输入): ${frameRate}\n`)
-        event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `分辨率(输入): ${resolution}\n`)
-        event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `是否含有音频: ${audioText}\n`)
-        event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `是否含有字幕: ${subtitleText}\n`)
-      }
+      const { hasAudio, hasSubtitle } = await getInputVideoInfo(event, video)
 
       // ========== 2. 生成 vpy 文件 ==========
-      // 生成唯一 vpy 路径
       const baseName = path.basename(video, path.extname(video))
       const vpyPath = getGenVpyPath(taskConfig, baseName)
       await writeVpyFile(null, vpyPath, vpyContent, video)
 
       // ========== 3. 获取输出视频信息 ==========
-      let info: {
-        width: string
-        height: string
-        frames: string
-        fps: string
-      } = {
-        width: '未知',
-        height: '未知',
-        frames: '0',
-        fps: '0',
-      }
-      await new Promise<void>((resolve, reject) => {
-        const vspipeInfoProcess = spawn(vspipePath, ['--info', vpyPath])
-        addProcess('vspipe', vspipeInfoProcess)
-
-        let vspipeOut = '' // 用于保存 stdout 内容
-        // eslint-disable-next-line unused-imports/no-unused-vars
-        let stderrOut = '' // 用于保存 stderr 内容
-
-        vspipeInfoProcess.stdout.on('data', (data: Buffer) => {
-          const str = iconv.decode(data, 'gbk')
-          vspipeOut += str
-          event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `${str}`)
-        })
-
-        vspipeInfoProcess.stderr.on('data', (data: Buffer) => {
-          const str = iconv.decode(data, 'gbk')
-          stderrOut += str
-          event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `${str}`)
-        })
-
-        vspipeInfoProcess.on('close', (code) => {
-          removeProcess(vspipeInfoProcess)
-          event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `vspipe info 执行完毕，退出码: ${code}\n`)///////
-
-          info = {
-            width: vspipeOut.match(/Width:\s*(\d+)/)?.[1] || '未知',
-            height: vspipeOut.match(/Height:\s*(\d+)/)?.[1] || '未知',
-            frames: vspipeOut.match(/Frames:\s*(\d+)/)?.[1] || '0',
-            fps: vspipeOut.match(/FPS:\s*([\d/]+)\s*\(([\d.]+) fps\)/)?.[2] || '0',
-          }
-
-          event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `======= 输出视频信息 =======\n`)
-          event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `宽: ${info.width}\n`)
-          event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `高: ${info.height}\n`)
-          event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `帧数: ${info.frames}\n`)
-          event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `帧率: ${info.fps}\n`)
-          resolve()
-        })
-
-        vspipeInfoProcess.on('error', (err) => {
-          event.sender.send(IpcChannelOn.FFMPEG_OUTPUT, `vspipe 执行出错: ${err.message}\n`)
-          reject(err)
-        })
-      })
+      const info = await getOutputVideoInfo(event, vpyPath)
 
       // ========== 4. 构建渲染命令 ==========
       const vspipeArgs = ffmpegCMD[0].replace(MagicStr.VPY_PATH, vpyPath)
       const ffmpegMajorArgs = ffmpegCMD[1]
       const ffmpegMinorArgs = ffmpegCMD[2]
       const ffmpeg_audio_sub_Args = generate_cmd(taskConfig, hasAudio, hasSubtitle)
-
       const ffmpegArgs = ffmpegMajorArgs.replace(MagicStr.VIDEO_PATH, video) + ffmpeg_audio_sub_Args + ffmpegMinorArgs.replace(MagicStr.VIDEO_NAME, path.join(taskConfig.outputFolder, `${baseName}_enhance`) + taskConfig.videoContainer)
 
       const full_cmd = `${`"${vspipePath}" ${vspipeArgs}`} | "${ffmpegPath}" ${ffmpegArgs}`

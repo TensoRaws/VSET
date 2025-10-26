@@ -136,9 +136,9 @@ watch(() => logs.value, () => {
 .flex-container {
   display: flex;
   flex-direction: column;
-  height: 92vh;
-  padding: 10px;
+  height: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .header {
