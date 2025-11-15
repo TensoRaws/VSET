@@ -373,13 +373,6 @@ const SwinIRModel_options = [
   { value: 'colorCAR_DFWB_s126w7_SwinIR_M_jpeg40', label: 'colorCAR_DFWB_s126w7_SwinIR_M_jpeg40' },
 ]
 
-const SR_ExtraModel_options = [
-  {
-    value: 'AniSD_DC_SPAN_x2',
-    label: 'AniSD_DC_SPAN_x2',
-  },
-]
-
 const sr_numstreams_options = [
   {
     value: '1',
@@ -391,4 +384,4 @@ const sr_numstreams_options = [
   },
 ]
 
-export { Inference_options, RealcuganModel_options, RealesrganModel_options, RealesrganScale_options, SR_ExtraModel_options, sr_numstreams_options, SRMethod_options, SwinIRModel_options, VsmlrtTile_options, Waifu2xModel_options }
+export { Inference_options, RealcuganModel_options, RealesrganModel_options, RealesrganScale_options, sr_numstreams_options, SRMethod_options, SwinIRModel_options, VsmlrtTile_options, Waifu2xModel_options }

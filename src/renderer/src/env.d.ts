@@ -6,3 +6,13 @@ declare module '*.vue' {
   const component: DefineComponent<object, object, any>
   export default component
 }
+export {}
+declare global {
+  interface Window {
+    electronWindow?: {
+      minimize: () => void
+      maximize: () => void
+      close: () => void
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import type { TaskConfig } from '@shared/type/taskConfig'
+import { existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import { app } from 'electron'
 
@@ -36,6 +37,18 @@ export function getExtraSRModelPath(): string {
   return path.join(getCorePath(), 'vs-coreplugins', 'models', 'VSET_ExtraSrModel')
 }
 
+function ensureVpyDir(): string {
+  const dir = process.env.NODE_ENV === 'development'
+    ? path.join(app.getAppPath(), 'resources', 'vpyFile')
+    : path.join(app.getAppPath(), '..', 'vpyFile')
+
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true })
+  }
+
+  return dir
+}
+
 /**
  * 获取 VSET 生成的设置文件路径
  * 暂时存放在 outputfolder 目录下
@@ -46,8 +59,8 @@ export function getGenSettingsPath(taskConfig: TaskConfig): string {
 
 /**
  * 获取 VSET 生成的 vpy 文件路径
- * 暂时存放在 outputfolder 目录下
+ * 存放在软件 vpyFile 目录下
  */
-export function getGenVpyPath(taskConfig: TaskConfig, baseName: string): string {
-  return path.join(taskConfig.outputFolder, `${baseName}.vpy`)
+export function getGenVpyPath(_taskConfig: TaskConfig, baseName: string): string {
+  return path.join(ensureVpyDir(), `${baseName}.vpy`)
 }

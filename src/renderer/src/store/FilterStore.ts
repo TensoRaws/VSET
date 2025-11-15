@@ -21,6 +21,9 @@ export default defineStore('filterConfig', () => {
   const ReduceOn_AfterEnhance = ref(0)
   const ReduceDown_AfterEnhance = ref(0)
 
+  const UseQTGMC_BeforeEnhance = ref(false)
+  const QTGMC_Preset_BeforeEnhance = ref('Slower')
+
   return {
     UseResize_BeforeEnhance,
     UseResize_AfterEnhance,
@@ -36,6 +39,8 @@ export default defineStore('filterConfig', () => {
     ReduceRight_AfterEnhance,
     ReduceOn_AfterEnhance,
     ReduceDown_AfterEnhance,
+    UseQTGMC_BeforeEnhance,
+    QTGMC_Preset_BeforeEnhance,
   }
 }, {
   persist: true,
