@@ -145,14 +145,14 @@ onMounted(() => {
         :max="frameCount"
         :step="1"
         :disabled="isRunning"
-        style="margin-top: 10px; width: 100%;"
+        style="margin-top: 10px; width: 95%; margin-left: 12px"
         show-input
         @change="onFrameChange"
       />
     </div>
 
-    <div v-if="imageNaturalWidth && imageNaturalHeight" class="resolution-text" style="margin-bottom: 6px;">
-      当前图片分辨率: {{ imageNaturalWidth }} × {{ imageNaturalHeight }}
+    <div v-if="imageNaturalWidth && imageNaturalHeight" class="resolution-text" style="margin-bottom: 6px; color: #000;">
+      当前预览帧分辨率: {{ imageNaturalWidth }} × {{ imageNaturalHeight }}
     </div>
 
     <div class="preview-box">
@@ -173,6 +173,15 @@ onMounted(() => {
 </template>
 
 <style scoped>
+:deep(.el-slider__runway) {
+  background-color: #d8d8d8; /* 未激活部分轨道的颜色 */
+  height: 6px; /* 轨道高度，可选 */
+  border-radius: 3px;
+}
+
+:deep(.el-slider__bar) {
+  background-color: #b39ddb; /* 已激活部分（滑块左侧）的颜色，柔和紫色 */
+}
 .image-container {
   max-width: 100%;
   max-height: 100%;

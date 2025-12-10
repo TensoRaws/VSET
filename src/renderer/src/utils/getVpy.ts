@@ -59,6 +59,8 @@ export function buildVpyContent(): string {
     ReduceRight_AfterEnhance,
     ReduceOn_AfterEnhance,
     ReduceDown_AfterEnhance,
+    UseQTGMC_BeforeEnhance,
+    QTGMC_Preset_BeforeEnhance,
   } = storeToRefs(FilterConfigStore)
 
   // 开始生成 vpy 内容
@@ -80,6 +82,8 @@ GitHub: https://github.com/EutropicAI/VSET
   vpyContent += `res = core.lsmas.LWLibavSource(r"${MagicStr.VIDEO_PATH}")\n`
   vpyContent += 'from vsmlrt import CUGAN,RealESRGAN,Waifu2x,RIFE,Backend\n'
   vpyContent += 'import vsmlrt\n'
+  vpyContent += 'import havsfunc\n'
+
 
   // 前置缩放(需要在此改进色彩控制)
   if (UseResize_BeforeEnhance.value === true) {
@@ -87,6 +91,11 @@ GitHub: https://github.com/EutropicAI/VSET
   }
   else {
     vpyContent += 'res = core.resize.Bicubic(clip=res,format=vs.YUV420P16)\n'
+  }
+
+  // QTGMC 滤镜
+  if (UseQTGMC_BeforeEnhance.value === true) {
+    vpyContent += `res = havsfunc.QTGMC(res, TFF=False, FPSDivisor=2, Preset='${QTGMC_Preset_BeforeEnhance.value}')\n`
   }
 
   vpyContent += `res = core.std.Crop(clip=res,left=${ReduceLeft_BeforeEnhance.value}, right=${ReduceRight_BeforeEnhance.value}, top=${ReduceOn_BeforeEnhance.value}, bottom=${ReduceDown_BeforeEnhance.value})\n`
@@ -310,11 +319,11 @@ GitHub: https://github.com/EutropicAI/VSET
     }
 
     if (SRMethodValue.value === 'SR_ExtraModel') {
-      const model_switch = {
-        AniSD_DC_SPAN_x2: 'AniSD_DC_SPAN_x2.onnx',
-      }
-
-      const model = `${MagicStr.EXTRA_MODEL_PATH}/${model_switch[SR_ExtraModelValue.value] || 'AniSD_DC_SPAN_x2.onnx'}`
+      // 自动添加 .onnx 扩展名
+      const modelFileName = SR_ExtraModelValue.value.endsWith('.onnx') 
+        ? SR_ExtraModelValue.value 
+        : `${SR_ExtraModelValue.value}.onnx`
+      const model = `${MagicStr.EXTRA_MODEL_PATH}/${modelFileName}`
 
       vpyContent += `res = vsmlrt.inference(res, network_path=r"${model}", backend=device_sr)\n`
     }

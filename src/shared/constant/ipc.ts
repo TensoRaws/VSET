@@ -5,6 +5,8 @@ export enum IpcChannelInvoke {
   OPEN_DIRECTORY_DIALOG = 'ipc:open-directory-dialog',
   GET_GPU_INFO = 'ipc:get-gpu-info',
   GET_CPU_INFO = 'ipc:get-cpu-info',
+  GET_MEMORY_INFO = 'ipc:get-memory-info',
+  GET_EXTRA_SR_MODEL_LIST = 'ipc:get-extra-sr-model-list',
 }
 
 /**
