@@ -107,7 +107,7 @@ function clearFileList(): void {
 
 <style scoped>
 .upload-dragger {
-  border: 2px dashed #e2e2e2;
+  border: 2px dashed #999999;
   border-radius: 6px;
   padding: 20px;
   height: 100px;

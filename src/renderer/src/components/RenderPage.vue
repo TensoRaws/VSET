@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Delete, Lock, WarningFilled } from '@element-plus/icons-vue'
+import { Delete, Lock, VideoPlay, WarningFilled } from '@element-plus/icons-vue'
 import { useAppStore } from '@renderer/store/AppStore'
 import { useLogStore } from '@renderer/store/LogStore'
 import { CheckSetting } from '@renderer/utils/checkSetting'
@@ -82,9 +82,9 @@ onBeforeUnmount(() => {
 // ✅ 启动渲染流程
 function StartSR(): void {
   // 调用参数错误查询函数
-  if (!CheckSetting()) {
-    console.log('参数错误，无法启动渲染流程')
-    message.error('参数错误，无法启动渲染流程', { duration: 5000 })
+  const checkResult = CheckSetting()
+  if (checkResult !== true) {
+    message.info(checkResult, { duration: 5000 })
     return
   }
 
@@ -106,7 +106,7 @@ watch(() => logs.value, () => {
 <template>
   <div class="flex-container">
     <div class="header">
-      <el-button type="primary" :loading="isRunning" :disabled="isRunning" @click="StartSR">
+      <el-button type="primary" :icon="VideoPlay" :loading="isRunning" :disabled="isRunning" @click="StartSR">
         {{ isRunning ? '处理中...' : '启动' }}
       </el-button>
       <el-button type="primary" :icon="Delete" @click="clearLogs">
@@ -136,9 +136,9 @@ watch(() => logs.value, () => {
 .flex-container {
   display: flex;
   flex-direction: column;
-  height: 92vh;
-  padding: 10px;
+  height: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .header {
@@ -162,6 +162,15 @@ watch(() => logs.value, () => {
   padding: 10px;
   box-sizing: border-box;
   font-family: monospace;
+  font-size: 14px;
   background-color: #fff;
+}
+
+:deep(.log-content) {
+  font-size: 20px;
+}
+
+:deep(.log-content pre) {
+  font-size: 20px;
 }
 </style>

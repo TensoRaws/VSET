@@ -1,4 +1,5 @@
 import type { TaskConfig } from '@shared/type/taskConfig'
+import { existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import { app } from 'electron'
 
@@ -19,13 +20,14 @@ export function getCorePath(): string {
 
 /**
  * 获取 VSET-core 中的可执行文件路径
- * @returns {object} 包含 vspipe、ffmpeg 和 ffprobe 的路径
+ * @returns {object} 包含 vspipe、ffmpeg、ffprobe 和 mediainfo 的路径
  */
-export function getExecPath(): { vspipe: string, ffmpeg: string, ffprobe: string } {
+export function getExecPath(): { vspipe: string, ffmpeg: string, ffprobe: string, mediainfo: string } {
   return {
     vspipe: path.join(getCorePath(), 'VSPipe.exe'),
     ffmpeg: path.join(getCorePath(), 'ffmpeg.exe'),
     ffprobe: path.join(getCorePath(), 'ffprobe.exe'),
+    mediainfo: path.join(getCorePath(), 'MediaInfo.exe'),
   }
 }
 
@@ -34,6 +36,18 @@ export function getExecPath(): { vspipe: string, ffmpeg: string, ffprobe: string
  */
 export function getExtraSRModelPath(): string {
   return path.join(getCorePath(), 'vs-coreplugins', 'models', 'VSET_ExtraSrModel')
+}
+
+function ensureVpyDir(): string {
+  const dir = process.env.NODE_ENV === 'development'
+    ? path.join(app.getAppPath(), 'resources', 'vpyFile')
+    : path.join(app.getAppPath(), '..', 'vpyFile')
+
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true })
+  }
+
+  return dir
 }
 
 /**
@@ -46,8 +60,8 @@ export function getGenSettingsPath(taskConfig: TaskConfig): string {
 
 /**
  * 获取 VSET 生成的 vpy 文件路径
- * 暂时存放在 outputfolder 目录下
+ * 存放在软件 vpyFile 目录下
  */
-export function getGenVpyPath(taskConfig: TaskConfig, baseName: string): string {
-  return path.join(taskConfig.outputFolder, `${baseName}.vpy`)
+export function getGenVpyPath(_taskConfig: TaskConfig, baseName: string): string {
+  return path.join(ensureVpyDir(), `${baseName}.vpy`)
 }

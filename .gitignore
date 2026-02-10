@@ -8,3 +8,5 @@ out
 /.idea
 /coverage/
 /json/
+*.vpy
+*.lwi
