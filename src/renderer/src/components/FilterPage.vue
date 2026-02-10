@@ -38,7 +38,6 @@ const {
                 v-model="UseResize_BeforeEnhance"
                 inline-prompt
                 size="large"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                 active-text="启用缩放"
                 inactive-text="关闭缩放"
               />
@@ -80,7 +79,6 @@ const {
                 v-model="UseQTGMC_BeforeEnhance"
                 inline-prompt
                 size="large"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                 active-text="启用QTGMC"
                 inactive-text="关闭QTGMC"
               />
@@ -112,7 +110,6 @@ const {
                 v-model="UseResize_AfterEnhance"
                 inline-prompt
                 size="large"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                 active-text="启用缩放"
                 inactive-text="关闭缩放"
               />
@@ -203,5 +200,30 @@ const {
 .system-info-card {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
+}
+
+/* 自定义 el-switch 样式：方形带圆角，激活时绿色 */
+.switch-container :deep(.el-switch) {
+  border-radius: 6px;
+}
+
+.switch-container :deep(.el-switch__core) {
+  border-radius: 6px;
+  background-color: #dcdfe6;
+}
+
+.switch-container :deep(.el-switch.is-checked .el-switch__core) {
+  background-color: #89e25c;
+  border-color: #67c23a;
+}
+
+.switch-container :deep(.el-switch__action) {
+  border-radius: 4px;
+  width: 20px;
+  height: 20px;
+}
+
+.switch-container :deep(.el-switch.is-checked .el-switch__action) {
+  left: calc(100% - 22px);
 }
 </style>

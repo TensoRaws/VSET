@@ -64,5 +64,5 @@ export const useSystemInfoStore = defineStore('systemInfo', () => {
     fetchExtraSRModelList,
   }
 }, {
-  persist: true,
+  
 })
